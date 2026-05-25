@@ -8,7 +8,7 @@ export interface Coordinate {
   yCoordinate: number;
 }
 
-export type Unit = 'px' | '%';
+export type Unit = 'px' | '%' | 'rem';
 
 export type CommandType = 'from' | 'line' | 'hline' | 'vline' | 'curve' | 'arc' | 'close';
 

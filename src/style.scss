@@ -577,6 +577,7 @@ code, pre {
     display: grid;
     grid-template-columns: 1fr;
     gap: 16px;
+    align-items: stretch;
     
     @media (min-width: 640px) {
       grid-template-columns: 140px 1fr;
@@ -589,7 +590,9 @@ code, pre {
     align-items: center;
     background-color: var(--color-field-slate);
     border-radius: 8px;
-    height: 140px;
+    min-height: 140px;
+    height: 100%;
+    box-sizing: border-box;
     border: 1px solid var(--color-input-focus);
     
     .shifter-preview-box {
@@ -613,25 +616,28 @@ code, pre {
   .animation-controls {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 12px;
+    justify-content: flex-start;
+    gap: 14px;
     
     .state-actions-row {
       display: flex;
+      flex-wrap: wrap;
       gap: 10px;
        
       .action-btn-green {
-        flex: 1;
+        flex: 1 1 140px;
         background-color: var(--color-field-slate);
         border: 1px solid var(--color-brand-primary);
         color: var(--color-brand-primary);
         font-family: var(--font-sans);
         font-weight: 500;
-        font-size: 12px;
+        font-size: 11.5px;
         padding: 8px 10px;
         border-radius: 6px;
         cursor: pointer;
         transition: all 0.1s ease;
+        white-space: nowrap;
+        text-align: center;
         
         &:hover {
           background-color: var(--color-brand-primary);
@@ -646,7 +652,8 @@ code, pre {
     .play-controls-row {
       display: flex;
       align-items: center;
-      gap: 12px;
+      flex-wrap: wrap;
+      gap: 10px 12px;
       background-color: var(--color-field-slate);
       padding: 10px;
       border-radius: 8px;
@@ -655,12 +662,13 @@ code, pre {
       .range-field-label {
         font-size: 11px;
         color: var(--color-text-subtle);
-        min-width: 64px;
+        white-space: nowrap;
         font-family: var(--font-monospace);
       }
       
       .sc-range-slider {
-        flex: 1;
+        flex: 1 1 100px;
+        min-width: 80px;
         accent-color: var(--color-brand-primary);
         cursor: pointer;
       }
@@ -670,13 +678,14 @@ code, pre {
         color: oklch(1 0 0);
         border: none;
         font-family: var(--font-sans);
-        font-size: 12px;
+        font-size: 11.5px;
         font-weight: 600;
         padding: 7px 14px;
         border-radius: 6px;
         cursor: pointer;
         box-shadow: 0 2px 8px oklch(0 0 0 / 0.2);
         transition: all 0.1s ease;
+        white-space: nowrap;
         
         &:hover {
           background-color: var(--color-brand-primary-hover);
@@ -691,15 +700,18 @@ code, pre {
     .states-indicator-bar {
       display: flex;
       justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px 12px;
       font-size: 11px;
       color: var(--color-text-muted);
-      border-top: 1px solid var(--color-input-focus);
+      border-top: 1px dashed var(--color-input-focus);
       padding-top: 8px;
       
       .state-node-status {
         display: flex;
         align-items: center;
         gap: 4px;
+        white-space: nowrap;
         
         .amber-highlight {
           color: var(--color-gold-highlight);
@@ -836,6 +848,13 @@ code, pre {
       margin: 0;
     }
     
+    .globally-units-selector-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    
     .globally-units-selector {
       display: flex;
       align-items: center;
@@ -866,6 +885,47 @@ code, pre {
           color: var(--color-text-luxury);
           background-color: oklch(0.60 0.17 250 / 0.05);
         }
+      }
+    }
+
+    .base-font-size-configurator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background-color: var(--color-panel-slate);
+      padding: 3px 6px;
+      border-radius: 6px;
+      border: 1px dashed var(--color-input-focus);
+      
+      .label-heading {
+        font-size: 11px;
+        color: var(--color-text-muted);
+        white-space: nowrap;
+      }
+      
+      .parent-font-size-input {
+        background-color: var(--color-field-slate);
+        border: 1px solid var(--color-input-focus);
+        color: var(--color-text-luxury);
+        font-family: var(--font-monospace);
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 4px;
+        border-radius: 4px;
+        width: 44px;
+        text-align: center;
+        box-sizing: border-box;
+        
+        &:focus {
+          outline: none;
+          border-color: var(--color-brand-primary);
+        }
+      }
+      
+      .px-suffix {
+        font-size: 11px;
+        color: var(--color-text-muted);
+        font-family: var(--font-monospace);
       }
     }
   }

@@ -33,6 +33,36 @@ let stateACommands: ShapeCommand[] | null = null;
 let stateBCommands: ShapeCommand[] | null = null;
 let currentAnimationToggle: 'state_a' | 'state_b' = 'state_b';
 
+let parentFontSize: number = 16;
+
+/**
+ * Converts value from specified unit to pure pixels on 400x400 canvas.
+ */
+function convertUnitToPx(value: number, unit: Unit): number {
+  if (unit === '%') {
+    return (value / 100) * 400;
+  }
+  if (unit === 'rem') {
+    return value * parentFontSize;
+  }
+  return value;
+}
+
+/**
+ * Converts absolute pure canvas pixel coordinate to target units.
+ */
+function convertPxToUnit(absolutePixelValue: number, unit: Unit): number {
+  if (unit === '%') {
+    const calculatedPercent = (absolutePixelValue / 400) * 100;
+    return Math.round(calculatedPercent * 10) / 10;
+  }
+  if (unit === 'rem') {
+    const calculatedRem = absolutePixelValue / parentFontSize;
+    return Math.round(calculatedRem * 1000) / 1000;
+  }
+  return Math.round(absolutePixelValue);
+}
+
 // ==========================================
 // Localization System Extra Types & Dictionaries
 // ==========================================
@@ -62,6 +92,8 @@ interface LanguageDictionary {
   convert_label: string;
   btn_convert_px: string;
   btn_convert_percent: string;
+  btn_convert_rem: string;
+  base_font_label: string;
   css_title: string;
   btn_copy: string;
   how_it_works_title: string;
@@ -107,6 +139,8 @@ const localizationMatrix: Record<'en' | 'fr', LanguageDictionary> = {
     convert_label: 'Convert to:',
     btn_convert_px: 'Pixels (px)',
     btn_convert_percent: 'Percentage (%)',
+    btn_convert_rem: 'REM (rem)',
+    base_font_label: 'Base font-size:',
     css_title: 'Generated CSS shape() Code',
     btn_copy: 'Copy code',
     how_it_works_title: 'How it works:',
@@ -146,6 +180,8 @@ const localizationMatrix: Record<'en' | 'fr', LanguageDictionary> = {
     convert_label: 'Convertir en :',
     btn_convert_px: 'Pixels (px)',
     btn_convert_percent: 'Pourcentage (%)',
+    btn_convert_rem: 'REM (rem)',
+    base_font_label: 'Police de base :',
     css_title: 'Code CSS shape() Généré',
     btn_copy: 'Copier le code',
     how_it_works_title: 'Comprendre le fonctionnement :',
@@ -344,8 +380,8 @@ function computeWholeCoordinatesMatrix(commands: ShapeCommand[]): ComputedCoordi
       case 'from': {
         const xCoordinateValue = currentCommand.xCoordinate;
         const yCoordinateValue = currentCommand.yCoordinate;
-        absoluteEndX = currentCommand.horizontalUnit === '%' ? (xCoordinateValue / 100) * 400 : xCoordinateValue;
-        absoluteEndY = currentCommand.verticalUnit === '%' ? (yCoordinateValue / 100) * 400 : yCoordinateValue;
+        absoluteEndX = convertUnitToPx(xCoordinateValue, currentCommand.horizontalUnit);
+        absoluteEndY = convertUnitToPx(yCoordinateValue, currentCommand.verticalUnit);
         firstContourStartingPoint = { xCoordinate: absoluteEndX, yCoordinate: absoluteEndY };
         break;
       }
@@ -353,8 +389,8 @@ function computeWholeCoordinatesMatrix(commands: ShapeCommand[]): ComputedCoordi
       case 'line': {
         const xCoordinateValue = currentCommand.xCoordinate;
         const yCoordinateValue = currentCommand.yCoordinate;
-        const logicalTargetX = currentCommand.horizontalUnit === '%' ? (xCoordinateValue / 100) * 400 : xCoordinateValue;
-        const logicalTargetY = currentCommand.verticalUnit === '%' ? (yCoordinateValue / 100) * 400 : yCoordinateValue;
+        const logicalTargetX = convertUnitToPx(xCoordinateValue, currentCommand.horizontalUnit);
+        const logicalTargetY = convertUnitToPx(yCoordinateValue, currentCommand.verticalUnit);
         if (currentCommand.syntaxModifier === 'to') {
           absoluteEndX = logicalTargetX;
           absoluteEndY = logicalTargetY;
@@ -367,7 +403,7 @@ function computeWholeCoordinatesMatrix(commands: ShapeCommand[]): ComputedCoordi
 
       case 'hline': {
         const targetValue = currentCommand.value;
-        const logicalTargetValue = currentCommand.unit === '%' ? (targetValue / 100) * 400 : targetValue;
+        const logicalTargetValue = convertUnitToPx(targetValue, currentCommand.unit);
         if (currentCommand.syntaxModifier === 'to') {
           absoluteEndX = logicalTargetValue;
         } else {
@@ -379,7 +415,7 @@ function computeWholeCoordinatesMatrix(commands: ShapeCommand[]): ComputedCoordi
 
       case 'vline': {
         const targetValue = currentCommand.value;
-        const logicalTargetValue = currentCommand.unit === '%' ? (targetValue / 100) * 400 : targetValue;
+        const logicalTargetValue = convertUnitToPx(targetValue, currentCommand.unit);
         absoluteEndX = currentPositionX;
         if (currentCommand.syntaxModifier === 'to') {
           absoluteEndY = logicalTargetValue;
@@ -392,13 +428,13 @@ function computeWholeCoordinatesMatrix(commands: ShapeCommand[]): ComputedCoordi
       case 'curve': {
         const targetXCoordinate = currentCommand.xCoordinate;
         const targetYCoordinate = currentCommand.yCoordinate;
-        const logicalTargetEndX = currentCommand.horizontalUnit === '%' ? (targetXCoordinate / 100) * 400 : targetXCoordinate;
-        const logicalTargetEndY = currentCommand.verticalUnit === '%' ? (targetYCoordinate / 100) * 400 : targetYCoordinate;
+        const logicalTargetEndX = convertUnitToPx(targetXCoordinate, currentCommand.horizontalUnit);
+        const logicalTargetEndY = convertUnitToPx(targetYCoordinate, currentCommand.verticalUnit);
         
         const controlOneXVal = currentCommand.firstControlCircle.xCoordinate;
         const controlOneYVal = currentCommand.firstControlCircle.yCoordinate;
-        let logicalCtrl1X = currentCommand.firstControlHorizontalUnit === '%' ? (controlOneXVal / 100) * 400 : controlOneXVal;
-        let logicalCtrl1Y = currentCommand.firstControlVerticalUnit === '%' ? (controlOneYVal / 100) * 400 : controlOneYVal;
+        let logicalCtrl1X = convertUnitToPx(controlOneXVal, currentCommand.firstControlHorizontalUnit);
+        let logicalCtrl1Y = convertUnitToPx(controlOneYVal, currentCommand.firstControlVerticalUnit);
 
         if (currentCommand.syntaxModifier === 'to') {
           absoluteEndX = logicalTargetEndX;
@@ -408,8 +444,8 @@ function computeWholeCoordinatesMatrix(commands: ShapeCommand[]): ComputedCoordi
           if (currentCommand.hasSecondControlCircle) {
             const controlTwoXVal = currentCommand.secondControlCircle.xCoordinate;
             const controlTwoYVal = currentCommand.secondControlCircle.yCoordinate;
-            const logicalCtrl2X = currentCommand.secondControlHorizontalUnit === '%' ? (controlTwoXVal / 100) * 400 : controlTwoXVal;
-            const logicalCtrl2Y = currentCommand.secondControlVerticalUnit === '%' ? (controlTwoYVal / 100) * 400 : controlTwoYVal;
+            const logicalCtrl2X = convertUnitToPx(controlTwoXVal, currentCommand.secondControlHorizontalUnit);
+            const logicalCtrl2Y = convertUnitToPx(controlTwoYVal, currentCommand.secondControlVerticalUnit);
             absoluteControlTwo = { xCoordinate: logicalCtrl2X, yCoordinate: logicalCtrl2Y };
           }
         } else {
@@ -420,8 +456,8 @@ function computeWholeCoordinatesMatrix(commands: ShapeCommand[]): ComputedCoordi
           if (currentCommand.hasSecondControlCircle) {
             const controlTwoXVal = currentCommand.secondControlCircle.xCoordinate;
             const controlTwoYVal = currentCommand.secondControlCircle.yCoordinate;
-            const logicalCtrl2X = currentCommand.secondControlHorizontalUnit === '%' ? (controlTwoXVal / 100) * 400 : controlTwoXVal;
-            const logicalCtrl2Y = currentCommand.secondControlVerticalUnit === '%' ? (controlTwoYVal / 100) * 400 : controlTwoYVal;
+            const logicalCtrl2X = convertUnitToPx(controlTwoXVal, currentCommand.secondControlHorizontalUnit);
+            const logicalCtrl2Y = convertUnitToPx(controlTwoYVal, currentCommand.secondControlVerticalUnit);
             absoluteControlTwo = { xCoordinate: currentPositionX + logicalCtrl2X, yCoordinate: currentPositionY + logicalCtrl2Y };
           }
         }
@@ -431,8 +467,8 @@ function computeWholeCoordinatesMatrix(commands: ShapeCommand[]): ComputedCoordi
       case 'arc': {
         const targetXCoordinate = currentCommand.xCoordinate;
         const targetYCoordinate = currentCommand.yCoordinate;
-        const logicalTargetX = currentCommand.horizontalUnit === '%' ? (targetXCoordinate / 100) * 400 : targetXCoordinate;
-        const logicalTargetY = currentCommand.verticalUnit === '%' ? (targetYCoordinate / 100) * 400 : targetYCoordinate;
+        const logicalTargetX = convertUnitToPx(targetXCoordinate, currentCommand.horizontalUnit);
+        const logicalTargetY = convertUnitToPx(targetYCoordinate, currentCommand.verticalUnit);
 
         if (currentCommand.syntaxModifier === 'to') {
           absoluteEndX = logicalTargetX;
@@ -570,11 +606,7 @@ function batchConvertAllCoordinates(targetUnit: Unit): void {
 
     // Helper functions to convert a 0-400 absolute pixel value into target units
     const projectCoordinate = (absolutePixelValue: number): number => {
-      if (targetUnit === '%') {
-        const calculatedPercent = (absolutePixelValue / 400) * 100;
-        return Math.round(calculatedPercent * 10) / 10;
-      }
-      return Math.round(absolutePixelValue);
+      return convertPxToUnit(absolutePixelValue, targetUnit);
     };
 
     switch (currentCommand.type) {
@@ -672,9 +704,11 @@ function batchConvertAllCoordinates(targetUnit: Unit): void {
         currentCommand.horizontalUnit = targetUnit;
         currentCommand.verticalUnit = targetUnit;
 
-        // Radii conversion (treated as direct bounds)
-        currentCommand.radiusX = projectCoordinate(currentCommand.radiusX);
-        currentCommand.radiusY = projectCoordinate(currentCommand.radiusY);
+        // Radii conversion (now correctly pre-resolving the old unit to px before projection)
+        const rxPx = convertUnitToPx(currentCommand.radiusX, currentCommand.radiusXUnit);
+        const ryPx = convertUnitToPx(currentCommand.radiusY, currentCommand.radiusYUnit);
+        currentCommand.radiusX = projectCoordinate(rxPx);
+        currentCommand.radiusY = projectCoordinate(ryPx);
         currentCommand.radiusXUnit = targetUnit;
         currentCommand.radiusYUnit = targetUnit;
         break;
@@ -1028,10 +1062,8 @@ function applyDragShiftToAnchor(
 
   switch (command.type) {
     case 'from': {
-      const outputHorizontal = command.horizontalUnit === '%' ? (targetLogicalX / 400) * 100 : targetLogicalX;
-      const outputVertical = command.verticalUnit === '%' ? (targetLogicalY / 400) * 100 : targetLogicalY;
-      command.xCoordinate = command.horizontalUnit === '%' ? Math.round(outputHorizontal * 10) / 10 : Math.round(outputHorizontal);
-      command.yCoordinate = command.verticalUnit === '%' ? Math.round(outputVertical * 10) / 10 : Math.round(outputVertical);
+      command.xCoordinate = convertPxToUnit(targetLogicalX, command.horizontalUnit);
+      command.yCoordinate = convertPxToUnit(targetLogicalY, command.verticalUnit);
       
       // Update the bound text inputs in sidebar directly to ensure stable keyboard focus
       stablePushCoordinateValueToSidebarInputs(command.identifier, 'xCoordinate', command.xCoordinate);
@@ -1040,10 +1072,8 @@ function applyDragShiftToAnchor(
     }
 
     case 'line': {
-      const outputHorizontal = command.horizontalUnit === '%' ? (targetLogicalX / 400) * 100 : targetLogicalX;
-      const outputVertical = command.verticalUnit === '%' ? (targetLogicalY / 400) * 100 : targetLogicalY;
-      command.xCoordinate = command.horizontalUnit === '%' ? Math.round(outputHorizontal * 10) / 10 : Math.round(outputHorizontal);
-      command.yCoordinate = command.verticalUnit === '%' ? Math.round(outputVertical * 10) / 10 : Math.round(outputVertical);
+      command.xCoordinate = convertPxToUnit(targetLogicalX, command.horizontalUnit);
+      command.yCoordinate = convertPxToUnit(targetLogicalY, command.verticalUnit);
       
       stablePushCoordinateValueToSidebarInputs(command.identifier, 'xCoordinate', command.xCoordinate);
       stablePushCoordinateValueToSidebarInputs(command.identifier, 'yCoordinate', command.yCoordinate);
@@ -1051,26 +1081,22 @@ function applyDragShiftToAnchor(
     }
 
     case 'hline': {
-      const outputValue = command.unit === '%' ? (targetLogicalX / 400) * 100 : targetLogicalX;
-      command.value = command.unit === '%' ? Math.round(outputValue * 10) / 10 : Math.round(outputValue);
+      command.value = convertPxToUnit(targetLogicalX, command.unit);
       
       stablePushCoordinateValueToSidebarInputs(command.identifier, 'value', command.value);
       break;
     }
 
     case 'vline': {
-      const outputValue = command.unit === '%' ? (targetLogicalY / 400) * 100 : targetLogicalY;
-      command.value = command.unit === '%' ? Math.round(outputValue * 10) / 10 : Math.round(outputValue);
+      command.value = convertPxToUnit(targetLogicalY, command.unit);
       
       stablePushCoordinateValueToSidebarInputs(command.identifier, 'value', command.value);
       break;
     }
 
     case 'curve': {
-      const outputHorizontal = command.horizontalUnit === '%' ? (targetLogicalX / 400) * 100 : targetLogicalX;
-      const outputVertical = command.verticalUnit === '%' ? (targetLogicalY / 400) * 100 : targetLogicalY;
-      command.xCoordinate = command.horizontalUnit === '%' ? Math.round(outputHorizontal * 10) / 10 : Math.round(outputHorizontal);
-      command.yCoordinate = command.verticalUnit === '%' ? Math.round(outputVertical * 10) / 10 : Math.round(outputVertical);
+      command.xCoordinate = convertPxToUnit(targetLogicalX, command.horizontalUnit);
+      command.yCoordinate = convertPxToUnit(targetLogicalY, command.verticalUnit);
       
       stablePushCoordinateValueToSidebarInputs(command.identifier, 'xCoordinate', command.xCoordinate);
       stablePushCoordinateValueToSidebarInputs(command.identifier, 'yCoordinate', command.yCoordinate);
@@ -1078,10 +1104,8 @@ function applyDragShiftToAnchor(
     }
 
     case 'arc': {
-      const outputHorizontal = command.horizontalUnit === '%' ? (targetLogicalX / 400) * 100 : targetLogicalX;
-      const outputVertical = command.verticalUnit === '%' ? (targetLogicalY / 400) * 100 : targetLogicalY;
-      command.xCoordinate = command.horizontalUnit === '%' ? Math.round(outputHorizontal * 10) / 10 : Math.round(outputHorizontal);
-      command.yCoordinate = command.verticalUnit === '%' ? Math.round(outputVertical * 10) / 10 : Math.round(outputVertical);
+      command.xCoordinate = convertPxToUnit(targetLogicalX, command.horizontalUnit);
+      command.yCoordinate = convertPxToUnit(targetLogicalY, command.verticalUnit);
       
       stablePushCoordinateValueToSidebarInputs(command.identifier, 'xCoordinate', command.xCoordinate);
       stablePushCoordinateValueToSidebarInputs(command.identifier, 'yCoordinate', command.yCoordinate);
@@ -1107,18 +1131,14 @@ function applyDragShiftToControlPoint(
   const targetLogicalY = logicalY - relativeOffsetReferenceY;
 
   if (controlPointSelection === 'first') {
-    const rawValX = command.firstControlHorizontalUnit === '%' ? (targetLogicalX / 400) * 100 : targetLogicalX;
-    const rawValY = command.firstControlVerticalUnit === '%' ? (targetLogicalY / 400) * 100 : targetLogicalY;
-    command.firstControlCircle.xCoordinate = command.firstControlHorizontalUnit === '%' ? Math.round(rawValX * 10) / 10 : Math.round(rawValX);
-    command.firstControlCircle.yCoordinate = command.firstControlVerticalUnit === '%' ? Math.round(rawValY * 10) / 10 : Math.round(rawValY);
+    command.firstControlCircle.xCoordinate = convertPxToUnit(targetLogicalX, command.firstControlHorizontalUnit);
+    command.firstControlCircle.yCoordinate = convertPxToUnit(targetLogicalY, command.firstControlVerticalUnit);
     
     stablePushCoordinateValueToSidebarInputs(command.identifier, 'firstControlCircle-xCoordinate', command.firstControlCircle.xCoordinate);
     stablePushCoordinateValueToSidebarInputs(command.identifier, 'firstControlCircle-yCoordinate', command.firstControlCircle.yCoordinate);
   } else {
-    const rawValX = command.secondControlHorizontalUnit === '%' ? (targetLogicalX / 400) * 100 : targetLogicalX;
-    const rawValY = command.secondControlVerticalUnit === '%' ? (targetLogicalY / 400) * 100 : targetLogicalY;
-    command.secondControlCircle.xCoordinate = command.secondControlHorizontalUnit === '%' ? Math.round(rawValX * 10) / 10 : Math.round(rawValX);
-    command.secondControlCircle.yCoordinate = command.secondControlVerticalUnit === '%' ? Math.round(rawValY * 10) / 10 : Math.round(rawValY);
+    command.secondControlCircle.xCoordinate = convertPxToUnit(targetLogicalX, command.secondControlHorizontalUnit);
+    command.secondControlCircle.yCoordinate = convertPxToUnit(targetLogicalY, command.secondControlVerticalUnit);
     
     stablePushCoordinateValueToSidebarInputs(command.identifier, 'secondControlCircle-xCoordinate', command.secondControlCircle.xCoordinate);
     stablePushCoordinateValueToSidebarInputs(command.identifier, 'secondControlCircle-yCoordinate', command.secondControlCircle.yCoordinate);
@@ -1708,8 +1728,14 @@ function buildDropdownUnitParameterCell(
   percentOption.textContent = '%';
   percentOption.selected = currentUnit === '%';
 
+  const remOption = document.createElement('option');
+  remOption.setAttribute('value', 'rem');
+  remOption.textContent = 'rem';
+  remOption.selected = currentUnit === 'rem';
+
   unitSelector.appendChild(pxOption);
   unitSelector.appendChild(percentOption);
+  unitSelector.appendChild(remOption);
   containerCell.appendChild(caption);
   containerCell.appendChild(unitSelector);
 
@@ -2203,6 +2229,26 @@ function initializeUIEventHandlers(): void {
   if (convertPercentBtn) {
     convertPercentBtn.addEventListener('click', () => {
       batchConvertAllCoordinates('%');
+    });
+  }
+
+  const convertRemBtn = document.getElementById('convertAllRemButton');
+  if (convertRemBtn) {
+    convertRemBtn.addEventListener('click', () => {
+      batchConvertAllCoordinates('rem');
+    });
+  }
+
+  const parentFontSizeInp = document.getElementById('parentFontSizeInput') as HTMLInputElement;
+  if (parentFontSizeInp) {
+    parentFontSizeInp.addEventListener('input', () => {
+      let val = parseInt(parentFontSizeInp.value, 10);
+      if (isNaN(val) || val <= 0) {
+        return;
+      }
+      parentFontSize = val;
+      // Re-trigger visual layout and update generate CSS shape code instantly!
+      updateVisualClippedLayoutAndCanvas();
     });
   }
 

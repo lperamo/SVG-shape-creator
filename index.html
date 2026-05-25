@@ -142,10 +142,18 @@
           <div class="commands-card">
             <div class="commands-header">
               <h3 class="section-title" data-i18n="commands_title">Command Structure</h3>
-              <div class="globally-units-selector">
-                <span class="label-heading" data-i18n="convert_label">Convert to:</span>
-                <button type="button" class="convert-unit-btn" id="convertAllPxButton" data-i18n="btn_convert_px">Pixels (px)</button>
-                <button type="button" class="convert-unit-btn" id="convertAllPercentButton" data-i18n="btn_convert_percent">Percentage (%)</button>
+              <div class="globally-units-selector-container">
+                <div class="globally-units-selector">
+                  <span class="label-heading" data-i18n="convert_label">Convert to:</span>
+                  <button type="button" class="convert-unit-btn" id="convertAllPxButton" data-i18n="btn_convert_px">Pixels (px)</button>
+                  <button type="button" class="convert-unit-btn" id="convertAllPercentButton" data-i18n="btn_convert_percent">Percentage (%)</button>
+                  <button type="button" class="convert-unit-btn" id="convertAllRemButton" data-i18n="btn_convert_rem">REM (rem)</button>
+                </div>
+                <div class="base-font-size-configurator">
+                  <label for="parentFontSizeInput" class="label-heading" data-i18n="base_font_label">Base font-size:</label>
+                  <input type="number" id="parentFontSizeInput" class="parent-font-size-input" value="16" min="1" max="120" step="1" aria-label="Base font size in px" />
+                  <span class="px-suffix">px</span>
+                </div>
               </div>
             </div>
 
