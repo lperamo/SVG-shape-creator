@@ -386,6 +386,7 @@ code, pre {
     z-index: 2;
     overflow: visible;
     pointer-events: none;
+    touch-action: none;
     
     .svg-connecting-polyline {
       fill: none;
@@ -406,6 +407,7 @@ code, pre {
     .anchor-node-g {
       pointer-events: auto;
       cursor: grab;
+      touch-action: none;
       
       &:active {
         cursor: grabbing;
@@ -458,6 +460,7 @@ code, pre {
     .control-handle-g {
       pointer-events: auto;
       cursor: grab;
+      touch-action: none;
       
       &:active {
         cursor: grabbing;

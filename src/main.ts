@@ -961,7 +961,11 @@ function initializeHandleDragSequence(
   }
 
   // Request native pointer capture to follow coordinates securely outside canvas bounds
-  captureTargetG.setPointerCapture(startPointerEvent.pointerId);
+  try {
+    captureTargetG.setPointerCapture(startPointerEvent.pointerId);
+  } catch (e) {
+    // Ignore if not supported or not allowed in specific containment
+  }
 
   const pointerMoveHandler = (moveEvent: PointerEvent) => {
     const parentContainerRect = paintboard.getBoundingClientRect();
@@ -986,19 +990,23 @@ function initializeHandleDragSequence(
   };
 
   const pointerUpHandler = (releaseEvent: PointerEvent) => {
-    captureTargetG.releasePointerCapture(releaseEvent.pointerId);
-    captureTargetG.removeEventListener('pointermove', pointerMoveHandler);
-    captureTargetG.removeEventListener('pointerup', pointerUpHandler);
-    captureTargetG.removeEventListener('pointercancel', pointerUpHandler);
+    try {
+      captureTargetG.releasePointerCapture(releaseEvent.pointerId);
+    } catch (e) {
+      // Ignore
+    }
+    window.removeEventListener('pointermove', pointerMoveHandler);
+    window.removeEventListener('pointerup', pointerUpHandler);
+    window.removeEventListener('pointercancel', pointerUpHandler);
     
     if (onDragEndCallback) {
       onDragEndCallback();
     }
   };
 
-  captureTargetG.addEventListener('pointermove', pointerMoveHandler);
-  captureTargetG.addEventListener('pointerup', pointerUpHandler);
-  captureTargetG.addEventListener('pointercancel', pointerUpHandler);
+  window.addEventListener('pointermove', pointerMoveHandler);
+  window.addEventListener('pointerup', pointerUpHandler);
+  window.addEventListener('pointercancel', pointerUpHandler);
 }
 
 // ==========================================
