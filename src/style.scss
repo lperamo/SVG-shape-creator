@@ -145,6 +145,53 @@ code, pre {
     }
   }
 
+  .header-controls-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .theme-switcher-group {
+    display: inline-flex;
+    background-color: var(--color-input-background);
+    border: 1px solid var(--color-input-border);
+    border-radius: var(--border-radius-standard);
+    padding: 2px;
+    gap: 2px;
+    align-items: center;
+    
+    .theme-btn {
+      background: none;
+      border: none;
+      color: var(--color-text-subtle);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px;
+      width: 25px;
+      height: 25px;
+      border-radius: calc(var(--border-radius-standard) - 2px);
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      
+      &:hover:not(.active) {
+        color: var(--color-text-luxury);
+        background-color: oklch(0.60 0.17 250 / 0.08);
+      }
+      
+      &.active {
+        color: var(--color-text-luxury);
+        background-color: var(--color-brand-primary);
+        box-shadow: 0 0 8px var(--color-brand-primary);
+      }
+      
+      svg {
+        stroke: currentColor;
+        display: block;
+      }
+    }
+  }
+
   .language-switcher {
     display: inline-flex;
     background-color: var(--color-input-background);

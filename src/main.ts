@@ -2323,6 +2323,48 @@ window.addEventListener('DOMContentLoaded', () => {
     paintboard.classList.add('bg-transparent');
   }
 
+  // Hook up theme switcher buttons
+  const themeBtns = document.querySelectorAll('.theme-switcher-group .theme-btn');
+  const applyTheme = (targetTheme: 'dark' | 'light') => {
+    if (targetTheme === 'light') {
+      document.body.classList.add('theme-light');
+      document.body.classList.remove('theme-dark');
+    } else {
+      document.body.classList.add('theme-dark');
+      document.body.classList.remove('theme-light');
+    }
+    
+    themeBtns.forEach(btn => {
+      const btnTheme = btn.getAttribute('data-theme');
+      if (btnTheme === targetTheme) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+    
+    localStorage.setItem('theme', targetTheme);
+  };
+
+  // Get saved theme or detect preferred color scheme (fallback to dark)
+  const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' | null;
+  let initialTheme: 'dark' | 'light' = 'dark';
+  if (savedTheme === 'dark' || savedTheme === 'light') {
+    initialTheme = savedTheme;
+  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    initialTheme = 'light';
+  }
+  applyTheme(initialTheme);
+
+  themeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const selectedTheme = btn.getAttribute('data-theme') as 'dark' | 'light';
+      if (selectedTheme) {
+        applyTheme(selectedTheme);
+      }
+    });
+  });
+
   // Hook up language switcher segmented buttons
   const switcherBtns = document.querySelectorAll('.language-switcher .lang-btn');
   switcherBtns.forEach(btn => {
