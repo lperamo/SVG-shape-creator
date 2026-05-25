@@ -1,0 +1,6 @@
+{
+  "name": "CSS shape() Generator",
+  "description": "An interactive, lightweight, zero-dependency graphical tool to visual-edit, generate, and animate CSS clip-path shape() syntax paths in real time.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

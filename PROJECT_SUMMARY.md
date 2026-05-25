@@ -1,0 +1,30 @@
+# Project Summary: CSS shape() Generator
+
+## Project Intent
+An interactive, high-fidelity browser-based graphical utility to edit and generate standard level 2 `clip-path: shape(...)` declarations. By replacing tedious coordinate calculations and constant browser refreshes with graphical anchors, users can draw, edit, and animate complex silhouettes in real time.
+
+## Specifications and Constraints
+- **Zero dependencies**: No bloated JavaScript or CSS frameworks are present; the application runs exclusively on pure vanilla TypeScript with clean, tailored SCSS styles. We completely avoided global stylesheet resets to prevent side-effects.
+- **Ergonomics & Performance**: Built with "stable input focus" so that typing values directly in the sidebar edits the shape dynamically, while mouse dragging on the interactive canvas updates values in the input field without losing keyboard target focus.
+- **No abbreviations**: Every single variable, parameter, and property is fully expanded (e.g., `xCoordinate` instead of `x`, `syntaxModifier` instead of `subType`, `firstControlCircle` instead of `ctrlRef`).
+- **Sleek Interface & Modern Colors**: Upgraded with a professional **Sleek Interface** developer-centric visuals. Color styling is designed exclusively using modern `oklch` color spaces (`oklch(L C H)`), delivering rich midnight dark panel layers (`#0F1115`, `#161B22`, `#0D1117`) and glowing electric/blue active handle high-contrast layouts.
+- **Responsive Mode & Support**: Seamless fallback color scaling accommodates system light themes (`body.theme-light` & `(prefers-color-scheme: light)`) as well as tailored printing layouts (`@media print`) that strip interactive elements to optimize physical print outputs.
+- **Accessibility (RGAA)**: Labels are strictly associated with inputs to support screen readers, high-contrast outlines are present on active elements, and focus states have standard visible outline offsets.
+
+## Features Implemented
+1. **Interactive SVG Painting Canvas**: A highly responsive 400x400 grid overlaid with active anchors. Highlights active selection steps and supports direct mouse or touch pointer drag operations. Includes cursor coordinates readout.
+2. **Double-Click Node Insertion**: Users can double-click anywhere inside the grid to dynamically place a new `line to` anchor, automatically inserted in the correct sequential hierarchy before the path wraps up.
+3. **Bespoke Preset Library**: Contains multiple optimized ready-to-use vector presets:
+   - *Bulle de discussion*: The iconic speaker bubble with curved corners and pointer tip.
+   - *Cœur Sacré*: A love heart using complex cubic Bézier commands.
+   - *Étoile à 5 branches*: Clean polygonal star.
+   - *Bouclier National*: Shield combining lines and curves.
+   - *Bannière Vague*: Dynamic wave.
+   - *Badge Octogonal*: Regular polygon.
+4. **Transition Animation Player (Keyframe Workbench)**: Lets developers save a "State A" shape configuration, modify the path on screen, save it to "State B", and play a genuine CSS transition loop on a preview element with customized durations using a range slider.
+5. **Universal Unit Converter Suite**: Allows changing all coordinates across the entire shape between pixels (`px`) and percentages (`%`) in a single click, instantly transforming calculations based on physical grid projection.
+6. **Code Terminal block**: Provides real-time formatted CSS output with a single-click "Copy Code" action offering high-contrast styled copy success banners.
+7. **Internationalization & Language Switcher**: Configured with a default English-first localization system that supports a full translation matrix for both English and French. The segmented controller in the header dynamically translates static content, SVG pointer descriptions, real-time cursor coordinates, transition players, and the dynamic preset cards.
+
+## Current Project State
+The application remains completely framework-free (utilizing pure vanilla TypeScript and SCSS styles). TypeScript typing has been fully resolved and both compilation and lint checks are passing successfully. Layout and display issues, such as the bottom-right toast banner peeking out while inactive, have been completely resolved using elegant opacity transitions and hidden visibility overrides.
