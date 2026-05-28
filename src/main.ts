@@ -1834,9 +1834,23 @@ function createAndAppendCommandBlock(type: CommandType): void {
   const newIdentifier = `cmd-user-${Date.now()}`;
   let newCommand: ShapeCommand;
 
+  // Find index of currently selected command
+  let insertIndex = -1;
+  if (selectedCommandIdentifier) {
+    insertIndex = commandsStack.findIndex((cmd: ShapeCommand) => cmd.identifier === selectedCommandIdentifier);
+  }
+
   // Derive logical coordinates based on the preceding point coordinates at output
   const matrix = computeWholeCoordinatesMatrix(commandsStack);
-  const previousPoint = matrix.length > 0 ? matrix[matrix.length - 1].absoluteEnd : { xCoordinate: 100, yCoordinate: 100 };
+  
+  let previousPoint: Coordinate;
+  if (insertIndex !== -1 && insertIndex < matrix.length) {
+    previousPoint = matrix[insertIndex].absoluteEnd;
+  } else if (matrix.length > 0) {
+    previousPoint = matrix[matrix.length - 1].absoluteEnd;
+  } else {
+    previousPoint = { xCoordinate: 100, yCoordinate: 100 };
+  }
   
   // Decide placing coordinates offset slightly from preceding position to be highly visible
   const derivedX = Math.round(Math.min(360, Math.max(40, previousPoint.xCoordinate + 40)));
@@ -1896,11 +1910,20 @@ function createAndAppendCommandBlock(type: CommandType): void {
       break;
   }
 
-  // Double-check to insert lines or arcs before the existing close commands if any close exists!
-  if (commandsStack.length > 1 && commandsStack[commandsStack.length - 1].type === 'close') {
-    commandsStack.splice(commandsStack.length - 1, 0, newCommand);
+  if (insertIndex !== -1) {
+    const selectedCmd = commandsStack[insertIndex];
+    if (selectedCmd.type === 'close') {
+      commandsStack.splice(insertIndex, 0, newCommand);
+    } else {
+      commandsStack.splice(insertIndex + 1, 0, newCommand);
+    }
   } else {
-    commandsStack.push(newCommand);
+    // Double-check to insert lines or arcs before the existing close commands if any close exists!
+    if (commandsStack.length > 1 && commandsStack[commandsStack.length - 1].type === 'close') {
+      commandsStack.splice(commandsStack.length - 1, 0, newCommand);
+    } else {
+      commandsStack.push(newCommand);
+    }
   }
 
   selectedCommandIdentifier = newIdentifier;
@@ -1926,11 +1949,25 @@ function handleCanvasDoubleClick(logicalX: number, logicalY: number): void {
     verticalUnit: 'px'
   };
 
-  // Safe insertion before the final close
-  if (commandsStack.length > 1 && commandsStack[commandsStack.length - 1].type === 'close') {
-    commandsStack.splice(commandsStack.length - 1, 0, command);
+  let insertIndex = -1;
+  if (selectedCommandIdentifier) {
+    insertIndex = commandsStack.findIndex((cmd: ShapeCommand) => cmd.identifier === selectedCommandIdentifier);
+  }
+
+  if (insertIndex !== -1) {
+    const selectedCmd = commandsStack[insertIndex];
+    if (selectedCmd.type === 'close') {
+      commandsStack.splice(insertIndex, 0, command);
+    } else {
+      commandsStack.splice(insertIndex + 1, 0, command);
+    }
   } else {
-    commandsStack.push(command);
+    // Safe insertion before the final close
+    if (commandsStack.length > 1 && commandsStack[commandsStack.length - 1].type === 'close') {
+      commandsStack.splice(commandsStack.length - 1, 0, command);
+    } else {
+      commandsStack.push(command);
+    }
   }
 
   selectedCommandIdentifier = newIdentifier;
