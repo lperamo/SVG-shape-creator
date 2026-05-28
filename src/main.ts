@@ -925,6 +925,7 @@ function rebuildCanvasSvgInteractionHandles(coordinatesMatrix: ComputedCoordinat
         newY = Math.round(Math.max(0, Math.min(400, newY)));
 
         applyDragShiftToAnchor(command, index, previousAnchor, newX, newY);
+        announceToScreenReader(currentLanguage === 'en' ? `Moved point to ${newX}, ${newY}` : `Point déplacé à ${newX}, ${newY}`);
       }
     });
 
@@ -1951,6 +1952,9 @@ function loadSelectedPresetTemplate(preset: ShapePreset): void {
   stableRebuildCommandsSidebarDOM();
   updateVisualClippedLayoutAndCanvas();
   renderPresetButtonCardsList();
+
+  const presetName = presetLocalizations[currentLanguage][shapePresets.indexOf(preset)]?.name || preset.name;
+  announceToScreenReader(currentLanguage === 'en' ? `Preset loaded: ${presetName}` : `Préréglage chargé : ${presetName}`);
 }
 
 function createAndAppendCommandBlock(type: CommandType): void {
@@ -2052,6 +2056,7 @@ function createAndAppendCommandBlock(type: CommandType): void {
   selectedCommandIdentifier = newIdentifier;
   stableRebuildCommandsSidebarDOM();
   updateVisualClippedLayoutAndCanvas();
+  announceToScreenReader(currentLanguage === 'en' ? `Added step: ${newCommand.type}` : `Étape ajoutée : ${newCommand.type}`);
 }
 
 /**
@@ -2096,6 +2101,7 @@ function handleCanvasDoubleClick(logicalX: number, logicalY: number): void {
   selectedCommandIdentifier = newIdentifier;
   stableRebuildCommandsSidebarDOM();
   updateVisualClippedLayoutAndCanvas();
+  announceToScreenReader(currentLanguage === 'en' ? `Added point on canvas at X: ${roundedX}, Y: ${roundedY}` : `Point ajouté sur le canevas à l'emplacement X: ${roundedX}, Y: ${roundedY}`);
 }
 
 function removeCommandFromStack(commandIdentifier: string): void {
@@ -2105,6 +2111,7 @@ function removeCommandFromStack(commandIdentifier: string): void {
     return;
   }
 
+  const deletedType = commandsStack[index].type;
   commandsStack.splice(index, 1);
   
   // Re-adjust focus selection
@@ -2114,6 +2121,7 @@ function removeCommandFromStack(commandIdentifier: string): void {
 
   stableRebuildCommandsSidebarDOM();
   updateVisualClippedLayoutAndCanvas();
+  announceToScreenReader(currentLanguage === 'en' ? `Removed step: ${deletedType}` : `Étape supprimée : ${deletedType}`);
 }
 
 function swapCommandsInStack(indexOne: number, indexTwo: number): void {
@@ -2132,6 +2140,7 @@ function swapCommandsInStack(indexOne: number, indexTwo: number): void {
 
   stableRebuildCommandsSidebarDOM();
   updateVisualClippedLayoutAndCanvas();
+  announceToScreenReader(currentLanguage === 'en' ? 'Step order updated' : 'Ordre des étapes mis à jour');
 }
 
 // ==========================================
@@ -2603,3 +2612,16 @@ window.addEventListener('DOMContentLoaded', () => {
   // Register window resize listener for clip-path scaling alignment
   window.addEventListener('resize', adjustClippedElementScale);
 });
+
+/**
+ * Sends a polite verbal notification to screen readers via an aria-live div.
+ */
+function announceToScreenReader(message: string): void {
+  const announcer = document.getElementById('srLiveAnnouncer');
+  if (announcer) {
+    announcer.textContent = '';
+    setTimeout(() => {
+      announcer.textContent = message;
+    }, 50);
+  }
+}
