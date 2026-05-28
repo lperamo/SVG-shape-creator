@@ -505,6 +505,19 @@ code, pre {
           fill: var(--color-gold-highlight);
         }
       }
+
+      &:focus-visible {
+        outline: none;
+        .anchor-ring-glow {
+          transform: scale(2.0);
+          opacity: 0.65;
+          fill: var(--color-cyan-accent);
+        }
+        .anchor-circle {
+          stroke: var(--color-cyan-accent);
+          stroke-width: 4.5;
+        }
+      }
     }
     
     /* Control handles Bézier dots on SVG layer */
@@ -550,6 +563,19 @@ code, pre {
         }
         .control-point-inner {
           fill: var(--color-gold-highlight);
+        }
+      }
+
+      &:focus-visible {
+        outline: none;
+        .ctrl-circle-glow {
+          transform: scale(2.0);
+          opacity: 0.65;
+          fill: var(--color-gold-highlight);
+        }
+        .control-point-outer {
+          stroke: var(--color-gold-highlight);
+          stroke-width: 3.5;
         }
       }
     }

@@ -832,6 +832,9 @@ function rebuildCanvasSvgInteractionHandles(coordinatesMatrix: ComputedCoordinat
     return;
   }
 
+  // Preserve keyboard focus across redraws
+  const activeElementId = document.activeElement ? document.activeElement.id : null;
+
   markersContainer.innerHTML = '';
   auxiliaryContainer.innerHTML = '';
 
@@ -889,6 +892,42 @@ function rebuildCanvasSvgInteractionHandles(coordinatesMatrix: ComputedCoordinat
       });
     });
 
+    // Keyboard support for main anchor handle
+    anchorGroup.addEventListener('keydown', (event: KeyboardEvent) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        setFocusedActiveCommand(command.identifier);
+        return;
+      }
+
+      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
+        event.preventDefault();
+        setFocusedActiveCommand(command.identifier);
+
+        const currentX = absoluteRecord.absoluteEnd.xCoordinate;
+        const currentY = absoluteRecord.absoluteEnd.yCoordinate;
+        const step = event.shiftKey ? 10 : 1;
+
+        let newX = currentX;
+        let newY = currentY;
+
+        if (event.key === 'ArrowLeft') {
+          newX -= step;
+        } else if (event.key === 'ArrowRight') {
+          newX += step;
+        } else if (event.key === 'ArrowUp') {
+          newY -= step;
+        } else if (event.key === 'ArrowDown') {
+          newY += step;
+        }
+
+        newX = Math.round(Math.max(0, Math.min(400, newX)));
+        newY = Math.round(Math.max(0, Math.min(400, newY)));
+
+        applyDragShiftToAnchor(command, index, previousAnchor, newX, newY);
+      }
+    });
+
     markersContainer.appendChild(anchorGroup);
 
     // If the command is curve, render control points circles and auxiliary connecting lines
@@ -908,6 +947,8 @@ function rebuildCanvasSvgInteractionHandles(coordinatesMatrix: ComputedCoordinat
       // Create Control 1 point group circular handle
       const controlOneGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
       controlOneGroup.setAttribute('class', 'control-handle-g');
+      controlOneGroup.setAttribute('id', `control-one-handle-${command.identifier}`);
+      controlOneGroup.setAttribute('tabindex', '0');
       controlOneGroup.setAttribute('role', 'button');
       controlOneGroup.setAttribute('aria-label', currentLanguage === 'en' ? `Primary Bézier control point for command ${index + 1}` : `Poignée de contrôle initiale de la courbe de Bézier de l'élément numéro ${index + 1}`);
 
@@ -945,6 +986,42 @@ function rebuildCanvasSvgInteractionHandles(coordinatesMatrix: ComputedCoordinat
         });
       });
 
+      // Keyboard support for Control 1 handle
+      controlOneGroup.addEventListener('keydown', (event: KeyboardEvent) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          setFocusedActiveCommand(command.identifier);
+          return;
+        }
+
+        if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
+          event.preventDefault();
+          setFocusedActiveCommand(command.identifier);
+
+          const currentX = absoluteRecord.absoluteControlOne.xCoordinate;
+          const currentY = absoluteRecord.absoluteControlOne.yCoordinate;
+          const step = event.shiftKey ? 10 : 1;
+
+          let newX = currentX;
+          let newY = currentY;
+
+          if (event.key === 'ArrowLeft') {
+            newX -= step;
+          } else if (event.key === 'ArrowRight') {
+            newX += step;
+          } else if (event.key === 'ArrowUp') {
+            newY -= step;
+          } else if (event.key === 'ArrowDown') {
+            newY += step;
+          }
+
+          newX = Math.round(Math.max(0, Math.min(400, newX)));
+          newY = Math.round(Math.max(0, Math.min(400, newY)));
+
+          applyDragShiftToControlPoint(command, 'first', startOfCurveAnchor, newX, newY);
+        }
+      });
+
       markersContainer.appendChild(controlOneGroup);
 
       // Draw dashed connecting lines & circles for Control 2 (if cubic Bézier active)
@@ -959,6 +1036,8 @@ function rebuildCanvasSvgInteractionHandles(coordinatesMatrix: ComputedCoordinat
 
         const controlTwoGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         controlTwoGroup.setAttribute('class', 'control-handle-g');
+        controlTwoGroup.setAttribute('id', `control-two-handle-${command.identifier}`);
+        controlTwoGroup.setAttribute('tabindex', '0');
         controlTwoGroup.setAttribute('role', 'button');
         controlTwoGroup.setAttribute('aria-label', currentLanguage === 'en' ? `Secondary Bézier control point for command ${index + 1}` : `Poignée de contrôle secondaire de la courbe de Bézier de l'élément numéro ${index + 1}`);
 
@@ -996,8 +1075,52 @@ function rebuildCanvasSvgInteractionHandles(coordinatesMatrix: ComputedCoordinat
           });
         });
 
+        // Keyboard support for Control 2 handle
+        controlTwoGroup.addEventListener('keydown', (event: KeyboardEvent) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            setFocusedActiveCommand(command.identifier);
+            return;
+          }
+
+          if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
+            event.preventDefault();
+            setFocusedActiveCommand(command.identifier);
+
+            const currentX = absoluteRecord.absoluteControlTwo.xCoordinate;
+            const currentY = absoluteRecord.absoluteControlTwo.yCoordinate;
+            const step = event.shiftKey ? 10 : 1;
+
+            let newX = currentX;
+            let newY = currentY;
+
+            if (event.key === 'ArrowLeft') {
+              newX -= step;
+            } else if (event.key === 'ArrowRight') {
+              newX += step;
+            } else if (event.key === 'ArrowUp') {
+              newY -= step;
+            } else if (event.key === 'ArrowDown') {
+              newY += step;
+            }
+
+            newX = Math.round(Math.max(0, Math.min(400, newX)));
+            newY = Math.round(Math.max(0, Math.min(400, newY)));
+
+            applyDragShiftToControlPoint(command, 'second', startOfCurveAnchor, newX, newY);
+          }
+        });
+
         markersContainer.appendChild(controlTwoGroup);
       }
+    }
+  }
+
+  // Restore keyboard focus context securely
+  if (activeElementId) {
+    const elementToFocus = document.getElementById(activeElementId);
+    if (elementToFocus) {
+      elementToFocus.focus();
     }
   }
 }
