@@ -113,6 +113,8 @@ interface LanguageDictionary {
   aria_bg_group: string;
   aria_config_section: string;
   aria_commands_list: string;
+  footer_text: string;
+  footer_link_blog: string;
 }
 
 const localizationMatrix: Record<'en' | 'fr', LanguageDictionary> = {
@@ -155,7 +157,9 @@ const localizationMatrix: Record<'en' | 'fr', LanguageDictionary> = {
     aria_canvas_section: 'Interactive drawing workspace',
     aria_bg_group: 'Preview background style',
     aria_config_section: 'Shape configuration panel',
-    aria_commands_list: 'List of drawing commands'
+    aria_commands_list: 'List of drawing commands',
+    footer_text: 'Want to discover other tools or connect?',
+    footer_link_blog: 'Blog'
   },
   fr: {
     header_title: 'Éditeur Visuel CSS shape()',
@@ -196,7 +200,9 @@ const localizationMatrix: Record<'en' | 'fr', LanguageDictionary> = {
     aria_canvas_section: 'Zone interactive de dessin',
     aria_bg_group: 'Type d\'arrière-plan de l\'aperçu',
     aria_config_section: 'Panneau de configuration de la forme',
-    aria_commands_list: 'Liste des directives de tracé'
+    aria_commands_list: 'Liste des directives de tracé',
+    footer_text: 'Envie de découvrir d\'autres outils ou de me contacter ?',
+    footer_link_blog: 'Blog'
   }
 };
 
