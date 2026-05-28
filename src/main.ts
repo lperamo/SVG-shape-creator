@@ -740,10 +740,26 @@ function deepDuplicateStack(commands: ShapeCommand[]): ShapeCommand[] {
 // ==========================================
 
 /**
+ * Scales the 400x400 clipped element block using CSS transforms, e.g. transform: scale(factor),
+ * so that shape coordinates (both absolute pixels, rems, or percentages) align exactly with the SVG handlers.
+ */
+function adjustClippedElementScale(): void {
+  const paintboard = document.getElementById('paintboard');
+  const clippedElement = document.getElementById('clippedElement');
+  if (paintboard && clippedElement) {
+    const width = paintboard.clientWidth;
+    const scale = width / 400;
+    clippedElement.style.transform = `scale(${scale})`;
+    clippedElement.style.transformOrigin = 'top left';
+  }
+}
+
+/**
  * Triggers rendering update on both the real-time cropped visual, 
  * the SVG canvas overlays, connecting lines, code templates & auxiliary coordinates.
  */
 function updateVisualClippedLayoutAndCanvas(): void {
+  adjustClippedElementScale();
   const cssStringCode = compileShapeCodeString(commandsStack);
   
   // Update generated code text areas
@@ -1010,11 +1026,15 @@ function initializeHandleDragSequence(
   const pointerMoveHandler = (moveEvent: PointerEvent) => {
     const parentContainerRect = paintboard.getBoundingClientRect();
     
-    // Convert physical cursor coordinate into logical coordinate ratios inside drafting boundary (offset 5% padding)
-    const normalizedWidth = parentContainerRect.width * 0.9;
-    const normalizedHeight = parentContainerRect.height * 0.9;
-    const offsetPaddingX = parentContainerRect.left + parentContainerRect.width * 0.05;
-    const offsetPaddingY = parentContainerRect.top + parentContainerRect.height * 0.05;
+    // Add border width to offset calculation if it exists
+    const borderLeft = parseInt(window.getComputedStyle(paintboard).borderLeftWidth) || 0;
+    const borderTop = parseInt(window.getComputedStyle(paintboard).borderTopWidth) || 0;
+    
+    // Convert physical cursor coordinate into logical coordinate ratios inside drafting boundary
+    const normalizedWidth = paintboard.clientWidth;
+    const normalizedHeight = paintboard.clientHeight;
+    const offsetPaddingX = parentContainerRect.left + borderLeft;
+    const offsetPaddingY = parentContainerRect.top + borderTop;
 
     let relativeX = (moveEvent.clientX - offsetPaddingX) / normalizedWidth;
     let relativeY = (moveEvent.clientY - offsetPaddingY) / normalizedHeight;
@@ -2124,10 +2144,10 @@ function initializeUIEventHandlers(): void {
       // Don't trigger if clicked on child handles or circles
       if (event.target === paintboard || (event.target as HTMLElement).classList.contains('canvas-grid-lines')) {
         const boardRect = paintboard.getBoundingClientRect();
-        const activeWidth = boardRect.width * 0.9;
-        const activeHeight = boardRect.height * 0.9;
-        const paddingLeft = boardRect.left + boardRect.width * 0.05;
-        const paddingTop = boardRect.top + boardRect.height * 0.05;
+        const activeWidth = boardRect.width;
+        const activeHeight = boardRect.height;
+        const paddingLeft = boardRect.left;
+        const paddingTop = boardRect.top;
 
         // Fetch click position relative inside the grid square
         const clickRatioX = (event.clientX - paddingLeft) / activeWidth;
@@ -2136,9 +2156,8 @@ function initializeUIEventHandlers(): void {
         const logicalX = clickRatioX * 400;
         const logicalY = clickRatioY * 400;
 
-        if (logicalX >= 0 && logicalX <= 400 && logicalY >= 0 && logicalY <= 400) {
-          handleCanvasDoubleClick(logicalX, logicalY);
-        }
+        // Ensure we operate within the expected coordinate system
+        handleCanvasDoubleClick(logicalX, logicalY);
       }
     });
 
@@ -2147,10 +2166,10 @@ function initializeUIEventHandlers(): void {
       const readout = document.getElementById('activeCoordinateReadout');
       if (readout) {
         const boardRect = paintboard.getBoundingClientRect();
-        const activeWidth = boardRect.width * 0.9;
-        const activeHeight = boardRect.height * 0.9;
-        const paddingLeft = boardRect.left + boardRect.width * 0.05;
-        const paddingTop = boardRect.top + boardRect.height * 0.05;
+        const activeWidth = boardRect.width;
+        const activeHeight = boardRect.height;
+        const paddingLeft = boardRect.left;
+        const paddingTop = boardRect.top;
 
         const ratioX = (event.clientX - paddingLeft) / activeWidth;
         const ratioY = (event.clientY - paddingTop) / activeHeight;
@@ -2420,4 +2439,7 @@ window.addEventListener('DOMContentLoaded', () => {
   // Render list of preset templates
   renderPresetButtonCardsList();
   refreshAnimationIndicatorsUI();
+
+  // Register window resize listener for clip-path scaling alignment
+  window.addEventListener('resize', adjustClippedElementScale);
 });

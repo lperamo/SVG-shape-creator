@@ -344,6 +344,7 @@ code, pre {
     }
     
     .draft-board {
+      box-sizing: border-box;
       position: absolute;
       top: 0;
       left: 0;
@@ -372,10 +373,11 @@ code, pre {
   /* Interactive Cut Masking overlay element */
   .clipped-element-visual {
     position: absolute;
-    top: 5%;
-    left: 5%;
-    width: 90%;
-    height: 90%;
+    top: 0;
+    left: 0;
+    width: 400px;
+    height: 400px;
+    transform-origin: top left;
     transition: clip-path 0.15s ease-out;
     pointer-events: none;
     z-index: 1;
@@ -426,10 +428,10 @@ code, pre {
   /* SVG Drag-and-Drop Controller overlay */
   .canvas-interactive-svg {
     position: absolute;
-    top: 5%;
-    left: 5%;
-    width: 90%;
-    height: 90%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     z-index: 2;
     overflow: visible;
     pointer-events: none;
