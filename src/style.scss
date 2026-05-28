@@ -17,9 +17,9 @@
   --color-risk-danger: oklch(0.58 0.18 28);    /* Deep ruby red for action warning */
   --color-risk-danger-hover: oklch(0.64 0.17 28);
   
-  --color-text-luxury: oklch(0.92 0.01 255);   /* #E2E8F0 High contrast near-white */
-  --color-text-subtle: oklch(0.74 0.01 255);   /* #94A3B8 Cool grey details */
-  --color-text-muted: oklch(0.50 0.01 255);    /* #64748B Inactive/helper gray */
+  --color-text-luxury: oklch(0.95 0.01 255);   /* High contrast near-white */
+  --color-text-subtle: oklch(0.82 0.01 255);   /* High quality cool grey details */
+  --color-text-muted: oklch(0.70 0.01 255);    /* Clear helper gray with contrast > 7:1 */
   
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-monospace: 'JetBrains Mono', monospace;
@@ -45,9 +45,9 @@
     --color-risk-danger: oklch(0.50 0.18 28);
     --color-risk-danger-hover: oklch(0.44 0.18 28);
     
-    --color-text-luxury: oklch(0.16 0.01 255);
-    --color-text-subtle: oklch(0.42 0.01 255);
-    --color-text-muted: oklch(0.58 0.01 255);
+    --color-text-luxury: oklch(0.12 0.01 255);
+    --color-text-subtle: oklch(0.32 0.01 255);
+    --color-text-muted: oklch(0.38 0.01 255);
     
     --box-shadow-elevation: 0 4px 12px oklch(0.20 0.01 255 / 0.12);
   }
@@ -67,9 +67,9 @@ body.theme-light {
   --color-risk-danger: oklch(0.50 0.18 28);
   --color-risk-danger-hover: oklch(0.44 0.18 28);
   
-  --color-text-luxury: oklch(0.16 0.01 255);
-  --color-text-subtle: oklch(0.42 0.01 255);
-  --color-text-muted: oklch(0.58 0.01 255);
+  --color-text-luxury: oklch(0.12 0.01 255);
+  --color-text-subtle: oklch(0.32 0.01 255);
+  --color-text-muted: oklch(0.38 0.01 255);
   
   --box-shadow-elevation: 0 4px 12px oklch(0.20 0.01 255 / 0.12);
 }
@@ -411,12 +411,14 @@ code, pre {
     
     .grid-coordinate {
       position: absolute;
-      color: var(--color-text-muted);
+      color: var(--color-text-luxury);
       font-family: var(--font-monospace);
       font-size: 10px;
-      padding: 4px;
-      background-color: oklch(0.12 0.01 255 / 0.7);
+      padding: 4px 6px;
+      background-color: var(--color-field-slate);
+      border: 1px solid var(--color-input-focus);
       border-radius: 3px;
+      line-height: 1;
       
       &.top-left { top: 4px; left: 4px; }
       &.top-right { top: 4px; right: 4px; }
