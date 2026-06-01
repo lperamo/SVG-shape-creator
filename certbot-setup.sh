@@ -1,90 +1,101 @@
 #!/bin/sh
 # =========================================================================
-# Script POSIX d'automatisation et de renouvellement Certbot (Let's Encrypt)
+# POSIX Shell Automation Script for Certbot (Let's Encrypt)
 # =========================================================================
-# Conçu avec amour dans l'esprit "Amstrad-ready" (léger, efficace, fiable).
-# Ce script aide à installer, configurer et planifier les renouvellements
-# de vos certificats SSL pour votre configuration Nginx multisite.
+# Crafted with care keeping the "Amstrad-ready" lightweight ethos.
+# This script guides the installation, configuration, and automatic renewal
+# of SSL certificates for your Nginx setup.
 
 set -e
 
-# Couleurs pour un affichage propre sans surcharger la mémoire
-VERT='\033[0;32m'
-BLEU='\033[0;34m'
-ROUGE='\033[0;31m'
-NEUTRE='\033[0m'
+# Terminal colors for clean logging without bloating memory allocation
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+RED='\033[0;31m'
+RESET='\033[0m'
 
-echo "${BLEU}=== Assistance d'installation et configuration Certbot ===${NEUTRE}"
+echo "${BLUE}=== Certbot Installation & Configuration Assistant ===${RESET}"
 
-# 1. Vérification de la présence de Certbot
+# 1. Verification of Certbot availability
 if ! command -v certbot >/dev/null 2>&1; then
-    echo "${ROUGE}[Erreur] Certbot n'est pas installé sur ce système.${NEUTRE}"
-    echo "Pour l'installer :"
-    echo "  - Debian/Ubuntu : apt-get update && apt-get install -y certbot python3-certbot-nginx"
-    echo "  - CentOS/RHEL : dnf install -y certbot python3-certbot-nginx"
+    echo "${RED}[Error] Certbot is not installed on this system.${RESET}"
+    echo "To install it:"
+    echo "  - Debian/Ubuntu: apt-get update && apt-get install -y certbot python3-certbot-nginx"
+    echo "  - CentOS/RHEL: dnf install -y certbot python3-certbot-nginx"
     exit 1
 fi
-echo "${VERT}[OK] Certbot détecté.${NEUTRE}"
+echo "${GREEN}[OK] Certbot detected.${RESET}"
 
-# 2. Vérification de la présence de Nginx
+# 2. Verification of Nginx availability
 if ! command -v nginx >/dev/null 2>&1; then
-    echo "${ROUGE}[Attention] Nginx n'est pas détecté localement.${NEUTRE}"
-    echo "Veuillez exécuter ce script directement sur votre serveur de production."
+    echo "${RED}[Warning] Nginx is not detected locally.${RESET}"
+    echo "Please execute this script directly on your production server."
 fi
 
-# Répertoires de configuration
-WEBROOT_DIR="/var/www/svg-shape-creator/dist"
-DOMAINE_PAR_DEFAUT="votre-domaine.com"
+# Configuration directories
+WEBROOT_DIR="/var/www/html/svg-shape-creator/dist"
+DEFAULT_DOMAIN="shape.lionel-peramo.com"
 
 echo ""
-echo "Ce script va vous aider à obtenir un certificat SSL pour votre site."
-echo "La méthode utilisée est celle du ${VERT}webroot${NEUTRE}."
-echo "Elle permet d'obtenir un certificat sans couper Nginx ni perturber les autres sites."
-echo "Le chemin webroot configuré est : ${BLEU}${WEBROOT_DIR}${NEUTRE}"
+echo "This script helps you obtain an SSL certificate for your website."
+echo "The default method used is ${GREEN}webroot${RESET}."
+echo ""
+echo "${RED}[Warning] The directory '$WEBROOT_DIR' only exists if you build the application first. ${RESET}"
+echo "Before running Certbot, you must run in your project:"
+echo "  ${GREEN}npm run build${RESET}"
+echo "This will create the 'dist' folder containing production static assets!"
+echo ""
+echo "The configured webroot path is: ${BLUE}${WEBROOT_DIR}${RESET}"
 echo ""
 
-# S'assurer que le dossier webroot pour le challenge existe
+# Ensure that the webroot challenge directory exists
 if [ ! -d "$WEBROOT_DIR" ]; then
-    echo "[Info] Création du dossier webroot : $WEBROOT_DIR"
+    echo "[Info] Creating the webroot folder: $WEBROOT_DIR (Will be replaced upon next npm run build)"
     mkdir -p "$WEBROOT_DIR"
 fi
 
-# Demande d'informations à l'utilisateur (ou affichage des commandes si non-interactif)
+# Execution options display
 echo "---------------------------------------------------------"
-echo "Pour obtenir une clé sécurisée pour vos domaines, lancez la commande suivante :"
+echo "OPTION A: Automatic Webroot Command (Nginx stays online, requires 'dist' folder)"
 echo "---------------------------------------------------------"
-echo "${VERT}sudo certbot certonly --webroot -w $WEBROOT_DIR -d $DOMAINE_PAR_DEFAUT -d www.$DOMAINE_PAR_DEFAUT${NEUTRE}"
+echo "${GREEN}sudo certbot certonly --webroot -w $WEBROOT_DIR -d $DEFAULT_DOMAIN${RESET}"
 echo ""
-echo "Si vous avez un certificat ${VERT}multisite/wildcard${NEUTRE} existant :"
-echo "Vous pouvez utiliser la méthode DNS de Let's Encrypt, ou simplement mapper le chemin des fichiers pem :"
-echo "  - Certificat :   /etc/letsencrypt/live/votre-domaine.com/fullchain.pem"
-echo "  - Clé privée :   /etc/letsencrypt/live/votre-domaine.com/privkey.pem"
+echo "---------------------------------------------------------"
+echo "OPTION B: Standalone Command (Temporarily stops Nginx, does not require 'dist')"
+echo "---------------------------------------------------------"
+echo "If you prefer obtaining the certificate without worrying about physical paths, use this one-liner alternative:"
+echo "${GREEN}sudo systemctl stop nginx && sudo certbot certonly --standalone -d $DEFAULT_DOMAIN && sudo systemctl start nginx${RESET}"
+echo ""
+echo "If you have an existing ${GREEN}multisite/wildcard${RESET} certificate:"
+echo "You can use Let's Encrypt DNS verification, or simply point your Nginx configuration files to your existing pem files:"
+echo "  - Certificate:   /etc/letsencrypt/live/shape.lionel-peramo.com/fullchain.pem"
+echo "  - Private Key:   /etc/letsencrypt/live/shape.lionel-peramo.com/privkey.pem"
 echo "---------------------------------------------------------"
 
-# 3. Génération des paramètres DH (Diffie-Hellman) pour un chiffrement renforcé
-# On utilise une taille de 2048 bits pour éviter de saturer la mémoire (idéal Amstrad/VPS léger)
+# 3. Diffie-Hellman (DH) parameters generation for enhanced security
+# Uses 2048-bit size to limit memory allocation (suitable for lightweight VPS hosts and keeping memory footprint low)
 DHPARAM_FILE="/etc/nginx/dhparam.pem"
 echo ""
-echo "${BLEU}=== Chiffrement & Sécurité Diffie-Hellman ===${NEUTRE}"
+echo "${BLUE}=== Diffie-Hellman Cryptography & Security ===${RESET}"
 if [ ! -f "$DHPARAM_FILE" ]; then
-    echo "Pour renforcer la sécurité contre les attaques de déchiffrement passif, générez un groupe Diffie-Hellman de 2048 bits (léger et sécurisé) :"
-    echo "  ${VERT}sudo openssl dhparam -out $DHPARAM_FILE 2048${NEUTRE}"
-    echo "Puis, ajoutez cette règle dans le bloc 'server' de votre Nginx :"
+    echo "To reinforce transit security against passive decryption attacks, generate a safe 2048-bit Diffie-Hellman group:"
+    echo "  ${GREEN}sudo openssl dhparam -out $DHPARAM_FILE 2048${RESET}"
+    echo "Then, append this directive inside your Nginx 'server' configuration block:"
     echo "  ssl_dhparam $DHPARAM_FILE;"
 else
-    echo "${VERT}[OK] Le fichier $DHPARAM_FILE est disponible sur votre système.${NEUTRE}"
+    echo "${GREEN}[OK] Diffie-Hellman parameter file $DHPARAM_FILE is available on this system.${RESET}"
 fi
 
-# 4. Planification du renouvellement (Cron Job)
+# 4. Certificate Renewal Scheduling (Cron Job)
 echo ""
-echo "${BLEU}=== Automatisation du renouvellement (Cron Job) ===${NEUTRE}"
-echo "Certbot configure souvent un timer systemd ou un cron par défaut."
-echo "Pour vérifier la validité de la tâche de renouvellement automatique :"
-echo "  ${VERT}sudo certbot renew --dry-run${NEUTRE}"
+echo "${BLUE}=== Automatic Certificate Renewal (Cron Job) ===${RESET}"
+echo "Certbot typically schedules a systemd timer or cron job out of the box."
+echo "To test and verify automatic renewal works cleanly on your system:"
+echo "  ${GREEN}sudo certbot renew --dry-run${RESET}"
 echo ""
-echo "Si ce n'est pas automatisé, ajoutez cette ligne dans votre crontab (sudo crontab -e) :"
-echo "  ${VERT}0 3 * * * certbot renew --post-hook 'systemctl reload nginx' > /dev/null 2>&1${NEUTRE}"
-echo "Cette tâche s'exécutera tous les jours à 3h00 du matin, renouvellera le certificat si nécessaire et rechargera proprement Nginx."
+echo "If no automatic tasks were configured, append this line inside your crontab (sudo crontab -e):"
+echo "  ${GREEN}0 3 * * * certbot renew --post-hook 'systemctl reload nginx' > /dev/null 2>&1${RESET}"
+echo "This task will execute daily at 3:00 AM, automatically renewing valid certificates when needed, and reloading Nginx cleanly."
 echo "---------------------------------------------------------"
 
 exit 0
