@@ -6,3 +6,7 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Administrative & Server Setup Files
+nginx.conf
+certbot-setup.sh
