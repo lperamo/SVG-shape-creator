@@ -464,10 +464,16 @@ code, pre {
         cursor: grabbing;
       }
       
+      &:focus, &:focus-visible {
+        outline: none;
+      }
+      
       .anchor-ring-glow {
         fill: var(--color-brand-primary);
         opacity: 0.15;
         transition: transform 0.2s ease, opacity 0.2s ease;
+        transform-box: fill-box;
+        transform-origin: center;
       }
       
       .anchor-circle {
@@ -507,7 +513,6 @@ code, pre {
       }
 
       &:focus-visible {
-        outline: none;
         .anchor-ring-glow {
           transform: scale(2.0);
           opacity: 0.65;
@@ -530,10 +535,16 @@ code, pre {
         cursor: grabbing;
       }
       
+      &:focus, &:focus-visible {
+        outline: none;
+      }
+      
       .ctrl-circle-glow {
         fill: var(--color-cyan-accent);
         opacity: 0.1;
         transition: transform 0.2s ease;
+        transform-box: fill-box;
+        transform-origin: center;
       }
       
       .control-point-outer {
@@ -567,7 +578,6 @@ code, pre {
       }
 
       &:focus-visible {
-        outline: none;
         .ctrl-circle-glow {
           transform: scale(2.0);
           opacity: 0.65;
