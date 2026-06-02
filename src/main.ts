@@ -2021,11 +2021,17 @@ function loadSelectedPresetTemplate(preset: ShapePreset): void {
 
   const presetName = presetLocalizations[currentLanguage][shapePresets.indexOf(preset)]?.name || preset.name;
   announceToScreenReader(currentLanguage === 'en' ? `Preset loaded: ${presetName}` : `Préréglage chargé : ${presetName}`);
+
+  // Auto-expand commands card on preset loading
+  toggleCollapsibleSection('commandsCard', 'expand');
 }
 
 function createAndAppendCommandBlock(type: CommandType): void {
   const newIdentifier = `cmd-user-${Date.now()}`;
   let newCommand: ShapeCommand;
+
+  // Make sure commands card is expanded when adding manually
+  toggleCollapsibleSection('commandsCard', 'expand');
 
   // Find index of currently selected command
   let insertIndex = -1;
@@ -2132,6 +2138,9 @@ function handleCanvasDoubleClick(logicalX: number, logicalY: number): void {
   const newIdentifier = `cmd-dbl-${Date.now()}`;
   const roundedX = Math.round(logicalX);
   const roundedY = Math.round(logicalY);
+
+  // Auto-expand commands card on canvas double click insertion
+  toggleCollapsibleSection('commandsCard', 'expand');
 
   const command: ShapeCommand = {
     identifier: newIdentifier,
@@ -2247,6 +2256,10 @@ function saveCurrentStateForAnimation(slotSelection: 'A' | 'B'): void {
 
   refreshAnimationIndicatorsUI();
 
+  // Auto-expand animation and output card sections so they are instantly visible
+  toggleCollapsibleSection('animationPresetCard', 'expand');
+  toggleCollapsibleSection('outputCard', 'expand');
+
   // Highlight and select the CSS Animation tab automatically
   const tabStaticBtn = document.getElementById('tabStaticCode');
   const tabAnimationBtn = document.getElementById('tabAnimationCode');
@@ -2348,6 +2361,10 @@ function performAnimationTransitionTest(): void {
     return;
   }
 
+  // Ensure cards are expanded to see the animation
+  toggleCollapsibleSection('animationPresetCard', 'expand');
+  toggleCollapsibleSection('outputCard', 'expand');
+
   // Highlight and select the CSS Animation tab automatically
   const tabStaticBtn = document.getElementById('tabStaticCode');
   const tabAnimationBtn = document.getElementById('tabAnimationCode');
@@ -2424,6 +2441,62 @@ function renderPresetButtonCardsList(): void {
     });
 
     container.appendChild(btnCard);
+  }
+}
+
+/**
+ * Toggles a collapsible card section's open/closed state.
+ * @param cardId The HTML element ID of the details element (e.g. 'canvasCard')
+ * @param forceState Optional explicit state to set: 'expand' or 'collapse'
+ */
+function toggleCollapsibleSection(cardId: string, forceState?: 'expand' | 'collapse'): void {
+  const card = document.getElementById(cardId) as HTMLDetailsElement | null;
+  if (!card) {
+    return;
+  }
+  
+  let shouldExpand = !card.open;
+  if (forceState === 'expand') {
+    shouldExpand = true;
+  } else if (forceState === 'collapse') {
+    shouldExpand = false;
+  }
+  
+  if (shouldExpand) {
+    card.open = true;
+    localStorage.setItem('collapse_' + cardId, 'false');
+    announceToScreenReader(currentLanguage === 'en' ? 'Section expanded' : 'Section développée');
+  } else {
+    card.open = false;
+    localStorage.setItem('collapse_' + cardId, 'true');
+    announceToScreenReader(currentLanguage === 'en' ? 'Section collapsed' : 'Section réduite');
+  }
+}
+
+/**
+ * Configures details toggle listeners to track active expansion preference,
+ * and restores saved states from localStorage on initialization.
+ */
+function initializeCollapsibleSections(): void {
+  const cards = ['canvasCard', 'animationPresetCard', 'presetsCard', 'commandsCard', 'outputCard'];
+  for (const cardId of cards) {
+    const card = document.getElementById(cardId) as HTMLDetailsElement | null;
+    if (!card) {
+      continue;
+    }
+    
+    // Restore saved states from localStorage
+    const savedCollapseState = localStorage.getItem('collapse_' + cardId);
+    if (savedCollapseState === 'true') {
+      card.open = false;
+    } else if (savedCollapseState === 'false') {
+      card.open = true;
+    }
+    
+    // Track toggle state change event to save preferences natively
+    card.addEventListener('toggle', () => {
+      localStorage.setItem('collapse_' + cardId, card.open ? 'false' : 'true');
+    });
   }
 }
 
@@ -2571,7 +2644,9 @@ function initializeUIEventHandlers(): void {
   // Copy Clipboard action
   const copyBtn = document.getElementById('copyClipboardCodeButton');
   if (copyBtn) {
-    copyBtn.addEventListener('click', () => {
+    copyBtn.addEventListener('click', (event: Event) => {
+      event.stopPropagation();
+      event.preventDefault();
       copyGeneratedCodeToClipboard();
     });
   }
@@ -2745,6 +2820,9 @@ window.addEventListener('DOMContentLoaded', () => {
     (modifiedPresetB[7] as any).yCoordinate = 260;
   }
   stateBCommands = modifiedPresetB;
+
+  // Setup accordion / collapsible section handlers and recover storage preferences
+  initializeCollapsibleSections();
 
   // Initialize all interactive buttons and cursors trackers
   initializeUIEventHandlers();

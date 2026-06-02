@@ -40,119 +40,146 @@
         
         <!-- Left Column: Interactive Workspace Canvas & Display -->
         <section class="canvas-section" aria-label="Interactive drawing workspace" data-i18n-aria="aria_canvas_section">
-          <div class="canvas-card">
-            <div class="canvas-toolbar">
-              <div class="toolbar-title-group">
-                <h2 class="section-title" data-i18n="section_canvas_title">Interactive Preview & Drawing</h2>
+          <details class="canvas-card" id="canvasCard" open>
+            <summary class="canvas-summary-header">
+              <h2 class="section-title">
+                <span data-i18n="section_canvas_title">Interactive Preview & Drawing</span>
+                <svg class="chevron-svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+              </h2>
+            </summary>
+
+            <div class="canvas-details-content">
+              <div class="canvas-sub-header">
                 <p class="section-help" data-i18n="section_canvas_help">Double-click anywhere on the grid to add a point!</p>
+                <div class="toolbar-actions" id="canvasToolbarActions">
+                  <span class="label-heading" data-i18n="bg_label">Background:</span>
+                  <div class="background-toggle-group" role="group" aria-label="Preview background style" data-i18n-aria="aria_bg_group">
+                    <button type="button" class="action-toggle-button active" data-background="transparent" aria-pressed="true" data-i18n="bg_checkers">Checkers</button>
+                    <button type="button" class="action-toggle-button" data-background="photo" aria-pressed="false" data-i18n="bg_photo">Photo</button>
+                    <button type="button" class="action-toggle-button" data-background="gradient" aria-pressed="false" data-i18n="bg_gradient">Gradient</button>
+                  </div>
+                </div>
               </div>
-              <div class="toolbar-actions">
-                <span class="label-heading" data-i18n="bg_label">Background:</span>
-                <div class="background-toggle-group" role="group" aria-label="Preview background style" data-i18n-aria="aria_bg_group">
-                  <button type="button" class="action-toggle-button active" data-background="transparent" aria-pressed="true" data-i18n="bg_checkers">Checkers</button>
-                  <button type="button" class="action-toggle-button" data-background="photo" aria-pressed="false" data-i18n="bg_photo">Photo</button>
-                  <button type="button" class="action-toggle-button" data-background="gradient" aria-pressed="false" data-i18n="bg_gradient">Gradient</button>
+
+              <!-- Drawing Area Wrapper -->
+              <div class="draft-board-container">
+                <div class="draft-board-aspect-ratio">
+                  <div class="draft-board" id="paintboard">
+                    <!-- The true target element that is clipped in real-time -->
+                    <div class="clipped-element-visual" id="clippedElement">
+                      <!-- Photo overlay / image block -->
+                      <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80" alt="Texture abstraite de vagues colorées" class="background-photo-asset hidden" id="previewPhoto" referrerpolicy="no-referrer" />
+                      <!-- Fallback rich gradient -->
+                      <div class="background-gradient-asset" id="previewGradient"></div>
+                    </div>
+
+                    <!-- Guide grid coordinates lines -->
+                    <div class="canvas-grid-lines">
+                      <span class="grid-coordinate top-left">0,0</span>
+                      <span class="grid-coordinate top-right">100%,0</span>
+                      <span class="grid-coordinate bottom-left">0,100%</span>
+                      <span class="grid-coordinate bottom-right">100%,100%</span>
+                    </div>
+
+                    <!-- Interactive SVG Interactive Overlay for Nodes, Anchors and Curves -->
+                    <svg class="canvas-interactive-svg" viewBox="0 0 400 400" id="interactiveCanvasSvg" preserveAspectRatio="none" style="display:block;">
+                      <!-- Connection lines between coordinates -->
+                      <path class="svg-connecting-polyline" id="visualConnectingPolyline" d="" />
+                      
+                      <!-- Auxiliary lines for curve control joints -->
+                      <g id="auxiliaryJointLinesGroup"></g>
+                      
+                      <!-- Dynamic draggable markers are appended here -->
+                      <g id="interactiveMarkersGroup"></g>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div class="canvas-footer">
+                <div class="canvas-meta-info">
+                  <span class="coordinate-readout" id="activeCoordinateReadout">Cursor: -- , --</span>
+                  <span class="nodes-counter" id="activeNodesReadout">Commands: 0</span>
+                </div>
+                <div class="canvas-zoom-controls">
+                  <button type="button" class="utility-action-button" id="resetPointsButton" data-i18n="btn_reset">Reset</button>
+                  <button type="button" class="utility-action-button" id="clearAllPointsButton" data-i18n="btn_clear">Clear all</button>
                 </div>
               </div>
             </div>
-
-            <!-- Drawing Area Wrapper -->
-            <div class="draft-board-container">
-              <div class="draft-board-aspect-ratio">
-                <div class="draft-board" id="paintboard">
-                  <!-- The true target element that is clipped in real-time -->
-                  <div class="clipped-element-visual" id="clippedElement">
-                    <!-- Photo overlay / image block -->
-                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80" alt="Texture abstraite de vagues colorées" class="background-photo-asset hidden" id="previewPhoto" referrerpolicy="no-referrer" />
-                    <!-- Fallback rich gradient -->
-                    <div class="background-gradient-asset" id="previewGradient"></div>
-                  </div>
-
-                  <!-- Guide grid coordinates lines -->
-                  <div class="canvas-grid-lines">
-                    <span class="grid-coordinate top-left">0,0</span>
-                    <span class="grid-coordinate top-right">100%,0</span>
-                    <span class="grid-coordinate bottom-left">0,100%</span>
-                    <span class="grid-coordinate bottom-right">100%,100%</span>
-                  </div>
-
-                  <!-- Interactive SVG Interactive Overlay for Nodes, Anchors and Curves -->
-                  <svg class="canvas-interactive-svg" viewBox="0 0 400 400" id="interactiveCanvasSvg" preserveAspectRatio="none" style="display:block;">
-                    <!-- Connection lines between coordinates -->
-                    <path class="svg-connecting-polyline" id="visualConnectingPolyline" d="" />
-                    
-                    <!-- Auxiliary lines for curve control joints -->
-                    <g id="auxiliaryJointLinesGroup"></g>
-                    
-                    <!-- Dynamic draggable markers are appended here -->
-                    <g id="interactiveMarkersGroup"></g>
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <div class="canvas-footer">
-              <div class="canvas-meta-info">
-                <span class="coordinate-readout" id="activeCoordinateReadout">Cursor: -- , --</span>
-                <span class="nodes-counter" id="activeNodesReadout">Commands: 0</span>
-              </div>
-              <div class="canvas-zoom-controls">
-                <button type="button" class="utility-action-button" id="resetPointsButton" data-i18n="btn_reset">Reset</button>
-                <button type="button" class="utility-action-button" id="clearAllPointsButton" data-i18n="btn_clear">Clear all</button>
-              </div>
-            </div>
-          </div>
+          </details>
 
           <!-- Section CSS Transition / Animation Engine -->
-          <div class="animation-preset-card">
-            <h3 class="section-title" data-i18n="animation_title">shape() Animation Module</h3>
-            <p class="section-help" data-i18n-html="animation_help">
-              In CSS, you can animate two <code>clip-path: shape()</code> paths as long as they have the same command structure. Save a reference state ("State A"), modify your shape, and trigger the transition!
-            </p>
-            <div class="animation-workbench">
-              <div class="animation-stage">
-                <!-- Mini view of animated transition element -->
-                <div class="shifter-preview-box">
-                  <div class="shifter-moving-element" id="animatedClippedElement"></div>
+          <details class="animation-preset-card" id="animationPresetCard" open>
+            <summary class="animation-summary-header">
+              <h3 class="section-title">
+                <span data-i18n="animation_title">shape() Animation Module</span>
+                <svg class="chevron-svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+              </h3>
+            </summary>
+            
+            <div class="animation-details-content">
+              <p class="section-help" data-i18n-html="animation_help">
+                In CSS, you can animate two <code>clip-path: shape()</code> paths as long as they have the same command structure. Save a reference state ("State A"), modify your shape, and trigger the transition!
+              </p>
+              <div class="animation-workbench">
+                <div class="animation-stage">
+                  <!-- Mini view of animated transition element -->
+                  <div class="shifter-preview-box">
+                    <div class="shifter-moving-element" id="animatedClippedElement"></div>
+                  </div>
                 </div>
-              </div>
-              <div class="animation-controls">
-                <div class="state-actions-row">
-                  <button type="button" class="action-btn-green" id="saveStateAButton" data-i18n="btn_save_a">✓ Set Initial State (A)</button>
-                  <button type="button" class="action-btn-green" id="saveStateBButton" data-i18n="btn_save_b">✓ Set Final State (B)</button>
-                </div>
-                <div class="play-controls-row">
-                  <label for="animationDurationRange" class="range-field-label"><span data-i18n="duration_label">Duration:</span> <span id="durationValueOutput">1.2</span>s</label>
-                  <input type="range" id="animationDurationRange" min="0.2" max="5" step="0.1" value="1.2" class="sc-range-slider" />
-                  
-                  <button type="button" class="btn-play-trigger" id="triggerTransitionTestButton" data-i18n="btn_run_animation">▶ Play Animation</button>
-                </div>
-                <div class="states-indicator-bar">
-                  <span class="state-node-status" id="indicatorStateA">State A: <strong class="amber-highlight">Not saved</strong></span>
-                  <span class="state-node-status" id="indicatorStateB">State B: <strong class="amber-highlight">Not saved</strong></span>
+                <div class="animation-controls">
+                  <div class="state-actions-row">
+                    <button type="button" class="action-btn-green" id="saveStateAButton" data-i18n="btn_save_a">✓ Set Initial State (A)</button>
+                    <button type="button" class="action-btn-green" id="saveStateBButton" data-i18n="btn_save_b">✓ Set Final State (B)</button>
+                  </div>
+                  <div class="play-controls-row">
+                    <label for="animationDurationRange" class="range-field-label"><span data-i18n="duration_label">Duration:</span> <span id="durationValueOutput">1.2</span>s</label>
+                    <input type="range" id="animationDurationRange" min="0.2" max="5" step="0.1" value="1.2" class="sc-range-slider" />
+                    
+                    <button type="button" class="btn-play-trigger" id="triggerTransitionTestButton" data-i18n="btn_run_animation">▶ Play Animation</button>
+                  </div>
+                  <div class="states-indicator-bar">
+                    <span class="state-node-status" id="indicatorStateA">State A: <strong class="amber-highlight">Not saved</strong></span>
+                    <span class="state-node-status" id="indicatorStateB">State B: <strong class="amber-highlight">Not saved</strong></span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          </details>
         </section>
 
         <!-- Right Column: Settings, Presets, List of commands as blocks -->
         <section class="configuration-section" aria-label="Shape configuration panel" data-i18n-aria="aria_config_section">
           
           <!-- Quick Starter presets -->
-          <div class="presets-card">
-            <h3 class="section-title" data-i18n="presets_title">Shape Presets</h3>
-            <p class="section-help" data-i18n="presets_help">Click on a preset to use it as a starting point:</p>
-            <div class="presets-list" id="presetsGridContainer">
-              <!-- Dynamically rendered visual presets button cards -->
+          <details class="presets-card" id="presetsCard" open>
+            <summary class="presets-summary-header">
+              <h3 class="section-title">
+                <span data-i18n="presets_title">Shape Presets</span>
+                <svg class="chevron-svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+              </h3>
+            </summary>
+            <div class="presets-details-content">
+              <p class="section-help" data-i18n="presets_help">Click on a preset to use it as a starting point:</p>
+              <div class="presets-list" id="presetsGridContainer">
+                <!-- Dynamically rendered visual presets button cards -->
+              </div>
             </div>
-          </div>
+          </details>
 
           <!-- Dynamic shape commands configuration list -->
-          <div class="commands-card">
-            <div class="commands-header">
-              <h3 class="section-title" data-i18n="commands_title">Command Structure</h3>
-              <div class="globally-units-selector-container">
+          <details class="commands-card" id="commandsCard" open>
+            <summary class="commands-summary-header">
+              <h3 class="section-title">
+                <span data-i18n="commands_title">Command Structure</span>
+                <svg class="chevron-svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+              </h3>
+            </summary>
+            
+            <div class="commands-details-content">
+              <div class="globally-units-selector-container" id="commandsUnitsSelector">
                 <div class="globally-units-selector">
                   <span class="label-heading" data-i18n="convert_label">Convert to:</span>
                   <button type="button" class="convert-unit-btn" id="convertAllPxButton" data-i18n="btn_convert_px">Pixels (px)</button>
@@ -165,59 +192,65 @@
                   <span class="px-suffix">px</span>
                 </div>
               </div>
-            </div>
 
-            <!-- Add Command Tool belt -->
-            <div class="command-creator-toolbar">
-              <button type="button" class="add-command-btn" data-preset-type="line" aria-label="Add a line" data-i18n-aria="btn_add_line">
-                + line
-              </button>
-              <button type="button" class="add-command-btn" data-preset-type="hline" aria-label="Add a horizontal line" data-i18n-aria="btn_add_hline">
-                + hline
-              </button>
-              <button type="button" class="add-command-btn" data-preset-type="vline" aria-label="Add a vertical line" data-i18n-aria="btn_add_vline">
-                + vline
-              </button>
-              <button type="button" class="add-command-btn" data-preset-type="curve" aria-label="Add a Bézier curve" data-i18n-aria="btn_add_curve">
-                + curve
-              </button>
-              <button type="button" class="add-command-btn" data-preset-type="arc" aria-label="Add an elliptical arc" data-i18n-aria="btn_add_arc">
-                + arc
-              </button>
-              <button type="button" class="add-command-btn" data-preset-type="close" aria-label="Add a close contour" data-i18n-aria="btn_add_close">
-                + close
-              </button>
-            </div>
+              <!-- Add Command Tool belt -->
+              <div class="command-creator-toolbar">
+                <button type="button" class="add-command-btn" data-preset-type="line" aria-label="Add a line" data-i18n-aria="btn_add_line">
+                  + line
+                </button>
+                <button type="button" class="add-command-btn" data-preset-type="hline" aria-label="Add a horizontal line" data-i18n-aria="btn_add_hline">
+                  + hline
+                </button>
+                <button type="button" class="add-command-btn" data-preset-type="vline" aria-label="Add a vertical line" data-i18n-aria="btn_add_vline">
+                  + vline
+                </button>
+                <button type="button" class="add-command-btn" data-preset-type="curve" aria-label="Add a Bézier curve" data-i18n-aria="btn_add_curve">
+                  + curve
+                </button>
+                <button type="button" class="add-command-btn" data-preset-type="arc" aria-label="Add an elliptical arc" data-i18n-aria="btn_add_arc">
+                  + arc
+                </button>
+                <button type="button" class="add-command-btn" data-preset-type="close" aria-label="Add a close contour" data-i18n-aria="btn_add_close">
+                  + close
+                </button>
+              </div>
 
-            <!-- Draggable/Reorderable Command Blocks List container -->
-            <div class="commands-stack" id="commandsListStack" role="list" aria-label="List of drawing commands" data-i18n-aria="aria_commands_list">
-              <!-- Dynamic command cards loaded in main.ts -->
-            </div>
-          </div>
-
-          <!-- Code Output Panel -->
-          <div class="output-card">
-            <div class="output-header">
-              <h3 class="section-title" data-i18n="css_title">Generated CSS shape() Code</h3>
-              <button type="button" class="copy-code-btn" id="copyClipboardCodeButton" aria-label="Copy code to clipboard" data-i18n="btn_copy">Copy code</button>
-            </div>
-            <div class="code-tabs-row">
-              <div class="code-tabs-group" role="tablist" aria-label="Code view style">
-                <button type="button" class="code-tab-button active" id="tabStaticCode" role="tab" aria-selected="true" data-i18n="tab_static">Static shape()</button>
-                <button type="button" class="code-tab-button" id="tabAnimationCode" role="tab" aria-selected="false" data-i18n="tab_animation">CSS Animation</button>
+              <!-- Draggable/Reorderable Command Blocks List container -->
+              <div class="commands-stack" id="commandsListStack" role="list" aria-label="List of drawing commands" data-i18n-aria="aria_commands_list">
+                <!-- Dynamic command cards loaded in main.ts -->
               </div>
             </div>
-            <div class="code-preview-scroll-wrapper">
-              <pre class="code-terminal-block"><code id="cssGeneratedCodeOutput">clip-path: shape(...);</code></pre>
-            </div>
+          </details>
+
+          <!-- Code Output Panel -->
+          <details class="output-card" id="outputCard" open>
+            <summary class="output-summary-header">
+              <h3 class="section-title">
+                <span data-i18n="css_title">Generated CSS shape() Code</span>
+                <svg class="chevron-svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+              </h3>
+              <button type="button" class="copy-code-btn" id="copyClipboardCodeButton" aria-label="Copy code to clipboard" data-i18n="btn_copy">Copy code</button>
+            </summary>
             
-            <div class="info-collapsible-tip">
-              <h4 class="tip-heading" data-i18n="how_it_works_title">How it works:</h4>
-              <p class="tip-body" data-i18n-html="how_it_works_body">
-                The CSS Level 2 <code>shape()</code> function allows drawing complex clip paths using absolute or relative coordinates in pixels or percentages. It natively handles Bézier curves (<code>curve</code>) and elliptical arcs (<code>arc</code>).
-              </p>
+            <div class="output-details-content">
+              <div class="code-tabs-row">
+                <div class="code-tabs-group" role="tablist" aria-label="Code view style">
+                  <button type="button" class="code-tab-button active" id="tabStaticCode" role="tab" aria-selected="true" data-i18n="tab_static">Static shape()</button>
+                  <button type="button" class="code-tab-button" id="tabAnimationCode" role="tab" aria-selected="false" data-i18n="tab_animation">CSS Animation</button>
+                </div>
+              </div>
+              <div class="code-preview-scroll-wrapper">
+                <pre class="code-terminal-block"><code id="cssGeneratedCodeOutput">clip-path: shape(...);</code></pre>
+              </div>
+              
+              <div class="info-collapsible-tip">
+                <h4 class="tip-heading" data-i18n="how_it_works_title">How it works:</h4>
+                <p class="tip-body" data-i18n-html="how_it_works_body">
+                  The CSS Level 2 <code>shape()</code> function allows drawing complex clip paths using absolute or relative coordinates in pixels or percentages. It natively handles Bézier curves (<code>curve</code>) and elliptical arcs (<code>arc</code>).
+                </p>
+              </div>
             </div>
-          </div>
+          </details>
 
         </section>
 
