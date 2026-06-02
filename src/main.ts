@@ -32,6 +32,7 @@ let selectedCommandIdentifier: string | null = null;
 let stateACommands: ShapeCommand[] | null = null;
 let stateBCommands: ShapeCommand[] | null = null;
 let currentAnimationToggle: 'state_a' | 'state_b' = 'state_b';
+let currentSelectedCodeTab: 'static' | 'animation' = 'static';
 
 let parentFontSize: number = 16;
 
@@ -96,6 +97,8 @@ interface LanguageDictionary {
   base_font_label: string;
   css_title: string;
   btn_copy: string;
+  tab_static: string;
+  tab_animation: string;
   how_it_works_title: string;
   how_it_works_body: string;
   toast_copied: string;
@@ -145,6 +148,8 @@ const localizationMatrix: Record<'en' | 'fr', LanguageDictionary> = {
     base_font_label: 'Base font-size:',
     css_title: 'Generated CSS shape() Code',
     btn_copy: 'Copy code',
+    tab_static: 'Static shape()',
+    tab_animation: 'CSS Animation',
     how_it_works_title: 'How it works:',
     how_it_works_body: 'The CSS Level 2 <code>shape()</code> function allows drawing complex clip paths using absolute or relative coordinates in pixels or percentages. It natively handles Bézier curves (<code>curve</code>) and elliptical arcs (<code>arc</code>).',
     toast_copied: '✓ Code copied successfully!',
@@ -188,6 +193,8 @@ const localizationMatrix: Record<'en' | 'fr', LanguageDictionary> = {
     base_font_label: 'Police de base :',
     css_title: 'Code CSS shape() Généré',
     btn_copy: 'Copier le code',
+    tab_static: 'shape() statique',
+    tab_animation: 'Animation CSS',
     how_it_works_title: 'Comprendre le fonctionnement :',
     how_it_works_body: 'La fonction <code>shape()</code> de CSS Level 2 permet de dessiner des chemins de découpe complexes en utilisant des coordonnées absolues ou relatives par rapport au pixel ou au pourcentage. Elle gère nativement les courbes de Bézier (<code>curve</code>) et les arcs elliptiques (<code>arc</code>).',
     toast_copied: '✓ Code copié avec succès !',
@@ -755,6 +762,61 @@ function adjustClippedElementScale(): void {
 }
 
 /**
+ * Compiles the CSS Animation or Transition code blocks when State A and State B are defined.
+ */
+function compileCSSAnimationCodeString(): string {
+  if (!stateACommands || !stateBCommands) {
+    if (currentLanguage === 'fr') {
+      return '/*\n' +
+        '  Étape 1 : Enregistrez une forme initiale comme "État A" dans le module d\'animation.\n' +
+        '  Étape 2 : Modifiez la forme sur la grille, puis enregistrez-la comme "État B".\n\n' +
+        '  Une fois les deux états définis, le code de transition et de keyframes CSS\n' +
+        '  sera disponible ici en temps réel !\n' +
+        '*/';
+    }
+    return '/*\n' +
+      '  Step 1: Save an initial shape as \'State A\' in the Animation Module.\n' +
+      '  Step 2: Modify the shape on the grid, then save it as \'State B\'.\n\n' +
+      '  Once both states are defined, the CSS Transition & Keyframes Code\n' +
+      '  will be available here in real-time!\n' +
+      '*/';
+  }
+
+  const durationSlider = document.getElementById('animationDurationRange') as HTMLInputElement | null;
+  const durationInSeconds = durationSlider ? durationSlider.value : '1.2';
+
+  const cssACommandsCompiled = compileShapeCodeString(stateACommands);
+  const cssBCommandsCompiled = compileShapeCodeString(stateBCommands);
+
+  return '/* Approach 1: Smooth CSS Transition on hover */\n' +
+    '.clipped-element {\n' +
+    '  width: 400px;\n' +
+    '  height: 400px;\n' +
+    '  background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-cyan-accent) 100%);\n' +
+    '  ' + cssACommandsCompiled.replace(/\n/g, '\n  ') + '\n' +
+    '  transition: clip-path ' + durationInSeconds + 's cubic-bezier(0.4, 0, 0.2, 1);\n' +
+    '}\n\n' +
+    '.clipped-element:hover {\n' +
+    '  ' + cssBCommandsCompiled.replace(/\n/g, '\n  ') + '\n' +
+    '}\n\n' +
+    '/* Approach 2: Continuous keyframe loop animation */\n' +
+    '@keyframes shape-fluid-transition {\n' +
+    '  0% {\n' +
+    '    ' + cssACommandsCompiled.replace(/\n/g, '\n    ') + '\n' +
+    '  }\n' +
+    '  100% {\n' +
+    '    ' + cssBCommandsCompiled.replace(/\n/g, '\n    ') + '\n' +
+    '  }\n' +
+    '}\n\n' +
+    '.clipped-element-animated {\n' +
+    '  width: 400px;\n' +
+    '  height: 400px;\n' +
+    '  background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-cyan-accent) 100%);\n' +
+    '  animation: shape-fluid-transition ' + durationInSeconds + 's infinite alternate cubic-bezier(0.4, 0, 0.2, 1);\n' +
+    '}';
+}
+
+/**
  * Triggers rendering update on both the real-time cropped visual, 
  * the SVG canvas overlays, connecting lines, code templates & auxiliary coordinates.
  */
@@ -765,7 +827,11 @@ function updateVisualClippedLayoutAndCanvas(): void {
   // Update generated code text areas
   const codeOutputElement = document.getElementById('cssGeneratedCodeOutput');
   if (codeOutputElement) {
-    codeOutputElement.textContent = cssStringCode;
+    if (currentSelectedCodeTab === 'static') {
+      codeOutputElement.textContent = cssStringCode;
+    } else {
+      codeOutputElement.textContent = compileCSSAnimationCodeString();
+    }
   }
 
   // Update clipped visual div elements (takes standard percentage or absolute pixels clip-path)
@@ -2148,8 +2214,11 @@ function swapCommandsInStack(indexOne: number, indexTwo: number): void {
 // ==========================================
 
 function copyGeneratedCodeToClipboard(): void {
-  const cssStringCode = compileShapeCodeString(commandsStack);
-  navigator.clipboard.writeText(cssStringCode).then(() => {
+  const codeContentText = currentSelectedCodeTab === 'static'
+    ? compileShapeCodeString(commandsStack)
+    : compileCSSAnimationCodeString();
+
+  navigator.clipboard.writeText(codeContentText).then(() => {
     // Show copy notification toast
     const toast = document.getElementById('copySuccessToast');
     if (toast) {
@@ -2177,6 +2246,31 @@ function saveCurrentStateForAnimation(slotSelection: 'A' | 'B'): void {
   }
 
   refreshAnimationIndicatorsUI();
+
+  // Highlight and select the CSS Animation tab automatically
+  const tabStaticBtn = document.getElementById('tabStaticCode');
+  const tabAnimationBtn = document.getElementById('tabAnimationCode');
+  if (tabStaticBtn && tabAnimationBtn) {
+    currentSelectedCodeTab = 'animation';
+    tabAnimationBtn.classList.add('active');
+    tabAnimationBtn.setAttribute('aria-selected', 'true');
+    tabStaticBtn.classList.remove('active');
+    tabStaticBtn.setAttribute('aria-selected', 'false');
+  }
+
+  // Instant visual feedback when saving a state
+  const animationElement = document.getElementById('animatedClippedElement');
+  if (animationElement) {
+    animationElement.style.transition = 'none';
+    const activeCommands = slotSelection === 'A' ? stateACommands : stateBCommands;
+    if (activeCommands) {
+      const cleanCss = compileShapeCodeString(activeCommands);
+      const clipValue = `shape(${cleanCss.replace('clip-path: shape(', '').slice(0, -2)})`;
+      animationElement.style.clipPath = clipValue;
+    }
+  }
+
+  updateVisualClippedLayoutAndCanvas();
 }
 
 function refreshAnimationIndicatorsUI(): void {
@@ -2204,6 +2298,17 @@ function refreshAnimationIndicatorsUI(): void {
       indicatorBField.innerHTML = currentLanguage === 'en'
         ? `State B: <strong class="amber-highlight">Not saved</strong>`
         : `État B : <strong class="amber-highlight">Non enregistré</strong>`;
+    }
+  }
+
+  const animationElement = document.getElementById('animatedClippedElement');
+  if (animationElement) {
+    if (!stateACommands && !stateBCommands) {
+      animationElement.style.clipPath = 'none';
+    } else if (stateACommands && !stateBCommands) {
+      animationElement.style.transition = 'none';
+      const cleanCss = compileShapeCodeString(stateACommands);
+      animationElement.style.clipPath = `shape(${cleanCss.replace('clip-path: shape(', '').slice(0, -2)})`;
     }
   }
 
@@ -2243,22 +2348,39 @@ function performAnimationTransitionTest(): void {
     return;
   }
 
+  // Highlight and select the CSS Animation tab automatically
+  const tabStaticBtn = document.getElementById('tabStaticCode');
+  const tabAnimationBtn = document.getElementById('tabAnimationCode');
+  if (tabStaticBtn && tabAnimationBtn) {
+    currentSelectedCodeTab = 'animation';
+    tabAnimationBtn.classList.add('active');
+    tabAnimationBtn.setAttribute('aria-selected', 'true');
+    tabStaticBtn.classList.remove('active');
+    tabStaticBtn.setAttribute('aria-selected', 'false');
+    updateVisualClippedLayoutAndCanvas();
+  }
+
   const animationElement = document.getElementById('animatedClippedElement');
   const durationSlider = document.getElementById('animationDurationRange') as HTMLInputElement | null;
   const durationInSeconds = durationSlider ? durationSlider.value : '1.2';
 
   if (animationElement) {
-    // Inject transition parameter
-    animationElement.style.transition = `clip-path ${durationInSeconds}s cubic-bezier(0.4, 0, 0.2, 1)`;
+    // 1. Instantly reset to State A without transition
+    animationElement.style.transition = 'none';
+    const cssA = compileShapeCodeString(stateACommands);
+    animationElement.style.clipPath = `shape(${cssA.replace('clip-path: shape(', '').slice(0, -2)})`;
 
-    // Toggle between states back and forth to let the browser smoothly render the path shift
-    const selectedStateSource = currentAnimationToggle === 'state_a' ? stateBCommands : stateACommands;
-    currentAnimationToggle = currentAnimationToggle === 'state_a' ? 'state_b' : 'state_a';
+    // 2. Force browser reflow to apply State A immediately
+    void animationElement.offsetWidth;
 
-    const cleanCss = compileShapeCodeString(selectedStateSource);
-    const compiledClipValue = `shape(${cleanCss.replace('clip-path: shape(', '').slice(0, -2)})`;
-
-    animationElement.style.clipPath = compiledClipValue;
+    // 3. Play smooth transition to State B in the next frames
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        animationElement.style.transition = `clip-path ${durationInSeconds}s cubic-bezier(0.4, 0, 0.2, 1)`;
+        const cssB = compileShapeCodeString(stateBCommands);
+        animationElement.style.clipPath = `shape(${cssB.replace('clip-path: shape(', '').slice(0, -2)})`;
+      });
+    });
   }
 }
 
@@ -2495,6 +2617,31 @@ function initializeUIEventHandlers(): void {
   if (rangeSlider && durationText) {
     rangeSlider.addEventListener('input', () => {
       durationText.textContent = rangeSlider.value;
+      updateVisualClippedLayoutAndCanvas();
+    });
+  }
+
+  // Code Output tab buttons mechanism (Static vs Animation)
+  const tabStaticBtn = document.getElementById('tabStaticCode');
+  const tabAnimationBtn = document.getElementById('tabAnimationCode');
+  
+  if (tabStaticBtn && tabAnimationBtn) {
+    tabStaticBtn.addEventListener('click', () => {
+      currentSelectedCodeTab = 'static';
+      tabStaticBtn.classList.add('active');
+      tabStaticBtn.setAttribute('aria-selected', 'true');
+      tabAnimationBtn.classList.remove('active');
+      tabAnimationBtn.setAttribute('aria-selected', 'false');
+      updateVisualClippedLayoutAndCanvas();
+    });
+    
+    tabAnimationBtn.addEventListener('click', () => {
+      currentSelectedCodeTab = 'animation';
+      tabAnimationBtn.classList.add('active');
+      tabAnimationBtn.setAttribute('aria-selected', 'true');
+      tabStaticBtn.classList.remove('active');
+      tabStaticBtn.setAttribute('aria-selected', 'false');
+      updateVisualClippedLayoutAndCanvas();
     });
   }
 

@@ -711,10 +711,16 @@ code, pre {
       overflow: hidden;
       
       .shifter-moving-element {
-        width: 100%;
-        height: 100%;
+        width: 400px;
+        height: 400px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform: scale(0.25);
+        transform-origin: top left;
         background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-cyan-accent) 100%);
         transition: clip-path 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
       }
     }
   }
@@ -1354,6 +1360,44 @@ code, pre {
       
       &:active {
         transform: translateY(0.5px);
+      }
+    }
+  }
+  
+  .code-tabs-row {
+    display: flex;
+    margin-bottom: 12px;
+    
+    .code-tabs-group {
+      display: flex;
+      background-color: var(--color-field-slate);
+      border: 1px solid var(--color-input-focus);
+      border-radius: 6px;
+      padding: 2px;
+      
+      .code-tab-button {
+        background: none;
+        border: none;
+        font-family: $font-sans;
+        font-size: 11px;
+        font-weight: 500;
+        padding: 4px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.1s ease, color 0.1s ease;
+        
+        &:not(.active):not(:hover) {
+          color: var(--color-text-subtle);
+          background-color: transparent;
+        }
+        &:not(.active):hover {
+          color: var(--color-text-luxury);
+          background-color: var(--color-input-focus);
+        }
+        &.active {
+          background-color: var(--color-brand-primary);
+          color: oklch(1 0 0);
+        }
       }
     }
   }
