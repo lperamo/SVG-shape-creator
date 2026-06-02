@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://shape.lionel-peramo.com/sitemap.xml
