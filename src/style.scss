@@ -858,38 +858,70 @@ code, pre {
   
   .presets-list {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 12px;
     
     @media (min-width: 480px) {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
+    }
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(5, 1fr);
+    }
+    @media (min-width: 1024px) {
+      grid-template-columns: repeat(6, 1fr);
     }
     
     .preset-item-card {
       background-color: var(--color-field-slate);
       border: 1px solid var(--color-input-focus);
-      border-radius: 6px;
-      padding: 12px;
+      border-radius: 8px;
+      padding: 10px;
       cursor: pointer;
-      text-align: left;
+      text-align: center;
       transition: all 0.1s ease;
       font-family: inherit;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      min-height: 80px;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 108px;
       
-      .preset-name {
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--color-text-luxury);
-        margin-bottom: 4px;
+      .preset-icon-container {
+        position: relative;
+        width: 48px;
+        height: 48px;
+        background-color: var(--color-canvas-slate);
+        border: 1px solid var(--color-input-focus);
+        border-radius: 6px;
+        overflow: hidden;
+        margin-bottom: 6px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: border-color 0.1s ease, background-color 0.1s ease;
       }
       
-      .preset-description {
-        font-size: 10.5px;
-        color: var(--color-text-muted);
-        line-height: 1.3;
+      .preset-icon-shape {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 400px;
+        height: 400px;
+        background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-cyan-accent) 100%);
+        transform-origin: top left;
+        transform: scale(0.12);
+        pointer-events: none;
+      }
+      
+      .preset-name {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: var(--color-text-luxury);
+        line-height: 1.25;
+        text-align: center;
+        word-break: break-word;
+        margin: 2px 0 0 0;
       }
       
       &:not(.active-setting):not(:hover) {
@@ -899,11 +931,20 @@ code, pre {
       &:not(.active-setting):hover {
         border-color: var(--color-brand-primary);
         background-color: oklch(0.60 0.17 250 / 0.05);
+        
+        .preset-icon-container {
+          border-color: var(--color-brand-primary);
+        }
       }
       &.active-setting {
         border-color: var(--color-brand-primary);
         background-color: oklch(0.60 0.17 250 / 0.1);
         box-shadow: 0 0 10px oklch(0.60 0.17 250 / 0.15);
+        
+        .preset-icon-container {
+          border-color: var(--color-brand-primary);
+          background-color: oklch(0.60 0.17 250 / 0.05);
+        }
       }
     }
   }

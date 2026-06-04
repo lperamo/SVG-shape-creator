@@ -220,20 +220,80 @@ interface PresetTranslation {
 
 const presetLocalizations: Record<'en' | 'fr', PresetTranslation[]> = {
   en: [
-    { name: 'Speech bubble', description: 'Lionel Péramo\'s iconic speech bubble with curved edges.' },
+    { name: 'Speech bubble', description: 'A classic communication balloon with curved corners and a pointed tip.' },
     { name: 'Sacred Heart', description: 'Romantic drawing built using two cubic Bézier curves.' },
     { name: '5-point Star', description: 'An asymmetric geometric shape clipped into polygons.' },
     { name: 'National Shield', description: 'A majestic shape combining straight lines and curves.' },
     { name: 'Wave Banner', description: 'Beautiful layout header cut with a double waving ripple effect.' },
-    { name: 'Octagonal Badge', description: 'A strict eight-sided geometric plaque.' }
+    { name: 'Octagonal Badge', description: 'A strict eight-sided geometric plaque.' },
+    { name: 'Teardrop', description: 'A sleek, symmetrical teardrop shape drawn using smooth Bézier curves.' },
+    { name: 'Crescent Moon', description: 'An elegant moon outline assembled with two intersecting Bézier curves.' },
+    { name: 'Infinity Symbol', description: 'A fluid double curve loop representing geometric eternity.' },
+    { name: 'Classic Hourglass', description: 'A sleek timeline silhouette pairing straight lines and inner curves.' },
+    { name: 'Solar Eclipse Arc', description: 'A gorgeous layout showing off the precision of elliptical arc commands.' },
+    { name: 'Triangle', description: 'A basic 3-sided polygon with clean coordinates.' },
+    { name: 'Trapezoid', description: 'A classic 4-sided trapezoid symmetric silhouette.' },
+    { name: 'Parallelogram', description: 'An elegant tilted 4-sided parallelogram shape.' },
+    { name: 'Rhombus', description: 'A perfectly balanced diamond or rhombus shape.' },
+    { name: 'Pentagon', description: 'A five-sided regular polygon silhouette.' },
+    { name: 'Hexagon', description: 'A six-sided standard symmetrical polygon.' },
+    { name: 'Heptagon', description: 'A seven-sided polygon with calculated corners.' },
+    { name: 'Octagon', description: 'A symmetrical eight-sided polygon shape.' },
+    { name: 'Nonagon', description: 'A complex nine-sided symmetrical polygon.' },
+    { name: 'Decagon', description: 'A highly structured ten-sided symmetrical polygon.' },
+    { name: 'Bevel', description: 'A square layout element cut symmetrically at every corner.' },
+    { name: 'Rabbet', description: 'A decorative notched-corner geometric frame shape.' },
+    { name: 'Left arrow', description: 'A classic signaling arrow pointing to the left.' },
+    { name: 'Right arrow', description: 'A standard signaling arrow pointing to the right.' },
+    { name: 'Left Point', description: 'A layout tag displaying a clean pointed tip on its left edge.' },
+    { name: 'Right Point', description: 'A layout tag displaying a clean pointed tip on its right edge.' },
+    { name: 'Left Chevron', description: 'A navigation chevron block pointing to the left.' },
+    { name: 'Right Chevron', description: 'A navigation chevron block pointing to the right.' },
+    { name: 'Cross', description: 'A classic symmetrical cross structure geometric layout.' },
+    { name: 'Message', description: 'A sleek chat balloon with a pointed conversational indicator tail.' },
+    { name: 'Close', description: 'The iconic standard close multiplication \'X\' structure.' },
+    { name: 'Frame', description: 'A beautiful hollow double frame using a single nested outline path.' },
+    { name: 'Inset', description: 'A centered, smaller rectangular viewport structure.' },
+    { name: 'Circle', description: 'A perfect circular alignment built using dual elliptical arc commands.' },
+    { name: 'Ellipse', description: 'A beautifully balanced ellipse stretched over offset semi-axes.' }
   ],
   fr: [
-    { name: 'Bulle de discussion', description: 'La bulle emblématique de Lionel Péramo avec bords courbes.' },
+    { name: 'Bulle de discussion', description: 'Une bulle de communication classique aux coins arrondis et avec une pointe.' },
     { name: 'Cœur Sacré', description: 'Dessin romantique à l\'aide de deux courbes de Bézier cubiques.' },
     { name: 'Étoile à 5 branches', description: 'Une forme géométrique asymétrique découpée en polygones.' },
     { name: 'Bouclier National', description: 'Une forme majestueuse combinant lignes droites et arrondies.' },
     { name: 'Bannière Vague', description: 'Magnifique en-tête horizontal découpé avec une double ondulation.' },
-    { name: 'Badge Octogonal', description: 'Une plaque géométrique stricte à huit côtés égale.' }
+    { name: 'Badge Octogonal', description: 'Une plaque géométrique stricte à huit côtés égale.' },
+    { name: 'Goutte d\'eau', description: 'Une forme de larme lisse dessinée avec des courbes de Bézier lisses symétriques.' },
+    { name: 'Croissant de lune', description: 'Un contour de lune élégant assemblé avec deux courbes de Bézier s\'entrecroisant.' },
+    { name: 'Signe Infini', description: 'Un double nœud de courbe fluide représentant l\'éternité géométrique.' },
+    { name: 'Sablier Classique', description: 'Une silhouette associée de lignes droites et de courbes intérieures lisses.' },
+    { name: 'Éclipse Solaire', description: 'Un superbe tracé de cercle découpé illustrant la commande d\'arc elliptique.' },
+    { name: 'Triangle', description: 'Un polygone de base à 3 côtés avec des coordonnées propres.' },
+    { name: 'Trapèze', description: 'La silhouette symétrique classique d\'un trapèze à 4 côtés.' },
+    { name: 'Parallélogramme', description: 'Une forme élégante inclinée à 4 côtés.' },
+    { name: 'Losange', description: 'Un losange ou diamant parfaitement équilibré.' },
+    { name: 'Pentagone', description: 'La silhouette d\'un polygone régulier à cinq côtés.' },
+    { name: 'Hexagone', description: 'Un polygone symétrique standard à six côtés.' },
+    { name: 'Heptagone', description: 'Un polygone à sept côtés avec des angles calculés.' },
+    { name: 'Octogone', description: 'Une forme de polygone symétrique à huit côtés.' },
+    { name: 'Nonagone', description: 'Un polygone symétrique complexe à neuf côtés.' },
+    { name: 'Décagone', description: 'Un polygone symétrique hautement structuré à dix côtés.' },
+    { name: 'Biseau', description: 'Un carré découpé symétriquement à chaque coin.' },
+    { name: 'Feuillure', description: 'Un cadre géométrique décoratif aux angles encochés.' },
+    { name: 'Flèche gauche', description: 'Une flèche de signalisation classique pointant vers la gauche.' },
+    { name: 'Flèche droite', description: 'Une flèche de signalisation standard pointant vers la droite.' },
+    { name: 'Pointe gauche', description: 'Une étiquette affichant une pointe nette sur son bord gauche.' },
+    { name: 'Pointe droit', description: 'Une étiquette affichant une pointe nette sur son bord droit.' },
+    { name: 'Chevron gauche', description: 'Un bloc de chevron de navigation pointant vers la gauche.' },
+    { name: 'Chevron droit', description: 'Un bloc de chevron de navigation pointant vers la droite.' },
+    { name: 'Croix', description: 'Une structure de croix latine symétrique classique.' },
+    { name: 'Message', description: 'Un ballon de chat élégant avec une queue d\'indicateur pointpointed.' },
+    { name: 'Fermer', description: 'La structure en croix \'X\' de fermeture classique.' },
+    { name: 'Cadre', description: 'Un magnifique cadre double évidé utilisant un seul chemin imbriqué.' },
+    { name: 'Encart', description: 'Une structure de fenêtre rectangulaire plus petite et centrée.' },
+    { name: 'Cercle', description: 'Un cercle parfait construit à l\'aide de commandes d\'arc double.' },
+    { name: 'Ellipse', description: 'Une ellipse joliment équilibrée étirée sur deux axes décalés.' }
   ]
 };
 
@@ -358,6 +418,404 @@ const shapePresets: ShapePreset[] = [
       { identifier: 'cmd-507', type: 'line', syntaxModifier: 'to', xCoordinate: 30, yCoordinate: 290, horizontalUnit: 'px', verticalUnit: 'px' },
       { identifier: 'cmd-508', type: 'vline', syntaxModifier: 'to', value: 110, unit: 'px' },
       { identifier: 'cmd-509', type: 'close' }
+    ]
+  },
+  {
+    name: 'Goutte d\'eau',
+    description: 'Une forme en larme dessinée avec des courbes de Bézier lisses symétriques.',
+    commands: [
+      { identifier: 'cmd-601', type: 'from', xCoordinate: 200, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-602', type: 'curve', syntaxModifier: 'to', xCoordinate: 200, yCoordinate: 360, horizontalUnit: 'px', verticalUnit: 'px', firstControlCircle: { xCoordinate: 340, yCoordinate: 160 }, firstControlHorizontalUnit: 'px', firstControlVerticalUnit: 'px', hasSecondControlCircle: true, secondControlCircle: { xCoordinate: 340, yCoordinate: 360 }, secondControlHorizontalUnit: 'px', secondControlVerticalUnit: 'px' },
+      { identifier: 'cmd-603', type: 'curve', syntaxModifier: 'to', xCoordinate: 200, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px', firstControlCircle: { xCoordinate: 60, yCoordinate: 360 }, firstControlHorizontalUnit: 'px', firstControlVerticalUnit: 'px', hasSecondControlCircle: true, secondControlCircle: { xCoordinate: 60, yCoordinate: 160 }, secondControlHorizontalUnit: 'px', secondControlVerticalUnit: 'px' },
+      { identifier: 'cmd-604', type: 'close' }
+    ]
+  },
+  {
+    name: 'Croissant de lune',
+    description: 'Un contour de lune élégant assemblé avec deux courbes de Bézier s\'entrecroisant.',
+    commands: [
+      { identifier: 'cmd-701', type: 'from', xCoordinate: 280, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-702', type: 'curve', syntaxModifier: 'to', xCoordinate: 280, yCoordinate: 360, horizontalUnit: 'px', verticalUnit: 'px', firstControlCircle: { xCoordinate: 100, yCoordinate: 100 }, firstControlHorizontalUnit: 'px', firstControlVerticalUnit: 'px', hasSecondControlCircle: true, secondControlCircle: { xCoordinate: 100, yCoordinate: 300 }, secondControlHorizontalUnit: 'px', secondControlVerticalUnit: 'px' },
+      { identifier: 'cmd-703', type: 'curve', syntaxModifier: 'to', xCoordinate: 280, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px', firstControlCircle: { xCoordinate: 180, yCoordinate: 280 }, firstControlHorizontalUnit: 'px', firstControlVerticalUnit: 'px', hasSecondControlCircle: true, secondControlCircle: { xCoordinate: 180, yCoordinate: 120 }, secondControlHorizontalUnit: 'px', secondControlVerticalUnit: 'px' },
+      { identifier: 'cmd-704', type: 'close' }
+    ]
+  },
+  {
+    name: 'Signe Infini',
+    description: 'Un double nœud de courbe fluide représentant l\'éternité géométrique.',
+    commands: [
+      { identifier: 'cmd-801', type: 'from', xCoordinate: 200, yCoordinate: 200, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-802', type: 'curve', syntaxModifier: 'to', xCoordinate: 350, yCoordinate: 120, horizontalUnit: 'px', verticalUnit: 'px', firstControlCircle: { xCoordinate: 250, yCoordinate: 120 }, firstControlHorizontalUnit: 'px', firstControlVerticalUnit: 'px', hasSecondControlCircle: true, secondControlCircle: { xCoordinate: 310, yCoordinate: 120 }, secondControlHorizontalUnit: 'px', secondControlVerticalUnit: 'px' },
+      { identifier: 'cmd-803', type: 'curve', syntaxModifier: 'to', xCoordinate: 350, yCoordinate: 280, horizontalUnit: 'px', verticalUnit: 'px', firstControlCircle: { xCoordinate: 390, yCoordinate: 120 }, firstControlHorizontalUnit: 'px', firstControlVerticalUnit: 'px', hasSecondControlCircle: true, secondControlCircle: { xCoordinate: 390, yCoordinate: 280 }, secondControlHorizontalUnit: 'px', secondControlVerticalUnit: 'px' },
+      { identifier: 'cmd-804', type: 'curve', syntaxModifier: 'to', xCoordinate: 200, yCoordinate: 200, horizontalUnit: 'px', verticalUnit: 'px', firstControlCircle: { xCoordinate: 310, yCoordinate: 280 }, firstControlHorizontalUnit: 'px', firstControlVerticalUnit: 'px', hasSecondControlCircle: true, secondControlCircle: { xCoordinate: 250, yCoordinate: 280 }, secondControlHorizontalUnit: 'px', secondControlVerticalUnit: 'px' },
+      { identifier: 'cmd-805', type: 'curve', syntaxModifier: 'to', xCoordinate: 50, yCoordinate: 120, horizontalUnit: 'px', verticalUnit: 'px', firstControlCircle: { xCoordinate: 150, yCoordinate: 120 }, firstControlHorizontalUnit: 'px', firstControlVerticalUnit: 'px', hasSecondControlCircle: true, secondControlCircle: { xCoordinate: 90, yCoordinate: 120 }, secondControlHorizontalUnit: 'px', secondControlVerticalUnit: 'px' },
+      { identifier: 'cmd-806', type: 'curve', syntaxModifier: 'to', xCoordinate: 50, yCoordinate: 280, horizontalUnit: 'px', verticalUnit: 'px', firstControlCircle: { xCoordinate: 10, yCoordinate: 120 }, firstControlHorizontalUnit: 'px', firstControlVerticalUnit: 'px', hasSecondControlCircle: true, secondControlCircle: { xCoordinate: 10, yCoordinate: 280 }, secondControlHorizontalUnit: 'px', secondControlVerticalUnit: 'px' },
+      { identifier: 'cmd-807', type: 'curve', syntaxModifier: 'to', xCoordinate: 200, yCoordinate: 200, horizontalUnit: 'px', verticalUnit: 'px', firstControlCircle: { xCoordinate: 90, yCoordinate: 280 }, firstControlHorizontalUnit: 'px', firstControlVerticalUnit: 'px', hasSecondControlCircle: true, secondControlCircle: { xCoordinate: 150, yCoordinate: 280 }, secondControlHorizontalUnit: 'px', secondControlVerticalUnit: 'px' },
+      { identifier: 'cmd-808', type: 'close' }
+    ]
+  },
+  {
+    name: 'Sablier Classique',
+    description: 'Une silhouette de sablier associant lignes droites et courbes intérieures.',
+    commands: [
+      { identifier: 'cmd-901', type: 'from', xCoordinate: 80, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-902', type: 'hline', syntaxModifier: 'to', value: 320, unit: 'px' },
+      { identifier: 'cmd-903', type: 'curve', syntaxModifier: 'to', xCoordinate: 320, yCoordinate: 360, horizontalUnit: 'px', verticalUnit: 'px', firstControlCircle: { xCoordinate: 220, yCoordinate: 200 }, firstControlHorizontalUnit: 'px', firstControlVerticalUnit: 'px', hasSecondControlCircle: false, secondControlCircle: { xCoordinate: 0, yCoordinate: 0 }, secondControlHorizontalUnit: 'px', secondControlVerticalUnit: 'px' },
+      { identifier: 'cmd-904', type: 'hline', syntaxModifier: 'to', value: 80, unit: 'px' },
+      { identifier: 'cmd-905', type: 'curve', syntaxModifier: 'to', xCoordinate: 80, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px', firstControlCircle: { xCoordinate: 180, yCoordinate: 200 }, firstControlHorizontalUnit: 'px', firstControlVerticalUnit: 'px', hasSecondControlCircle: false, secondControlCircle: { xCoordinate: 0, yCoordinate: 0 }, secondControlHorizontalUnit: 'px', secondControlVerticalUnit: 'px' },
+      { identifier: 'cmd-906', type: 'close' }
+    ]
+  },
+  {
+    name: 'Éclipse Solaire',
+    description: 'Un superbe tracé utilisant la puissance de la commande arc elliptique.',
+    commands: [
+      { identifier: 'cmd-1001', type: 'from', xCoordinate: 310, yCoordinate: 90, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-1002', type: 'arc', syntaxModifier: 'to', xCoordinate: 90, yCoordinate: 310, horizontalUnit: 'px', verticalUnit: 'px', radiusX: 160, radiusXUnit: 'px', radiusY: 160, radiusYUnit: 'px', arcSize: 'small', sweepDirection: 'ccw', rotationAngle: 0 },
+      { identifier: 'cmd-1003', type: 'arc', syntaxModifier: 'to', xCoordinate: 310, yCoordinate: 90, horizontalUnit: 'px', verticalUnit: 'px', radiusX: 130, radiusXUnit: 'px', radiusY: 130, radiusYUnit: 'px', arcSize: 'small', sweepDirection: 'cw', rotationAngle: 0 },
+      { identifier: 'cmd-1004', type: 'close' }
+    ]
+  },
+  {
+    name: 'Triangle',
+    description: 'A basic 3-sided polygon with clean coordinates.',
+    commands: [
+      { identifier: 'cmd-t1', type: 'from', xCoordinate: 200, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-t2', type: 'line', syntaxModifier: 'to', xCoordinate: 360, yCoordinate: 360, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-t3', type: 'line', syntaxModifier: 'to', xCoordinate: 40, yCoordinate: 360, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-t4', type: 'close' }
+    ]
+  },
+  {
+    name: 'Trapezoid',
+    description: 'A classic 4-sided trapezoid symmetric silhouette.',
+    commands: [
+      { identifier: 'cmd-tz1', type: 'from', xCoordinate: 120, yCoordinate: 60, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-tz2', type: 'hline', syntaxModifier: 'to', value: 280, unit: 'px' },
+      { identifier: 'cmd-tz3', type: 'line', syntaxModifier: 'to', xCoordinate: 340, yCoordinate: 340, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-tz4', type: 'hline', syntaxModifier: 'to', value: 60, unit: 'px' },
+      { identifier: 'cmd-tz5', type: 'close' }
+    ]
+  },
+  {
+    name: 'Parallelogram',
+    description: 'An elegant tilted 4-sided parallelogram shape.',
+    commands: [
+      { identifier: 'cmd-pa1', type: 'from', xCoordinate: 120, yCoordinate: 60, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-pa2', type: 'hline', syntaxModifier: 'to', value: 360, unit: 'px' },
+      { identifier: 'cmd-pa3', type: 'line', syntaxModifier: 'to', xCoordinate: 280, yCoordinate: 340, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-pa4', type: 'hline', syntaxModifier: 'to', value: 40, unit: 'px' },
+      { identifier: 'cmd-pa5', type: 'close' }
+    ]
+  },
+  {
+    name: 'Rhombus',
+    description: 'A perfectly balanced diamond or rhombus shape.',
+    commands: [
+      { identifier: 'cmd-rh1', type: 'from', xCoordinate: 200, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-rh2', type: 'line', syntaxModifier: 'to', xCoordinate: 360, yCoordinate: 200, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-rh3', type: 'line', syntaxModifier: 'to', xCoordinate: 200, yCoordinate: 360, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-rh4', type: 'line', syntaxModifier: 'to', xCoordinate: 40, yCoordinate: 200, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-rh5', type: 'close' }
+    ]
+  },
+  {
+    name: 'Pentagon',
+    description: 'A five-sided regular polygon silhouette.',
+    commands: [
+      { identifier: 'cmd-pe1', type: 'from', xCoordinate: 200, yCoordinate: 30, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-pe2', type: 'line', syntaxModifier: 'to', xCoordinate: 362, yCoordinate: 148, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-pe3', type: 'line', syntaxModifier: 'to', xCoordinate: 300, yCoordinate: 338, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-pe4', type: 'line', syntaxModifier: 'to', xCoordinate: 100, yCoordinate: 338, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-pe5', type: 'line', syntaxModifier: 'to', xCoordinate: 38, yCoordinate: 148, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-pe6', type: 'close' }
+    ]
+  },
+  {
+    name: 'Hexagon',
+    description: 'A six-sided standard symmetrical polygon.',
+    commands: [
+      { identifier: 'cmd-hx1', type: 'from', xCoordinate: 200, yCoordinate: 30, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-hx2', type: 'line', syntaxModifier: 'to', xCoordinate: 347, yCoordinate: 115, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-hx3', type: 'line', syntaxModifier: 'to', xCoordinate: 347, yCoordinate: 285, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-hx4', type: 'line', syntaxModifier: 'to', xCoordinate: 200, yCoordinate: 370, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-hx5', type: 'line', syntaxModifier: 'to', xCoordinate: 53, yCoordinate: 285, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-hx6', type: 'line', syntaxModifier: 'to', xCoordinate: 53, yCoordinate: 115, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-hx7', type: 'close' }
+    ]
+  },
+  {
+    name: 'Heptagon',
+    description: 'A seven-sided polygon with calculated corners.',
+    commands: [
+      { identifier: 'cmd-hp1', type: 'from', xCoordinate: 200, yCoordinate: 30, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-hp2', type: 'line', syntaxModifier: 'to', xCoordinate: 325, yCoordinate: 90, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-hp3', type: 'line', syntaxModifier: 'to', xCoordinate: 368, yCoordinate: 222, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-hp4', type: 'line', syntaxModifier: 'to', xCoordinate: 278, yCoordinate: 345, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-hp5', type: 'line', syntaxModifier: 'to', xCoordinate: 122, yCoordinate: 345, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-hp6', type: 'line', syntaxModifier: 'to', xCoordinate: 32, yCoordinate: 222, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-hp7', type: 'line', syntaxModifier: 'to', xCoordinate: 75, yCoordinate: 90, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-hp8', type: 'close' }
+    ]
+  },
+  {
+    name: 'Octagon',
+    description: 'A symmetrical eight-sided polygon shape.',
+    commands: [
+      { identifier: 'cmd-oc1', type: 'from', xCoordinate: 130, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-oc2', type: 'hline', syntaxModifier: 'to', value: 270, unit: 'px' },
+      { identifier: 'cmd-oc3', type: 'line', syntaxModifier: 'to', xCoordinate: 360, yCoordinate: 130, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-oc4', type: 'vline', syntaxModifier: 'to', value: 270, unit: 'px' },
+      { identifier: 'cmd-oc5', type: 'line', syntaxModifier: 'to', xCoordinate: 270, yCoordinate: 360, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-oc6', type: 'hline', syntaxModifier: 'to', value: 130, unit: 'px' },
+      { identifier: 'cmd-oc7', type: 'line', syntaxModifier: 'to', xCoordinate: 40, yCoordinate: 270, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-oc8', type: 'vline', syntaxModifier: 'to', value: 130, unit: 'px' },
+      { identifier: 'cmd-oc9', type: 'close' }
+    ]
+  },
+  {
+    name: 'Nonagon',
+    description: 'A complex nine-sided symmetrical polygon.',
+    commands: [
+      { identifier: 'cmd-nn1', type: 'from', xCoordinate: 200, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-nn2', type: 'line', syntaxModifier: 'to', xCoordinate: 303, yCoordinate: 77, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-nn3', type: 'line', syntaxModifier: 'to', xCoordinate: 358, yCoordinate: 172, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-nn4', type: 'line', syntaxModifier: 'to', xCoordinate: 339, yCoordinate: 280, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-nn5', type: 'line', syntaxModifier: 'to', xCoordinate: 255, yCoordinate: 350, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-nn6', type: 'line', syntaxModifier: 'to', xCoordinate: 145, yCoordinate: 350, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-nn7', type: 'line', syntaxModifier: 'to', xCoordinate: 61, yCoordinate: 280, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-nn8', type: 'line', syntaxModifier: 'to', xCoordinate: 42, yCoordinate: 172, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-nn9', type: 'line', syntaxModifier: 'to', xCoordinate: 97, yCoordinate: 77, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-nn10', type: 'close' }
+    ]
+  },
+  {
+    name: 'Decagon',
+    description: 'A highly structured ten-sided symmetrical polygon.',
+    commands: [
+      { identifier: 'cmd-dc1', type: 'from', xCoordinate: 200, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-dc2', type: 'line', syntaxModifier: 'to', xCoordinate: 294, yCoordinate: 71, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-dc3', type: 'line', syntaxModifier: 'to', xCoordinate: 352, yCoordinate: 151, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-dc4', type: 'line', syntaxModifier: 'to', xCoordinate: 352, yCoordinate: 249, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-dc5', type: 'line', syntaxModifier: 'to', xCoordinate: 294, yCoordinate: 329, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-dc6', type: 'line', syntaxModifier: 'to', xCoordinate: 200, yCoordinate: 360, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-dc7', type: 'line', syntaxModifier: 'to', xCoordinate: 106, yCoordinate: 329, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-dc8', type: 'line', syntaxModifier: 'to', xCoordinate: 48, yCoordinate: 249, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-dc9', type: 'line', syntaxModifier: 'to', xCoordinate: 48, yCoordinate: 151, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-dc10', type: 'line', syntaxModifier: 'to', xCoordinate: 106, yCoordinate: 71, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-dc11', type: 'close' }
+    ]
+  },
+  {
+    name: 'Bevel',
+    description: 'A square layout element cut symmetrically at every corner.',
+    commands: [
+      { identifier: 'cmd-bv1', type: 'from', xCoordinate: 80, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-bv2', type: 'hline', syntaxModifier: 'to', value: 320, unit: 'px' },
+      { identifier: 'cmd-bv3', type: 'line', syntaxModifier: 'to', xCoordinate: 360, yCoordinate: 80, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-bv4', type: 'vline', syntaxModifier: 'to', value: 320, unit: 'px' },
+      { identifier: 'cmd-bv5', type: 'line', syntaxModifier: 'to', xCoordinate: 320, yCoordinate: 360, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-bv6', type: 'hline', syntaxModifier: 'to', value: 80, unit: 'px' },
+      { identifier: 'cmd-bv7', type: 'line', syntaxModifier: 'to', xCoordinate: 40, yCoordinate: 320, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-bv8', type: 'vline', syntaxModifier: 'to', value: 80, unit: 'px' },
+      { identifier: 'cmd-bv9', type: 'close' }
+    ]
+  },
+  {
+    name: 'Rabbet',
+    description: 'A decorative notched-corner geometric frame shape.',
+    commands: [
+      { identifier: 'cmd-rb1', type: 'from', xCoordinate: 80, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-rb2', type: 'hline', syntaxModifier: 'to', value: 320, unit: 'px' },
+      { identifier: 'cmd-rb3', type: 'vline', syntaxModifier: 'to', value: 80, unit: 'px' },
+      { identifier: 'cmd-rb4', type: 'hline', syntaxModifier: 'to', value: 360, unit: 'px' },
+      { identifier: 'cmd-rb5', type: 'vline', syntaxModifier: 'to', value: 320, unit: 'px' },
+      { identifier: 'cmd-rb6', type: 'hline', syntaxModifier: 'to', value: 320, unit: 'px' },
+      { identifier: 'cmd-rb7', type: 'vline', syntaxModifier: 'to', value: 360, unit: 'px' },
+      { identifier: 'cmd-rb8', type: 'hline', syntaxModifier: 'to', value: 80, unit: 'px' },
+      { identifier: 'cmd-rb9', type: 'vline', syntaxModifier: 'to', value: 320, unit: 'px' },
+      { identifier: 'cmd-rb10', type: 'hline', syntaxModifier: 'to', value: 40, unit: 'px' },
+      { identifier: 'cmd-rb11', type: 'vline', syntaxModifier: 'to', value: 80, unit: 'px' },
+      { identifier: 'cmd-rb12', type: 'hline', syntaxModifier: 'to', value: 80, unit: 'px' },
+      { identifier: 'cmd-rb13', type: 'close' }
+    ]
+  },
+  {
+    name: 'Left arrow',
+    description: 'A classic signaling arrow pointing to the left.',
+    commands: [
+      { identifier: 'cmd-la1', type: 'from', xCoordinate: 180, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-la2', type: 'line', syntaxModifier: 'to', xCoordinate: 40, yCoordinate: 200, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-la3', type: 'line', syntaxModifier: 'to', xCoordinate: 180, yCoordinate: 360, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-la4', type: 'vline', syntaxModifier: 'to', value: 280, unit: 'px' },
+      { identifier: 'cmd-la5', type: 'hline', syntaxModifier: 'to', value: 360, unit: 'px' },
+      { identifier: 'cmd-la6', type: 'vline', syntaxModifier: 'to', value: 120, unit: 'px' },
+      { identifier: 'cmd-la7', type: 'hline', syntaxModifier: 'to', value: 180, unit: 'px' },
+      { identifier: 'cmd-la8', type: 'close' }
+    ]
+  },
+  {
+    name: 'Right arrow',
+    description: 'A standard signaling arrow pointing to the right.',
+    commands: [
+      { identifier: 'cmd-ra1', type: 'from', xCoordinate: 40, yCoordinate: 120, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-ra2', type: 'hline', syntaxModifier: 'to', value: 220, unit: 'px' },
+      { identifier: 'cmd-ra3', type: 'vline', syntaxModifier: 'to', value: 40, unit: 'px' },
+      { identifier: 'cmd-ra4', type: 'line', syntaxModifier: 'to', xCoordinate: 360, yCoordinate: 200, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-ra5', type: 'line', syntaxModifier: 'to', xCoordinate: 220, yCoordinate: 360, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-ra6', type: 'vline', syntaxModifier: 'to', value: 280, unit: 'px' },
+      { identifier: 'cmd-ra7', type: 'hline', syntaxModifier: 'to', value: 40, unit: 'px' },
+      { identifier: 'cmd-ra8', type: 'close' }
+    ]
+  },
+  {
+    name: 'Left Point',
+    description: 'A layout tag displaying a clean pointed tip on its left edge.',
+    commands: [
+      { identifier: 'cmd-lp1', type: 'from', xCoordinate: 160, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-lp2', type: 'hline', syntaxModifier: 'to', value: 360, unit: 'px' },
+      { identifier: 'cmd-lp3', type: 'vline', syntaxModifier: 'to', value: 360, unit: 'px' },
+      { identifier: 'cmd-lp4', type: 'hline', syntaxModifier: 'to', value: 160, unit: 'px' },
+      { identifier: 'cmd-lp5', type: 'line', syntaxModifier: 'to', xCoordinate: 40, yCoordinate: 200, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-lp6', type: 'close' }
+    ]
+  },
+  {
+    name: 'Right Point',
+    description: 'A layout tag displaying a clean pointed tip on its right edge.',
+    commands: [
+      { identifier: 'cmd-rp1', type: 'from', xCoordinate: 40, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-rp2', type: 'hline', syntaxModifier: 'to', value: 240, unit: 'px' },
+      { identifier: 'cmd-rp3', type: 'line', syntaxModifier: 'to', xCoordinate: 360, yCoordinate: 200, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-rp4', type: 'line', syntaxModifier: 'to', xCoordinate: 240, yCoordinate: 360, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-rp5', type: 'hline', syntaxModifier: 'to', value: 40, unit: 'px' },
+      { identifier: 'cmd-rp6', type: 'close' }
+    ]
+  },
+  {
+    name: 'Left Chevron',
+    description: 'A navigation chevron block pointing to the left.',
+    commands: [
+      { identifier: 'cmd-lc1', type: 'from', xCoordinate: 180, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-lc2', type: 'line', syntaxModifier: 'to', xCoordinate: 40, yCoordinate: 200, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-lc3', type: 'line', syntaxModifier: 'to', xCoordinate: 180, yCoordinate: 360, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-lc4', type: 'hline', syntaxModifier: 'to', value: 320, unit: 'px' },
+      { identifier: 'cmd-lc5', type: 'line', syntaxModifier: 'to', xCoordinate: 180, yCoordinate: 200, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-lc6', type: 'line', syntaxModifier: 'to', xCoordinate: 320, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-lc7', type: 'close' }
+    ]
+  },
+  {
+    name: 'Right Chevron',
+    description: 'A navigation chevron block pointing to the right.',
+    commands: [
+      { identifier: 'cmd-rc1', type: 'from', xCoordinate: 80, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-rc2', type: 'line', syntaxModifier: 'to', xCoordinate: 220, yCoordinate: 200, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-rc3', type: 'line', syntaxModifier: 'to', xCoordinate: 80, yCoordinate: 360, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-rc4', type: 'hline', syntaxModifier: 'to', value: 220, unit: 'px' },
+      { identifier: 'cmd-rc5', type: 'line', syntaxModifier: 'to', xCoordinate: 360, yCoordinate: 200, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-rc6', type: 'line', syntaxModifier: 'to', xCoordinate: 220, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-rc7', type: 'close' }
+    ]
+  },
+  {
+    name: 'Cross',
+    description: 'A classic symmetrical cross structure geometric layout.',
+    commands: [
+      { identifier: 'cmd-cr1', type: 'from', xCoordinate: 160, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-cr2', type: 'hline', syntaxModifier: 'to', value: 240, unit: 'px' },
+      { identifier: 'cmd-cr3', type: 'vline', syntaxModifier: 'to', value: 140, unit: 'px' },
+      { identifier: 'cmd-cr4', type: 'hline', syntaxModifier: 'to', value: 340, unit: 'px' },
+      { identifier: 'cmd-cr5', type: 'vline', syntaxModifier: 'to', value: 220, unit: 'px' },
+      { identifier: 'cmd-cr6', type: 'hline', syntaxModifier: 'to', value: 240, unit: 'px' },
+      { identifier: 'cmd-cr7', type: 'vline', syntaxModifier: 'to', value: 360, unit: 'px' },
+      { identifier: 'cmd-cr8', type: 'hline', syntaxModifier: 'to', value: 160, unit: 'px' },
+      { identifier: 'cmd-cr9', type: 'vline', syntaxModifier: 'to', value: 220, unit: 'px' },
+      { identifier: 'cmd-cr10', type: 'hline', syntaxModifier: 'to', value: 60, unit: 'px' },
+      { identifier: 'cmd-cr11', type: 'vline', syntaxModifier: 'to', value: 140, unit: 'px' },
+      { identifier: 'cmd-cr12', type: 'hline', syntaxModifier: 'to', value: 160, unit: 'px' },
+      { identifier: 'cmd-cr13', type: 'close' }
+    ]
+  },
+  {
+    name: 'Message',
+    description: 'A sleek chat balloon with a pointed conversational indicator tail.',
+    commands: [
+      { identifier: 'cmd-msg1', type: 'from', xCoordinate: 40, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-msg2', type: 'hline', syntaxModifier: 'to', value: 360, unit: 'px' },
+      { identifier: 'cmd-msg3', type: 'vline', syntaxModifier: 'to', value: 280, unit: 'px' },
+      { identifier: 'cmd-msg4', type: 'hline', syntaxModifier: 'to', value: 120, unit: 'px' },
+      { identifier: 'cmd-msg5', type: 'line', syntaxModifier: 'to', xCoordinate: 40, yCoordinate: 360, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-msg6', type: 'vline', syntaxModifier: 'to', value: 280, unit: 'px' },
+      { identifier: 'cmd-msg7', type: 'close' }
+    ]
+  },
+  {
+    name: 'Close',
+    description: 'The iconic standard close multiplication \'X\' structure.',
+    commands: [
+      { identifier: 'cmd-cl1', type: 'from', xCoordinate: 120, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-cl2', type: 'line', syntaxModifier: 'to', xCoordinate: 200, yCoordinate: 120, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-cl3', type: 'line', syntaxModifier: 'to', xCoordinate: 280, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-cl4', type: 'line', syntaxModifier: 'to', xCoordinate: 360, yCoordinate: 120, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-cl5', type: 'line', syntaxModifier: 'to', xCoordinate: 280, yCoordinate: 200, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-cl6', type: 'line', syntaxModifier: 'to', xCoordinate: 360, yCoordinate: 280, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-cl7', type: 'line', syntaxModifier: 'to', xCoordinate: 280, yCoordinate: 360, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-cl8', type: 'line', syntaxModifier: 'to', xCoordinate: 200, yCoordinate: 280, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-cl9', type: 'line', syntaxModifier: 'to', xCoordinate: 120, yCoordinate: 360, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-cl10', type: 'line', syntaxModifier: 'to', xCoordinate: 40, yCoordinate: 280, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-cl11', type: 'line', syntaxModifier: 'to', xCoordinate: 120, yCoordinate: 200, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-cl12', type: 'line', syntaxModifier: 'to', xCoordinate: 40, yCoordinate: 120, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-cl13', type: 'close' }
+    ]
+  },
+  {
+    name: 'Frame',
+    description: 'A beautiful hollow double frame using a single nested outline path.',
+    commands: [
+      { identifier: 'cmd-fr1', type: 'from', xCoordinate: 40, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-fr2', type: 'hline', syntaxModifier: 'to', value: 360, unit: 'px' },
+      { identifier: 'cmd-fr3', type: 'vline', syntaxModifier: 'to', value: 360, unit: 'px' },
+      { identifier: 'cmd-fr4', type: 'hline', syntaxModifier: 'to', value: 40, unit: 'px' },
+      { identifier: 'cmd-fr5', type: 'vline', syntaxModifier: 'to', value: 80, unit: 'px' },
+      { identifier: 'cmd-fr6', type: 'hline', syntaxModifier: 'to', value: 80, unit: 'px' },
+      { identifier: 'cmd-fr7', type: 'vline', syntaxModifier: 'to', value: 320, unit: 'px' },
+      { identifier: 'cmd-fr8', type: 'hline', syntaxModifier: 'to', value: 320, unit: 'px' },
+      { identifier: 'cmd-fr9', type: 'vline', syntaxModifier: 'to', value: 80, unit: 'px' },
+      { identifier: 'cmd-fr10', type: 'hline', syntaxModifier: 'to', value: 80, unit: 'px' },
+      { identifier: 'cmd-fr11', type: 'vline', syntaxModifier: 'to', value: 40, unit: 'px' },
+      { identifier: 'cmd-fr12', type: 'close' }
+    ]
+  },
+  {
+    name: 'Inset',
+    description: 'A centered, smaller rectangular viewport structure.',
+    commands: [
+      { identifier: 'cmd-in1', type: 'from', xCoordinate: 80, yCoordinate: 80, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-in2', type: 'hline', syntaxModifier: 'to', value: 320, unit: 'px' },
+      { identifier: 'cmd-in3', type: 'vline', syntaxModifier: 'to', value: 320, unit: 'px' },
+      { identifier: 'cmd-in4', type: 'hline', syntaxModifier: 'to', value: 80, unit: 'px' },
+      { identifier: 'cmd-in5', type: 'close' }
+    ]
+  },
+  {
+    name: 'Circle',
+    description: 'A perfect circular alignment built using dual elliptical arc commands.',
+    commands: [
+      { identifier: 'cmd-ci1', type: 'from', xCoordinate: 200, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-ci2', type: 'arc', syntaxModifier: 'to', xCoordinate: 200, yCoordinate: 360, horizontalUnit: 'px', verticalUnit: 'px', radiusX: 160, radiusXUnit: 'px', radiusY: 160, radiusYUnit: 'px', arcSize: 'large', sweepDirection: 'cw', rotationAngle: 0 },
+      { identifier: 'cmd-ci3', type: 'arc', syntaxModifier: 'to', xCoordinate: 200, yCoordinate: 40, horizontalUnit: 'px', verticalUnit: 'px', radiusX: 160, radiusXUnit: 'px', radiusY: 160, radiusYUnit: 'px', arcSize: 'large', sweepDirection: 'cw', rotationAngle: 0 },
+      { identifier: 'cmd-ci4', type: 'close' }
+    ]
+  },
+  {
+    name: 'Ellipse',
+    description: 'A beautifully balanced ellipse stretched over offset semi-axes.',
+    commands: [
+      { identifier: 'cmd-el1', type: 'from', xCoordinate: 200, yCoordinate: 70, horizontalUnit: 'px', verticalUnit: 'px' },
+      { identifier: 'cmd-el2', type: 'arc', syntaxModifier: 'to', xCoordinate: 200, yCoordinate: 330, horizontalUnit: 'px', verticalUnit: 'px', radiusX: 100, radiusXUnit: 'px', radiusY: 130, radiusYUnit: 'px', arcSize: 'large', sweepDirection: 'cw', rotationAngle: 0 },
+      { identifier: 'cmd-el3', type: 'arc', syntaxModifier: 'to', xCoordinate: 200, yCoordinate: 70, horizontalUnit: 'px', verticalUnit: 'px', radiusX: 100, radiusXUnit: 'px', radiusY: 130, radiusYUnit: 'px', arcSize: 'large', sweepDirection: 'cw', rotationAngle: 0 },
+      { identifier: 'cmd-el4', type: 'close' }
     ]
   }
 ];
@@ -2424,17 +2882,26 @@ function renderPresetButtonCardsList(): void {
     const btnCard = document.createElement('button');
     btnCard.setAttribute('type', 'button');
     btnCard.setAttribute('class', `preset-item-card${isCurrentActive ? ' active-setting' : ''}`);
-    btnCard.setAttribute('aria-label', currentLanguage === 'en' ? `Load preset ${presetName}` : `Charger le préréglage ${presetName}`);
+    btnCard.setAttribute('aria-label', currentLanguage === 'en' ? `Load preset ${presetName}: ${presetDesc}` : `Charger le préréglage ${presetName} : ${presetDesc}`);
+    btnCard.setAttribute('title', presetDesc);
+
+    const iconContainer = document.createElement('div');
+    iconContainer.setAttribute('class', 'preset-icon-container');
+
+    const iconShape = document.createElement('div');
+    iconShape.setAttribute('class', 'preset-icon-shape');
+
+    const cssText = compileShapeCodeString(presetObj.commands);
+    const shapeValue = cssText.replace('clip-path:', '').replace(';', '').trim();
+    iconShape.style.clipPath = shapeValue;
+
+    iconContainer.appendChild(iconShape);
+    btnCard.appendChild(iconContainer);
 
     const nameTitle = document.createElement('span');
     nameTitle.setAttribute('class', 'preset-name');
     nameTitle.textContent = presetName;
     btnCard.appendChild(nameTitle);
-
-    const descText = document.createElement('span');
-    descText.setAttribute('class', 'preset-description');
-    descText.textContent = presetDesc;
-    btnCard.appendChild(descText);
 
     btnCard.addEventListener('click', () => {
       loadSelectedPresetTemplate(presetObj);
