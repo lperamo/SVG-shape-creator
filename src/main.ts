@@ -25,42 +25,48 @@ import './style.scss';
 // Application Core State
 // ==========================================
 
-let commandsStack: ShapeCommand[] = [];
-let selectedCommandIdentifier: string | null = null;
+let
+  commandsStack: ShapeCommand[] = [],
+  selectedCommandIdentifier: string | null = null,
 
-// Animation Workspace States
-let stateACommands: ShapeCommand[] | null = null;
-let stateBCommands: ShapeCommand[] | null = null;
-let currentAnimationToggle: 'state_a' | 'state_b' = 'state_b';
-let currentSelectedCodeTab: 'static' | 'animation' = 'static';
+  // Animation Workspace States
+  stateACommands: ShapeCommand[] | null = null,
+  stateBCommands: ShapeCommand[] | null = null,
+  currentSelectedCodeTab: 'static' | 'animation' = 'static',
 
-let parentFontSize: number = 16;
+  parentFontSize: number = 16;
 
 /**
  * Converts value from specified unit to pure pixels on 400x400 canvas.
  */
-function convertUnitToPx(value: number, unit: Unit): number {
-  if (unit === '%') {
+function convertUnitToPx(value: number, unit: Unit): number
+{
+  if (unit === '%')
     return (value / 100) * 400;
-  }
-  if (unit === 'rem') {
+
+  if (unit === 'rem')
     return value * parentFontSize;
-  }
+
   return value;
 }
 
 /**
  * Converts absolute pure canvas pixel coordinate to target units.
  */
-function convertPxToUnit(absolutePixelValue: number, unit: Unit): number {
-  if (unit === '%') {
+function convertPxToUnit(absolutePixelValue: number, unit: Unit): number
+{
+  if (unit === '%')
+  {
     const calculatedPercent = (absolutePixelValue / 400) * 100;
     return Math.round(calculatedPercent * 10) / 10;
   }
-  if (unit === 'rem') {
+
+  if (unit === 'rem')
+  {
     const calculatedRem = absolutePixelValue / parentFontSize;
     return Math.round(calculatedRem * 1000) / 1000;
   }
+
   return Math.round(absolutePixelValue);
 }
 
@@ -70,7 +76,8 @@ function convertPxToUnit(absolutePixelValue: number, unit: Unit): number {
 
 let currentLanguage: 'en' | 'fr' = 'en';
 
-interface LanguageDictionary {
+interface LanguageDictionary
+{
   header_title: string;
   header_description: string;
   section_canvas_title: string;
@@ -120,7 +127,8 @@ interface LanguageDictionary {
   footer_link_blog: string;
 }
 
-const localizationMatrix: Record<'en' | 'fr', LanguageDictionary> = {
+const localizationMatrix: Record<'en' | 'fr', LanguageDictionary> =
+{
   en: {
     header_title: 'CSS shape() Visual Editor',
     header_description: 'Generate beautiful responsive <code>clip-path: shape()</code> paths. Drag and drop interactive anchor and control points in real-time without guessing pixels.',
@@ -297,35 +305,39 @@ const presetLocalizations: Record<'en' | 'fr', PresetTranslation[]> = {
   ]
 };
 
-function translatePageHTML(): void {
+function translatePageHTML(): void
+{
   // Update HTML document lang tag
   document.documentElement.lang = currentLanguage;
 
   // Static standard textual blocks
   const textElements = document.querySelectorAll('[data-i18n]');
-  textElements.forEach(element => {
+  textElements.forEach(element =>
+  {
     const key = element.getAttribute('data-i18n') as keyof LanguageDictionary;
-    if (key && localizationMatrix[currentLanguage][key]) {
+
+    if (key && localizationMatrix[currentLanguage][key])
       element.textContent = localizationMatrix[currentLanguage][key];
-    }
   });
 
   // HTML content block placeholders
   const htmlElements = document.querySelectorAll('[data-i18n-html]');
-  htmlElements.forEach(element => {
+  htmlElements.forEach(element =>
+  {
     const key = element.getAttribute('data-i18n-html') as keyof LanguageDictionary;
-    if (key && localizationMatrix[currentLanguage][key]) {
+
+    if (key && localizationMatrix[currentLanguage][key])
       element.innerHTML = localizationMatrix[currentLanguage][key];
-    }
   });
 
   // Accessible aria attributes placeholders
   const ariaElements = document.querySelectorAll('[data-i18n-aria]');
-  ariaElements.forEach(element => {
+  ariaElements.forEach(element =>
+  {
     const key = element.getAttribute('data-i18n-aria') as keyof LanguageDictionary;
-    if (key && localizationMatrix[currentLanguage][key]) {
+
+    if (key && localizationMatrix[currentLanguage][key])
       element.setAttribute('aria-label', localizationMatrix[currentLanguage][key]);
-    }
   });
 }
 
@@ -824,7 +836,8 @@ const shapePresets: ShapePreset[] = [
 // Anchor Point Calculation Engine (Absolute Matrix)
 // ==========================================
 
-interface ComputedCoordinates {
+interface ComputedCoordinates
+{
   absoluteEnd: Coordinate;
   absoluteControlOne?: Coordinate;
   absoluteControlTwo?: Coordinate;
@@ -834,132 +847,185 @@ interface ComputedCoordinates {
  * Iterates through the stack of commands sequentially, and calculates 
  * the physical coordinates (0-400px) of every anchor relative to standard grid size.
  */
-function computeWholeCoordinatesMatrix(commands: ShapeCommand[]): ComputedCoordinates[] {
-  let computedResultsList: ComputedCoordinates[] = [];
-  let currentPositionX = 0;
-  let currentPositionY = 0;
-  let firstContourStartingPoint: Coordinate = { xCoordinate: 0, yCoordinate: 0 };
+function computeWholeCoordinatesMatrix(commands: ShapeCommand[]): ComputedCoordinates[]
+{
+  let
+    computedResultsList: ComputedCoordinates[] = [],
+    currentPositionX = 0,
+    currentPositionY = 0,
+    firstContourStartingPoint: Coordinate = { xCoordinate: 0, yCoordinate: 0 };
 
-  for (let index = 0; index < commands.length; index = index + 1) {
+  for (let index = 0; index < commands.length; index = index + 1)
+  {
     const currentCommand = commands[index];
-    let absoluteEndX = currentPositionX;
-    let absoluteEndY = currentPositionY;
-    let absoluteControlOne: Coordinate | undefined;
-    let absoluteControlTwo: Coordinate | undefined;
+    let
+      absoluteEndX = currentPositionX,
+      absoluteEndY = currentPositionY,
+      absoluteControlOne: Coordinate | undefined,
+      absoluteControlTwo: Coordinate | undefined;
 
-    switch (currentCommand.type) {
-      case 'from': {
-        const xCoordinateValue = currentCommand.xCoordinate;
-        const yCoordinateValue = currentCommand.yCoordinate;
+    switch (currentCommand.type)
+    {
+      case 'from':
+      {
+        const
+          xCoordinateValue = currentCommand.xCoordinate,
+          yCoordinateValue = currentCommand.yCoordinate;
+
         absoluteEndX = convertUnitToPx(xCoordinateValue, currentCommand.horizontalUnit);
         absoluteEndY = convertUnitToPx(yCoordinateValue, currentCommand.verticalUnit);
-        firstContourStartingPoint = { xCoordinate: absoluteEndX, yCoordinate: absoluteEndY };
+        firstContourStartingPoint =
+          {
+            xCoordinate: absoluteEndX,
+            yCoordinate: absoluteEndY
+          };
         break;
       }
       
-      case 'line': {
-        const xCoordinateValue = currentCommand.xCoordinate;
-        const yCoordinateValue = currentCommand.yCoordinate;
-        const logicalTargetX = convertUnitToPx(xCoordinateValue, currentCommand.horizontalUnit);
-        const logicalTargetY = convertUnitToPx(yCoordinateValue, currentCommand.verticalUnit);
-        if (currentCommand.syntaxModifier === 'to') {
+      case 'line':
+      {
+        const
+          xCoordinateValue = currentCommand.xCoordinate,
+          yCoordinateValue = currentCommand.yCoordinate,
+          logicalTargetX = convertUnitToPx(xCoordinateValue, currentCommand.horizontalUnit),
+          logicalTargetY = convertUnitToPx(yCoordinateValue, currentCommand.verticalUnit);
+
+        if (currentCommand.syntaxModifier === 'to')
+        {
           absoluteEndX = logicalTargetX;
           absoluteEndY = logicalTargetY;
-        } else {
+        } else
+        {
           absoluteEndX = currentPositionX + logicalTargetX;
           absoluteEndY = currentPositionY + logicalTargetY;
         }
         break;
       }
 
-      case 'hline': {
-        const targetValue = currentCommand.value;
-        const logicalTargetValue = convertUnitToPx(targetValue, currentCommand.unit);
-        if (currentCommand.syntaxModifier === 'to') {
-          absoluteEndX = logicalTargetValue;
-        } else {
-          absoluteEndX = currentPositionX + logicalTargetValue;
-        }
+      case 'hline':
+      {
+        const
+          targetValue = currentCommand.value,
+          logicalTargetValue = convertUnitToPx(targetValue, currentCommand.unit);
+
+        absoluteEndX = (currentCommand.syntaxModifier === 'to')
+          ? logicalTargetValue
+          : currentPositionX + logicalTargetValue;
+
         absoluteEndY = currentPositionY;
         break;
       }
 
-      case 'vline': {
-        const targetValue = currentCommand.value;
-        const logicalTargetValue = convertUnitToPx(targetValue, currentCommand.unit);
+      case 'vline':
+      {
+        const
+          targetValue = currentCommand.value,
+          logicalTargetValue = convertUnitToPx(targetValue, currentCommand.unit);
+
         absoluteEndX = currentPositionX;
-        if (currentCommand.syntaxModifier === 'to') {
-          absoluteEndY = logicalTargetValue;
-        } else {
-          absoluteEndY = currentPositionY + logicalTargetValue;
-        }
+        absoluteEndY = (currentCommand.syntaxModifier === 'to')
+          ? logicalTargetValue
+          : currentPositionY + logicalTargetValue;
         break;
       }
 
-      case 'curve': {
-        const targetXCoordinate = currentCommand.xCoordinate;
-        const targetYCoordinate = currentCommand.yCoordinate;
-        const logicalTargetEndX = convertUnitToPx(targetXCoordinate, currentCommand.horizontalUnit);
-        const logicalTargetEndY = convertUnitToPx(targetYCoordinate, currentCommand.verticalUnit);
-        
-        const controlOneXVal = currentCommand.firstControlCircle.xCoordinate;
-        const controlOneYVal = currentCommand.firstControlCircle.yCoordinate;
-        let logicalCtrl1X = convertUnitToPx(controlOneXVal, currentCommand.firstControlHorizontalUnit);
-        let logicalCtrl1Y = convertUnitToPx(controlOneYVal, currentCommand.firstControlVerticalUnit);
+      case 'curve':
+      {
+        const
+          targetXCoordinate = currentCommand.xCoordinate,
+          targetYCoordinate = currentCommand.yCoordinate,
+          logicalTargetEndX = convertUnitToPx(targetXCoordinate, currentCommand.horizontalUnit),
+          logicalTargetEndY = convertUnitToPx(targetYCoordinate, currentCommand.verticalUnit),
+          controlOneXVal = currentCommand.firstControlCircle.xCoordinate,
+          controlOneYVal = currentCommand.firstControlCircle.yCoordinate;
 
-        if (currentCommand.syntaxModifier === 'to') {
+        let
+          logicalCtrl1X = convertUnitToPx(controlOneXVal, currentCommand.firstControlHorizontalUnit),
+          logicalCtrl1Y = convertUnitToPx(controlOneYVal, currentCommand.firstControlVerticalUnit);
+
+        if (currentCommand.syntaxModifier === 'to')
+        {
           absoluteEndX = logicalTargetEndX;
           absoluteEndY = logicalTargetEndY;
-          absoluteControlOne = { xCoordinate: logicalCtrl1X, yCoordinate: logicalCtrl1Y };
+          absoluteControlOne =
+          {
+            xCoordinate: logicalCtrl1X,
+            yCoordinate: logicalCtrl1Y
+          };
           
-          if (currentCommand.hasSecondControlCircle) {
-            const controlTwoXVal = currentCommand.secondControlCircle.xCoordinate;
-            const controlTwoYVal = currentCommand.secondControlCircle.yCoordinate;
-            const logicalCtrl2X = convertUnitToPx(controlTwoXVal, currentCommand.secondControlHorizontalUnit);
-            const logicalCtrl2Y = convertUnitToPx(controlTwoYVal, currentCommand.secondControlVerticalUnit);
+          if (currentCommand.hasSecondControlCircle)
+          {
+            const
+              controlTwoXVal = currentCommand.secondControlCircle.xCoordinate,
+              controlTwoYVal = currentCommand.secondControlCircle.yCoordinate,
+              logicalCtrl2X = convertUnitToPx(controlTwoXVal, currentCommand.secondControlHorizontalUnit),
+              logicalCtrl2Y = convertUnitToPx(controlTwoYVal, currentCommand.secondControlVerticalUnit);
+
             absoluteControlTwo = { xCoordinate: logicalCtrl2X, yCoordinate: logicalCtrl2Y };
           }
-        } else {
+        } else
+        {
           absoluteEndX = currentPositionX + logicalTargetEndX;
           absoluteEndY = currentPositionY + logicalTargetEndY;
-          absoluteControlOne = { xCoordinate: currentPositionX + logicalCtrl1X, yCoordinate: currentPositionY + logicalCtrl1Y };
+          absoluteControlOne =
+          {
+            xCoordinate: currentPositionX + logicalCtrl1X,
+            yCoordinate: currentPositionY + logicalCtrl1Y
+          };
           
-          if (currentCommand.hasSecondControlCircle) {
-            const controlTwoXVal = currentCommand.secondControlCircle.xCoordinate;
-            const controlTwoYVal = currentCommand.secondControlCircle.yCoordinate;
-            const logicalCtrl2X = convertUnitToPx(controlTwoXVal, currentCommand.secondControlHorizontalUnit);
-            const logicalCtrl2Y = convertUnitToPx(controlTwoYVal, currentCommand.secondControlVerticalUnit);
-            absoluteControlTwo = { xCoordinate: currentPositionX + logicalCtrl2X, yCoordinate: currentPositionY + logicalCtrl2Y };
+          if (currentCommand.hasSecondControlCircle)
+          {
+            const
+              controlTwoXVal = currentCommand.secondControlCircle.xCoordinate,
+              controlTwoYVal = currentCommand.secondControlCircle.yCoordinate,
+              logicalCtrl2X = convertUnitToPx(controlTwoXVal, currentCommand.secondControlHorizontalUnit),
+              logicalCtrl2Y = convertUnitToPx(controlTwoYVal, currentCommand.secondControlVerticalUnit);
+
+            absoluteControlTwo =
+            {
+              xCoordinate: currentPositionX + logicalCtrl2X,
+              yCoordinate: currentPositionY + logicalCtrl2Y
+            };
           }
         }
         break;
       }
 
-      case 'arc': {
-        const targetXCoordinate = currentCommand.xCoordinate;
-        const targetYCoordinate = currentCommand.yCoordinate;
-        const logicalTargetX = convertUnitToPx(targetXCoordinate, currentCommand.horizontalUnit);
-        const logicalTargetY = convertUnitToPx(targetYCoordinate, currentCommand.verticalUnit);
+      case 'arc':
+      {
+        const
+          targetXCoordinate = currentCommand.xCoordinate,
+          targetYCoordinate = currentCommand.yCoordinate,
+          logicalTargetX = convertUnitToPx(targetXCoordinate, currentCommand.horizontalUnit),
+          logicalTargetY = convertUnitToPx(targetYCoordinate, currentCommand.verticalUnit);
 
-        if (currentCommand.syntaxModifier === 'to') {
+        if (currentCommand.syntaxModifier === 'to')
+        {
           absoluteEndX = logicalTargetX;
           absoluteEndY = logicalTargetY;
-        } else {
+        } else
+        {
           absoluteEndX = currentPositionX + logicalTargetX;
           absoluteEndY = currentPositionY + logicalTargetY;
         }
         break;
       }
 
-      case 'close': {
+      case 'close':
+      {
         absoluteEndX = firstContourStartingPoint.xCoordinate;
         absoluteEndY = firstContourStartingPoint.yCoordinate;
         break;
       }
     }
 
-    computedResultsList.push({
-      absoluteEnd: { xCoordinate: absoluteEndX, yCoordinate: absoluteEndY },
+    computedResultsList.push(
+    {
+      absoluteEnd:
+      {
+        xCoordinate: absoluteEndX,
+        yCoordinate: absoluteEndY
+      },
       absoluteControlOne: absoluteControlOne,
       absoluteControlTwo: absoluteControlTwo
     });
@@ -979,82 +1045,98 @@ function computeWholeCoordinatesMatrix(commands: ShapeCommand[]): ComputedCoordi
  * Builds the pure CSS shape() string from the local command structures.
  * Formats standard coordinates beautifully.
  */
-function compileShapeCodeString(commands: ShapeCommand[]): string {
-  if (commands.length === 0) {
+function compileShapeCodeString(commands: ShapeCommand[]): string
+{
+  if (commands.length === 0)
     return 'clip-path: none;';
-  }
 
   const outputLines: string[] = [];
 
-  for (let index = 0; index < commands.length; index = index + 1) {
+  for (let index = 0; index < commands.length; index = index + 1)
+  {
     const currentCommand = commands[index];
     let statementLine = '';
 
-    switch (currentCommand.type) {
-      case 'from': {
-        const xCoordinateValue = currentCommand.xCoordinate;
-        const yCoordinateValue = currentCommand.yCoordinate;
+    switch (currentCommand.type)
+    {
+      case 'from':
+      {
+        const
+          xCoordinateValue = currentCommand.xCoordinate,
+          yCoordinateValue = currentCommand.yCoordinate;
+
         statementLine = `from ${xCoordinateValue}${currentCommand.horizontalUnit} ${yCoordinateValue}${currentCommand.verticalUnit}`;
         break;
       }
 
-      case 'line': {
-        const xCoordinateValue = currentCommand.xCoordinate;
-        const yCoordinateValue = currentCommand.yCoordinate;
+      case 'line':
+      {
+        const
+          xCoordinateValue = currentCommand.xCoordinate,
+          yCoordinateValue = currentCommand.yCoordinate;
+
         statementLine = `line ${currentCommand.syntaxModifier} ${xCoordinateValue}${currentCommand.horizontalUnit} ${yCoordinateValue}${currentCommand.verticalUnit}`;
         break;
       }
 
-      case 'hline': {
+      case 'hline':
+      {
         statementLine = `hline ${currentCommand.syntaxModifier} ${currentCommand.value}${currentCommand.unit}`;
         break;
       }
 
-      case 'vline': {
+      case 'vline':
+      {
         statementLine = `vline ${currentCommand.syntaxModifier} ${currentCommand.value}${currentCommand.unit}`;
         break;
       }
 
-      case 'curve': {
-        const targetXCoordinate = currentCommand.xCoordinate;
-        const targetYCoordinate = currentCommand.yCoordinate;
-        const ctrl1XCoordinate = currentCommand.firstControlCircle.xCoordinate;
-        const ctrl1YCoordinate = currentCommand.firstControlCircle.yCoordinate;
+      case 'curve':
+      {
+        const
+          targetXCoordinate = currentCommand.xCoordinate,
+          targetYCoordinate = currentCommand.yCoordinate,
+          ctrl1XCoordinate = currentCommand.firstControlCircle.xCoordinate,
+          ctrl1YCoordinate = currentCommand.firstControlCircle.yCoordinate;
 
         let curveExpression = `curve ${currentCommand.syntaxModifier} ${targetXCoordinate}${currentCommand.horizontalUnit} ${targetYCoordinate}${currentCommand.verticalUnit} with ${ctrl1XCoordinate}${currentCommand.firstControlHorizontalUnit} ${ctrl1YCoordinate}${currentCommand.firstControlVerticalUnit}`;
         
-        if (currentCommand.hasSecondControlCircle) {
-          const ctrl2XCoordinate = currentCommand.secondControlCircle.xCoordinate;
-          const ctrl2YCoordinate = currentCommand.secondControlCircle.yCoordinate;
+        if (currentCommand.hasSecondControlCircle)
+        {
+          const
+            ctrl2XCoordinate = currentCommand.secondControlCircle.xCoordinate,
+            ctrl2YCoordinate = currentCommand.secondControlCircle.yCoordinate;
+
           curveExpression = `${curveExpression} / ${ctrl2XCoordinate}${currentCommand.secondControlHorizontalUnit} ${ctrl2YCoordinate}${currentCommand.secondControlVerticalUnit}`;
         }
         statementLine = curveExpression;
         break;
       }
 
-      case 'arc': {
-        const targetXCoordinate = currentCommand.xCoordinate;
-        const targetYCoordinate = currentCommand.yCoordinate;
-        const rxCoordinate = currentCommand.radiusX;
-        const ryCoordinate = currentCommand.radiusY;
+      case 'arc':
+      {
+        const
+          targetXCoordinate = currentCommand.xCoordinate,
+          targetYCoordinate = currentCommand.yCoordinate,
+          rxCoordinate = currentCommand.radiusX,
+          ryCoordinate = currentCommand.radiusY;
 
         statementLine = `arc ${currentCommand.syntaxModifier} ${targetXCoordinate}${currentCommand.horizontalUnit} ${targetYCoordinate}${currentCommand.verticalUnit} of ${rxCoordinate}${currentCommand.radiusXUnit} ${ryCoordinate}${currentCommand.radiusYUnit} ${currentCommand.arcSize} ${currentCommand.sweepDirection}`;
         
-        if (currentCommand.rotationAngle !== 0) {
+        if (currentCommand.rotationAngle !== 0)
           statementLine = `${statementLine} rotate ${currentCommand.rotationAngle}deg`;
-        }
         break;
       }
 
-      case 'close': {
+      case 'close':
+      {
         statementLine = 'close';
         break;
       }
     }
 
-    if (statementLine) {
+    if (statementLine)
       outputLines.push(`  ${statementLine}`);
-    }
   }
 
   return `clip-path: shape(\n${outputLines.join(',\n')}\n);`;
@@ -1068,20 +1150,26 @@ function compileShapeCodeString(commands: ShapeCommand[]): string {
  * Perform a dynamic conversion of all coordinates inside the commands 
  * stack either directly to Pixels or Percentages in batch.
  */
-function batchConvertAllCoordinates(targetUnit: Unit): void {
+function batchConvertAllCoordinates(targetUnit: Unit): void
+{
   const computedMatrix = computeWholeCoordinatesMatrix(commandsStack);
   
-  for (let index = 0; index < commandsStack.length; index = index + 1) {
-    const currentCommand = commandsStack[index];
-    const absoluteRecord = computedMatrix[index];
+  for (let index = 0; index < commandsStack.length; index = index + 1)
+  {
+    const
+      currentCommand = commandsStack[index],
+      absoluteRecord = computedMatrix[index];
 
     // Helper functions to convert a 0-400 absolute pixel value into target units
-    const projectCoordinate = (absolutePixelValue: number): number => {
+    const projectCoordinate = (absolutePixelValue: number): number =>
+    {
       return convertPxToUnit(absolutePixelValue, targetUnit);
     };
 
-    switch (currentCommand.type) {
-      case 'from': {
+    switch (currentCommand.type)
+    {
+      case 'from':
+      {
         // From commands are always absolute from top-left, meaning they behave identically to "to"
         currentCommand.xCoordinate = projectCoordinate(absoluteRecord.absoluteEnd.xCoordinate);
         currentCommand.yCoordinate = projectCoordinate(absoluteRecord.absoluteEnd.yCoordinate);
@@ -1090,94 +1178,137 @@ function batchConvertAllCoordinates(targetUnit: Unit): void {
         break;
       }
 
-      case 'line': {
-        if (currentCommand.syntaxModifier === 'to') {
+      case 'line':
+      {
+        if (currentCommand.syntaxModifier === 'to')
+        {
           currentCommand.xCoordinate = projectCoordinate(absoluteRecord.absoluteEnd.xCoordinate);
           currentCommand.yCoordinate = projectCoordinate(absoluteRecord.absoluteEnd.yCoordinate);
-        } else {
+        } else
+        {
           // If relative "by", we calculate absolute difference from previous step
-          const previousAnchor = index > 0 ? computedMatrix[index - 1].absoluteEnd : { xCoordinate: 0, yCoordinate: 0 };
-          const differentialX = absoluteRecord.absoluteEnd.xCoordinate - previousAnchor.xCoordinate;
-          const differentialY = absoluteRecord.absoluteEnd.yCoordinate - previousAnchor.yCoordinate;
+          const
+            previousAnchor = index > 0 ? computedMatrix[index - 1].absoluteEnd : { xCoordinate: 0, yCoordinate: 0 },
+            differentialX = absoluteRecord.absoluteEnd.xCoordinate - previousAnchor.xCoordinate,
+            differentialY = absoluteRecord.absoluteEnd.yCoordinate - previousAnchor.yCoordinate;
+
           currentCommand.xCoordinate = projectCoordinate(differentialX);
           currentCommand.yCoordinate = projectCoordinate(differentialY);
         }
+
         currentCommand.horizontalUnit = targetUnit;
         currentCommand.verticalUnit = targetUnit;
         break;
       }
 
-      case 'hline': {
-        if (currentCommand.syntaxModifier === 'to') {
+      case 'hline':
+      {
+        if (currentCommand.syntaxModifier === 'to')
           currentCommand.value = projectCoordinate(absoluteRecord.absoluteEnd.xCoordinate);
-        } else {
-          const previousAnchor = index > 0 ? computedMatrix[index - 1].absoluteEnd : { xCoordinate: 0, yCoordinate: 0 };
-          const differentialX = absoluteRecord.absoluteEnd.xCoordinate - previousAnchor.xCoordinate;
+        else
+        {
+          const
+            previousAnchor = index > 0
+              ? computedMatrix[index - 1].absoluteEnd
+              : { xCoordinate: 0, yCoordinate: 0 },
+            differentialX = absoluteRecord.absoluteEnd.xCoordinate - previousAnchor.xCoordinate;
+
           currentCommand.value = projectCoordinate(differentialX);
         }
+
         currentCommand.unit = targetUnit;
         break;
       }
 
-      case 'vline': {
-        if (currentCommand.syntaxModifier === 'to') {
+      case 'vline':
+      {
+        if (currentCommand.syntaxModifier === 'to')
           currentCommand.value = projectCoordinate(absoluteRecord.absoluteEnd.yCoordinate);
-        } else {
-          const previousAnchor = index > 0 ? computedMatrix[index - 1].absoluteEnd : { xCoordinate: 0, yCoordinate: 0 };
-          const differentialY = absoluteRecord.absoluteEnd.yCoordinate - previousAnchor.yCoordinate;
+        else
+        {
+          const
+            previousAnchor = index > 0 ? computedMatrix[index - 1].absoluteEnd : { xCoordinate: 0, yCoordinate: 0 },
+            differentialY = absoluteRecord.absoluteEnd.yCoordinate - previousAnchor.yCoordinate;
           currentCommand.value = projectCoordinate(differentialY);
         }
+
         currentCommand.unit = targetUnit;
         break;
       }
 
-      case 'curve': {
+      case 'curve':
+      {
         // Calculate endpoint coordinates
-        const previousAnchor = index > 0 ? computedMatrix[index - 1].absoluteEnd : { xCoordinate: 0, yCoordinate: 0 };
-        const referenceStartingPoint = currentCommand.syntaxModifier === 'to' ? { xCoordinate: 0, yCoordinate: 0 } : previousAnchor;
+        const
+          previousAnchor = index > 0
+            ? computedMatrix[index - 1].absoluteEnd
+            : { xCoordinate: 0, yCoordinate: 0 },
+          referenceStartingPoint = currentCommand.syntaxModifier === 'to'
+            ? { xCoordinate: 0, yCoordinate: 0 }
+            : previousAnchor,
+          differentialEndX = absoluteRecord.absoluteEnd.xCoordinate - referenceStartingPoint.xCoordinate,
+          differentialEndY = absoluteRecord.absoluteEnd.yCoordinate - referenceStartingPoint.yCoordinate;
 
-        const differentialEndX = absoluteRecord.absoluteEnd.xCoordinate - referenceStartingPoint.xCoordinate;
-        const differentialEndY = absoluteRecord.absoluteEnd.yCoordinate - referenceStartingPoint.yCoordinate;
         currentCommand.xCoordinate = projectCoordinate(differentialEndX);
         currentCommand.yCoordinate = projectCoordinate(differentialEndY);
         currentCommand.horizontalUnit = targetUnit;
         currentCommand.verticalUnit = targetUnit;
 
         // Calculate control point coordinates
-        if (absoluteRecord.absoluteControlOne) {
-          const differentialCtrl1X = absoluteRecord.absoluteControlOne.xCoordinate - referenceStartingPoint.xCoordinate;
-          const differentialCtrl1Y = absoluteRecord.absoluteControlOne.yCoordinate - referenceStartingPoint.yCoordinate;
+        if (absoluteRecord.absoluteControlOne)
+        {
+          const
+            differentialCtrl1X = absoluteRecord.absoluteControlOne.xCoordinate - referenceStartingPoint.xCoordinate,
+            differentialCtrl1Y = absoluteRecord.absoluteControlOne.yCoordinate - referenceStartingPoint.yCoordinate;
+
           currentCommand.firstControlCircle.xCoordinate = projectCoordinate(differentialCtrl1X);
           currentCommand.firstControlCircle.yCoordinate = projectCoordinate(differentialCtrl1Y);
           currentCommand.firstControlHorizontalUnit = targetUnit;
           currentCommand.firstControlVerticalUnit = targetUnit;
         }
 
-        if (currentCommand.hasSecondControlCircle && absoluteRecord.absoluteControlTwo) {
-          const differentialCtrl2X = absoluteRecord.absoluteControlTwo.xCoordinate - referenceStartingPoint.xCoordinate;
-          const differentialCtrl2Y = absoluteRecord.absoluteControlTwo.yCoordinate - referenceStartingPoint.yCoordinate;
+        if (currentCommand.hasSecondControlCircle && absoluteRecord.absoluteControlTwo)
+        {
+          const
+            differentialCtrl2X = absoluteRecord.absoluteControlTwo.xCoordinate - referenceStartingPoint.xCoordinate,
+            differentialCtrl2Y = absoluteRecord.absoluteControlTwo.yCoordinate - referenceStartingPoint.yCoordinate;
+
           currentCommand.secondControlCircle.xCoordinate = projectCoordinate(differentialCtrl2X);
           currentCommand.secondControlCircle.yCoordinate = projectCoordinate(differentialCtrl2Y);
           currentCommand.secondControlHorizontalUnit = targetUnit;
           currentCommand.secondControlVerticalUnit = targetUnit;
         }
+
         break;
       }
 
-      case 'arc': {
-        const previousAnchor = index > 0 ? computedMatrix[index - 1].absoluteEnd : { xCoordinate: 0, yCoordinate: 0 };
-        const referenceStartingPoint = currentCommand.syntaxModifier === 'to' ? { xCoordinate: 0, yCoordinate: 0 } : previousAnchor;
+      case 'arc':
+      {
+        const
+          previousAnchor = index > 0
+            ? computedMatrix[index - 1].absoluteEnd
+            : { xCoordinate: 0, yCoordinate: 0 },
+          referenceStartingPoint = currentCommand.syntaxModifier === 'to'
+            ? {
+              xCoordinate: 0,
+              yCoordinate: 0
+            }
+            : previousAnchor;
 
-        const differentialEndX = absoluteRecord.absoluteEnd.xCoordinate - referenceStartingPoint.xCoordinate;
-        const differentialEndY = absoluteRecord.absoluteEnd.yCoordinate - referenceStartingPoint.yCoordinate;
+        const
+          differentialEndX = absoluteRecord.absoluteEnd.xCoordinate - referenceStartingPoint.xCoordinate,
+          differentialEndY = absoluteRecord.absoluteEnd.yCoordinate - referenceStartingPoint.yCoordinate;
+
         currentCommand.xCoordinate = projectCoordinate(differentialEndX);
         currentCommand.yCoordinate = projectCoordinate(differentialEndY);
         currentCommand.horizontalUnit = targetUnit;
         currentCommand.verticalUnit = targetUnit;
 
         // Radii conversion (now correctly pre-resolving the old unit to px before projection)
-        const rxPx = convertUnitToPx(currentCommand.radiusX, currentCommand.radiusXUnit);
-        const ryPx = convertUnitToPx(currentCommand.radiusY, currentCommand.radiusYUnit);
+        const
+          rxPx = convertUnitToPx(currentCommand.radiusX, currentCommand.radiusXUnit),
+          ryPx = convertUnitToPx(currentCommand.radiusY, currentCommand.radiusYUnit);
+
         currentCommand.radiusX = projectCoordinate(rxPx);
         currentCommand.radiusY = projectCoordinate(ryPx);
         currentCommand.radiusXUnit = targetUnit;
@@ -1196,7 +1327,8 @@ function batchConvertAllCoordinates(targetUnit: Unit): void {
 // Deep Command Copier (for Animation States)
 // ==========================================
 
-function deepDuplicateStack(commands: ShapeCommand[]): ShapeCommand[] {
+function deepDuplicateStack(commands: ShapeCommand[]): ShapeCommand[]
+{
   return JSON.parse(JSON.stringify(commands));
 }
 
@@ -1208,12 +1340,18 @@ function deepDuplicateStack(commands: ShapeCommand[]): ShapeCommand[] {
  * Scales the 400x400 clipped element block using CSS transforms, e.g. transform: scale(factor),
  * so that shape coordinates (both absolute pixels, rems, or percentages) align exactly with the SVG handlers.
  */
-function adjustClippedElementScale(): void {
-  const paintboard = document.getElementById('paintboard');
-  const clippedElement = document.getElementById('clippedElement');
-  if (paintboard && clippedElement) {
-    const width = paintboard.clientWidth;
-    const scale = width / 400;
+function adjustClippedElementScale(): void
+{
+  const
+    paintboard = document.getElementById('paintboard'),
+    clippedElement = document.getElementById('clippedElement');
+
+  if (paintboard && clippedElement)
+  {
+    const
+      width = paintboard.clientWidth,
+      scale = width / 400;
+
     clippedElement.style.transform = `scale(${scale})`;
     clippedElement.style.transformOrigin = 'top left';
   }
@@ -1222,9 +1360,12 @@ function adjustClippedElementScale(): void {
 /**
  * Compiles the CSS Animation or Transition code blocks when State A and State B are defined.
  */
-function compileCSSAnimationCodeString(): string {
-  if (!stateACommands || !stateBCommands) {
-    if (currentLanguage === 'fr') {
+function compileCSSAnimationCodeString(): string
+{
+  if (!stateACommands || !stateBCommands)
+  {
+    if (currentLanguage === 'fr')
+    {
       return '/*\n' +
         '  Étape 1 : Enregistrez une forme initiale comme "État A" dans le module d\'animation.\n' +
         '  Étape 2 : Modifiez la forme sur la grille, puis enregistrez-la comme "État B".\n\n' +
@@ -1232,6 +1373,7 @@ function compileCSSAnimationCodeString(): string {
         '  sera disponible ici en temps réel !\n' +
         '*/';
     }
+
     return '/*\n' +
       '  Step 1: Save an initial shape as \'State A\' in the Animation Module.\n' +
       '  Step 2: Modify the shape on the grid, then save it as \'State B\'.\n\n' +
@@ -1240,11 +1382,11 @@ function compileCSSAnimationCodeString(): string {
       '*/';
   }
 
-  const durationSlider = document.getElementById('animationDurationRange') as HTMLInputElement | null;
-  const durationInSeconds = durationSlider ? durationSlider.value : '1.2';
-
-  const cssACommandsCompiled = compileShapeCodeString(stateACommands);
-  const cssBCommandsCompiled = compileShapeCodeString(stateBCommands);
+  const
+    durationSlider = document.getElementById('animationDurationRange') as HTMLInputElement | null,
+    durationInSeconds = durationSlider ? durationSlider.value : '1.2',
+    cssACommandsCompiled = compileShapeCodeString(stateACommands),
+    cssBCommandsCompiled = compileShapeCodeString(stateBCommands);
 
   return '/* Approach 1: Smooth CSS Transition on hover */\n' +
     '.clipped-element {\n' +
@@ -1278,58 +1420,66 @@ function compileCSSAnimationCodeString(): string {
  * Triggers rendering update on both the real-time cropped visual, 
  * the SVG canvas overlays, connecting lines, code templates & auxiliary coordinates.
  */
-function updateVisualClippedLayoutAndCanvas(): void {
+function updateVisualClippedLayoutAndCanvas(): void
+{
   adjustClippedElementScale();
-  const cssStringCode = compileShapeCodeString(commandsStack);
-  
-  // Update generated code text areas
-  const codeOutputElement = document.getElementById('cssGeneratedCodeOutput');
-  if (codeOutputElement) {
-    if (currentSelectedCodeTab === 'static') {
-      codeOutputElement.textContent = cssStringCode;
-    } else {
-      codeOutputElement.textContent = compileCSSAnimationCodeString();
-    }
+
+  const
+    cssStringCode = compileShapeCodeString(commandsStack),
+    // Update generated code text areas
+    codeOutputElement = document.getElementById('cssGeneratedCodeOutput');
+
+  if (codeOutputElement)
+  {
+    codeOutputElement.textContent = (currentSelectedCodeTab === 'static')
+      ? cssStringCode
+      : compileCSSAnimationCodeString();
   }
 
   // Update clipped visual div elements (takes standard percentage or absolute pixels clip-path)
   const clippedElement = document.getElementById('clippedElement');
-  if (clippedElement) {
+
+  if (clippedElement)
     clippedElement.style.clipPath = `shape(${cssStringCode.replace('clip-path: shape(', '').slice(0, -2)})`;
-  }
 
   // Calculate the physical absolute points coordinates matrix for dragging
-  const coordinatesMatrix = computeWholeCoordinatesMatrix(commandsStack);
+  const
+    coordinatesMatrix = computeWholeCoordinatesMatrix(commandsStack),
+    // Update SVG connecting polyline path
+    visualPolyline = document.getElementById('visualConnectingPolyline') as unknown as SVGPathElement | null;
 
-  // Update SVG connecting polyline path
-  const visualPolyline = document.getElementById('visualConnectingPolyline') as unknown as SVGPathElement | null;
-  if (visualPolyline) {
+  if (visualPolyline)
+  {
     let svgPathInstructions = '';
     
-    for (let index = 0; index < coordinatesMatrix.length; index = index + 1) {
-      const record = coordinatesMatrix[index];
-      const command = commandsStack[index];
-      const coordinateX = record.absoluteEnd.xCoordinate;
-      const coordinateY = record.absoluteEnd.yCoordinate;
+    for (let index = 0; index < coordinatesMatrix.length; index = index + 1)
+    {
+      const
+        record = coordinatesMatrix[index],
+        command = commandsStack[index],
+        coordinateX = record.absoluteEnd.xCoordinate,
+        coordinateY = record.absoluteEnd.yCoordinate;
 
-      if (index === 0) {
+      if (index === 0)
         svgPathInstructions = `M ${coordinateX} ${coordinateY}`;
-      } else {
-        if (command.type === 'curve') {
-          const controlOne = record.absoluteControlOne;
-          const controlTwo = record.absoluteControlTwo;
-          if (controlOne && controlTwo) {
+      else
+      {
+        if (command.type === 'curve')
+        {
+          const
+            controlOne = record.absoluteControlOne,
+            controlTwo = record.absoluteControlTwo;
+
+          if (controlOne && controlTwo)
             svgPathInstructions = `${svgPathInstructions} C ${controlOne.xCoordinate} ${controlOne.yCoordinate}, ${controlTwo.xCoordinate} ${controlTwo.yCoordinate}, ${coordinateX} ${coordinateY}`;
-          } else if (controlOne) {
+          else if (controlOne)
             svgPathInstructions = `${svgPathInstructions} Q ${controlOne.xCoordinate} ${controlOne.yCoordinate}, ${coordinateX} ${coordinateY}`;
-          } else {
+          else
             svgPathInstructions = `${svgPathInstructions} L ${coordinateX} ${coordinateY}`;
-          }
-        } else if (command.type === 'close') {
+        } else if (command.type === 'close')
           svgPathInstructions = `${svgPathInstructions} Z`;
-        } else {
+        else
           svgPathInstructions = `${svgPathInstructions} L ${coordinateX} ${coordinateY}`;
-        }
       }
     }
     
@@ -1341,46 +1491,63 @@ function updateVisualClippedLayoutAndCanvas(): void {
 
   // Update counter readouts
   const activeNodesCountField = document.getElementById('activeNodesReadout');
-  if (activeNodesCountField) {
-    activeNodesCountField.textContent = currentLanguage === 'en' ? `Commands: ${commandsStack.length}` : `Commandes : ${commandsStack.length}`;
-  }
+
+  if (activeNodesCountField)
+    activeNodesCountField.textContent = currentLanguage === 'en'
+      ? `Commands: ${commandsStack.length}`
+      : `Commandes : ${commandsStack.length}`;
 }
 
 /**
  * Destroys and recreates interactive circular points & controls on the SVG workspace overlay.
  */
-function rebuildCanvasSvgInteractionHandles(coordinatesMatrix: ComputedCoordinates[]): void {
-  const markersContainer = document.getElementById('interactiveMarkersGroup');
-  const auxiliaryContainer = document.getElementById('auxiliaryJointLinesGroup');
-  if (!markersContainer || !auxiliaryContainer) {
+function rebuildCanvasSvgInteractionHandles(coordinatesMatrix: ComputedCoordinates[]): void
+{
+  const
+    markersContainer = document.getElementById('interactiveMarkersGroup'),
+    auxiliaryContainer = document.getElementById('auxiliaryJointLinesGroup');
+
+  if (!markersContainer || !auxiliaryContainer)
     return;
-  }
 
   // Preserve keyboard focus across redraws
-  const activeElementId = document.activeElement ? document.activeElement.id : null;
+  const activeElementId = document.activeElement
+    ? document.activeElement.id
+    : null;
 
   markersContainer.innerHTML = '';
   auxiliaryContainer.innerHTML = '';
 
-  for (let index = 0; index < commandsStack.length; index = index + 1) {
-    const command = commandsStack[index];
-    const absoluteRecord = coordinatesMatrix[index];
+  for (let index = 0; index < commandsStack.length; index = index + 1)
+  {
+    const
+      command = commandsStack[index],
+      absoluteRecord = coordinatesMatrix[index];
 
     // Close and commands with zero anchors do not need coordinate circles
-    if (command.type === 'close') {
+    if (command.type === 'close')
       continue;
-    }
 
     // Previous point node reference for relative calculation offsets
-    const previousAnchor = index > 0 ? coordinatesMatrix[index - 1].absoluteEnd : { xCoordinate: 0, yCoordinate: 0 };
+    const previousAnchor = index > 0
+      ? coordinatesMatrix[index - 1].absoluteEnd
+      : { xCoordinate: 0, yCoordinate: 0 };
 
     // Create the Main Anchor circular interact handle
     const anchorGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    anchorGroup.setAttribute('class', `anchor-node-g${selectedCommandIdentifier === command.identifier ? ' selected-active' : ''}`);
+    anchorGroup.setAttribute(
+      'class',
+      `anchor-node-g${selectedCommandIdentifier === command.identifier ? ' selected-active' : ''}`
+    );
     anchorGroup.setAttribute('id', `anchor-handle-${command.identifier}`);
     anchorGroup.setAttribute('tabindex', '0');
     anchorGroup.setAttribute('role', 'button');
-    anchorGroup.setAttribute('aria-label', currentLanguage === 'en' ? `Anchor node for command ${index + 1} of type ${command.type}` : `Point d'ancrage de la commande ${index + 1} de type ${command.type}`);
+    anchorGroup.setAttribute(
+      'aria-label',
+      currentLanguage === 'en'
+        ? `Anchor node for command ${index + 1} of type ${command.type}`
+        : `Point d'ancrage de la commande ${index + 1} de type ${command.type}`
+    );
 
     // Glow ring
     const glowRing = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -1407,43 +1574,49 @@ function rebuildCanvasSvgInteractionHandles(coordinatesMatrix: ComputedCoordinat
     anchorGroup.appendChild(innerDot);
 
     // Add interactivity to selecting items by selecting them on pointerdown
-    anchorGroup.addEventListener('pointerdown', (event: PointerEvent) => {
+    anchorGroup.addEventListener('pointerdown', (event: PointerEvent) =>
+    {
       event.stopPropagation();
       setFocusedActiveCommand(command.identifier);
-      initializeHandleDragSequence(event, anchorGroup, (newLogicalX: number, newLogicalY: number) => {
+      initializeHandleDragSequence(event, anchorGroup, (newLogicalX: number, newLogicalY: number) =>
+      {
         // Drag logic for Main Anchor point
         applyDragShiftToAnchor(command, index, previousAnchor, newLogicalX, newLogicalY);
       });
     });
 
     // Keyboard support for main anchor handle
-    anchorGroup.addEventListener('keydown', (event: KeyboardEvent) => {
-      if (event.key === 'Enter' || event.key === ' ') {
+    anchorGroup.addEventListener('keydown', (event: KeyboardEvent) =>
+    {
+      if (event.key === 'Enter' || event.key === ' ')
+      {
         event.preventDefault();
         setFocusedActiveCommand(command.identifier);
         return;
       }
 
-      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
+      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key))
+      {
         event.preventDefault();
         setFocusedActiveCommand(command.identifier);
 
-        const currentX = absoluteRecord.absoluteEnd.xCoordinate;
-        const currentY = absoluteRecord.absoluteEnd.yCoordinate;
-        const step = event.shiftKey ? 10 : 1;
+        const
+          currentX = absoluteRecord.absoluteEnd.xCoordinate,
+          currentY = absoluteRecord.absoluteEnd.yCoordinate,
+          step = event.shiftKey ? 10 : 1;
 
-        let newX = currentX;
-        let newY = currentY;
+        let
+          newX = currentX,
+          newY = currentY;
 
-        if (event.key === 'ArrowLeft') {
+        if (event.key === 'ArrowLeft')
           newX -= step;
-        } else if (event.key === 'ArrowRight') {
+        else if (event.key === 'ArrowRight')
           newX += step;
-        } else if (event.key === 'ArrowUp') {
+        else if (event.key === 'ArrowUp')
           newY -= step;
-        } else if (event.key === 'ArrowDown') {
+        else if (event.key === 'ArrowDown')
           newY += step;
-        }
 
         newX = Math.round(Math.max(0, Math.min(400, newX)));
         newY = Math.round(Math.max(0, Math.min(400, newY)));
@@ -1456,12 +1629,14 @@ function rebuildCanvasSvgInteractionHandles(coordinatesMatrix: ComputedCoordinat
     markersContainer.appendChild(anchorGroup);
 
     // If the command is curve, render control points circles and auxiliary connecting lines
-    if (command.type === 'curve' && absoluteRecord.absoluteControlOne) {
+    if (command.type === 'curve' && absoluteRecord.absoluteControlOne)
+    {
       // Curve commands starting anchor point reference coordinates
-      const startOfCurveAnchor = previousAnchor;
+      const
+        startOfCurveAnchor = previousAnchor,
+        // Draw dashed connecting line for Control 1
+        lineOne = document.createElementNS('http://www.w3.org/2000/svg', 'line');
 
-      // Draw dashed connecting line for Control 1
-      const lineOne = document.createElementNS('http://www.w3.org/2000/svg', 'line');
       lineOne.setAttribute('class', 'svg-auxiliary-line');
       lineOne.setAttribute('x1', startOfCurveAnchor.xCoordinate.toString());
       lineOne.setAttribute('y1', startOfCurveAnchor.yCoordinate.toString());
@@ -1470,75 +1645,99 @@ function rebuildCanvasSvgInteractionHandles(coordinatesMatrix: ComputedCoordinat
       auxiliaryContainer.appendChild(lineOne);
 
       // Create Control 1 point group circular handle
-      const controlOneGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      const controlOneGroup = document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'g'
+      );
       controlOneGroup.setAttribute('class', 'control-handle-g');
       controlOneGroup.setAttribute('id', `control-one-handle-${command.identifier}`);
       controlOneGroup.setAttribute('tabindex', '0');
       controlOneGroup.setAttribute('role', 'button');
-      controlOneGroup.setAttribute('aria-label', currentLanguage === 'en' ? `Primary Bézier control point for command ${index + 1}` : `Poignée de contrôle initiale de la courbe de Bézier de l'élément numéro ${index + 1}`);
+      controlOneGroup.setAttribute(
+        'aria-label',
+        currentLanguage === 'en'
+          ? `Primary Bézier control point for command ${index + 1}`
+          : `Poignée de contrôle initiale de la courbe de Bézier de l'élément numéro ${index + 1}`
+      );
 
-      const ctrl1Glow = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      const ctrl1Glow = document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'circle'
+      );
       ctrl1Glow.setAttribute('class', 'ctrl-circle-glow');
       ctrl1Glow.setAttribute('cx', absoluteRecord.absoluteControlOne.xCoordinate.toString());
       ctrl1Glow.setAttribute('cy', absoluteRecord.absoluteControlOne.yCoordinate.toString());
       ctrl1Glow.setAttribute('r', '14');
       controlOneGroup.appendChild(ctrl1Glow);
 
-      const ctrl1Circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      const ctrl1Circle = document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'circle'
+      );
       ctrl1Circle.setAttribute('class', 'control-point-outer');
       ctrl1Circle.setAttribute('cx', absoluteRecord.absoluteControlOne.xCoordinate.toString());
       ctrl1Circle.setAttribute('cy', absoluteRecord.absoluteControlOne.yCoordinate.toString());
       ctrl1Circle.setAttribute('r', '5.5');
       controlOneGroup.appendChild(ctrl1Circle);
 
-      const ctrl1Inner = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      const ctrl1Inner = document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'circle'
+      );
       ctrl1Inner.setAttribute('class', 'control-point-inner');
       ctrl1Inner.setAttribute('cx', absoluteRecord.absoluteControlOne.xCoordinate.toString());
       ctrl1Inner.setAttribute('cy', absoluteRecord.absoluteControlOne.yCoordinate.toString());
       ctrl1Inner.setAttribute('r', '2.5');
       controlOneGroup.appendChild(ctrl1Inner);
 
-      controlOneGroup.addEventListener('pointerdown', (event: PointerEvent) => {
+      controlOneGroup.addEventListener('pointerdown', (event: PointerEvent) =>
+      {
         event.stopPropagation();
         controlOneGroup.classList.add('active-drag');
         setFocusedActiveCommand(command.identifier);
         
-        initializeHandleDragSequence(event, controlOneGroup, (newLogicalX: number, newLogicalY: number) => {
+        initializeHandleDragSequence(event, controlOneGroup, (newLogicalX: number, newLogicalY: number) =>
+        {
           // Drag shift implementation for Control 1
           applyDragShiftToControlPoint(command, 'first', startOfCurveAnchor, newLogicalX, newLogicalY);
-        }, () => {
+        }, () =>
+        {
           controlOneGroup.classList.remove('active-drag');
         });
       });
 
       // Keyboard support for Control 1 handle
-      controlOneGroup.addEventListener('keydown', (event: KeyboardEvent) => {
-        if (event.key === 'Enter' || event.key === ' ') {
+      controlOneGroup.addEventListener('keydown', (event: KeyboardEvent) =>
+      {
+        if (event.key === 'Enter' || event.key === ' ')
+        {
           event.preventDefault();
           setFocusedActiveCommand(command.identifier);
           return;
         }
 
-        if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
+        if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key))
+        {
           event.preventDefault();
           setFocusedActiveCommand(command.identifier);
 
-          const currentX = absoluteRecord.absoluteControlOne.xCoordinate;
-          const currentY = absoluteRecord.absoluteControlOne.yCoordinate;
-          const step = event.shiftKey ? 10 : 1;
+          const
+            currentX = absoluteRecord.absoluteControlOne.xCoordinate,
+            currentY = absoluteRecord.absoluteControlOne.yCoordinate,
+            step = event.shiftKey ? 10 : 1;
 
-          let newX = currentX;
-          let newY = currentY;
+          let
+            newX = currentX,
+            newY = currentY;
 
-          if (event.key === 'ArrowLeft') {
+          if (event.key === 'ArrowLeft')
             newX -= step;
-          } else if (event.key === 'ArrowRight') {
+          else if (event.key === 'ArrowRight')
             newX += step;
-          } else if (event.key === 'ArrowUp') {
+          else if (event.key === 'ArrowUp')
             newY -= step;
-          } else if (event.key === 'ArrowDown') {
+          else if (event.key === 'ArrowDown')
             newY += step;
-          }
 
           newX = Math.round(Math.max(0, Math.min(400, newX)));
           newY = Math.round(Math.max(0, Math.min(400, newY)));
@@ -1550,8 +1749,12 @@ function rebuildCanvasSvgInteractionHandles(coordinatesMatrix: ComputedCoordinat
       markersContainer.appendChild(controlOneGroup);
 
       // Draw dashed connecting lines & circles for Control 2 (if cubic Bézier active)
-      if (command.hasSecondControlCircle && absoluteRecord.absoluteControlTwo) {
-        const lineTwo = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      if (command.hasSecondControlCircle && absoluteRecord.absoluteControlTwo)
+      {
+        const lineTwo = document.createElementNS(
+          'http://www.w3.org/2000/svg',
+          'line'
+        );
         lineTwo.setAttribute('class', 'svg-auxiliary-line');
         lineTwo.setAttribute('x1', absoluteRecord.absoluteEnd.xCoordinate.toString());
         lineTwo.setAttribute('y1', absoluteRecord.absoluteEnd.yCoordinate.toString());
@@ -1559,75 +1762,99 @@ function rebuildCanvasSvgInteractionHandles(coordinatesMatrix: ComputedCoordinat
         lineTwo.setAttribute('y2', absoluteRecord.absoluteControlTwo.yCoordinate.toString());
         auxiliaryContainer.appendChild(lineTwo);
 
-        const controlTwoGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        const controlTwoGroup = document.createElementNS(
+          'http://www.w3.org/2000/svg',
+          'g'
+        );
         controlTwoGroup.setAttribute('class', 'control-handle-g');
         controlTwoGroup.setAttribute('id', `control-two-handle-${command.identifier}`);
         controlTwoGroup.setAttribute('tabindex', '0');
         controlTwoGroup.setAttribute('role', 'button');
-        controlTwoGroup.setAttribute('aria-label', currentLanguage === 'en' ? `Secondary Bézier control point for command ${index + 1}` : `Poignée de contrôle secondaire de la courbe de Bézier de l'élément numéro ${index + 1}`);
+        controlTwoGroup.setAttribute(
+          'aria-label',
+          currentLanguage === 'en'
+            ? `Secondary Bézier control point for command ${index + 1}`
+            : `Poignée de contrôle secondaire de la courbe de Bézier de l'élément numéro ${index + 1}`
+        );
 
-        const ctrl2Glow = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        const ctrl2Glow = document.createElementNS(
+          'http://www.w3.org/2000/svg',
+          'circle'
+        );
         ctrl2Glow.setAttribute('class', 'ctrl-circle-glow');
         ctrl2Glow.setAttribute('cx', absoluteRecord.absoluteControlTwo.xCoordinate.toString());
         ctrl2Glow.setAttribute('cy', absoluteRecord.absoluteControlTwo.yCoordinate.toString());
         ctrl2Glow.setAttribute('r', '14');
         controlTwoGroup.appendChild(ctrl2Glow);
 
-        const ctrl2Circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        const ctrl2Circle = document.createElementNS(
+          'http://www.w3.org/2000/svg',
+          'circle'
+        );
         ctrl2Circle.setAttribute('class', 'control-point-outer');
         ctrl2Circle.setAttribute('cx', absoluteRecord.absoluteControlTwo.xCoordinate.toString());
         ctrl2Circle.setAttribute('cy', absoluteRecord.absoluteControlTwo.yCoordinate.toString());
         ctrl2Circle.setAttribute('r', '5.5');
         controlTwoGroup.appendChild(ctrl2Circle);
 
-        const ctrl2Inner = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        const ctrl2Inner = document.createElementNS(
+          'http://www.w3.org/2000/svg',
+          'circle'
+        );
         ctrl2Inner.setAttribute('class', 'control-point-inner');
         ctrl2Inner.setAttribute('cx', absoluteRecord.absoluteControlTwo.xCoordinate.toString());
         ctrl2Inner.setAttribute('cy', absoluteRecord.absoluteControlTwo.yCoordinate.toString());
         ctrl2Inner.setAttribute('r', '2.5');
         controlTwoGroup.appendChild(ctrl2Inner);
 
-        controlTwoGroup.addEventListener('pointerdown', (event: PointerEvent) => {
+        controlTwoGroup.addEventListener('pointerdown', (event: PointerEvent) =>
+        {
           event.stopPropagation();
           controlTwoGroup.classList.add('active-drag');
           setFocusedActiveCommand(command.identifier);
           
-          initializeHandleDragSequence(event, controlTwoGroup, (newLogicalX: number, newLogicalY: number) => {
+          initializeHandleDragSequence(event, controlTwoGroup, (newLogicalX: number, newLogicalY: number) =>
+          {
             // Drag shift implementation for Control 2
             applyDragShiftToControlPoint(command, 'second', startOfCurveAnchor, newLogicalX, newLogicalY);
-          }, () => {
+          }, () =>
+          {
             controlTwoGroup.classList.remove('active-drag');
           });
         });
 
         // Keyboard support for Control 2 handle
-        controlTwoGroup.addEventListener('keydown', (event: KeyboardEvent) => {
-          if (event.key === 'Enter' || event.key === ' ') {
+        controlTwoGroup.addEventListener('keydown', (event: KeyboardEvent) =>
+        {
+          if (event.key === 'Enter' || event.key === ' ')
+          {
             event.preventDefault();
             setFocusedActiveCommand(command.identifier);
             return;
           }
 
-          if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
+          if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key))
+          {
             event.preventDefault();
             setFocusedActiveCommand(command.identifier);
 
-            const currentX = absoluteRecord.absoluteControlTwo.xCoordinate;
-            const currentY = absoluteRecord.absoluteControlTwo.yCoordinate;
-            const step = event.shiftKey ? 10 : 1;
+            const
+              currentX = absoluteRecord.absoluteControlTwo.xCoordinate,
+              currentY = absoluteRecord.absoluteControlTwo.yCoordinate,
+              step = event.shiftKey ? 10 : 1;
 
-            let newX = currentX;
-            let newY = currentY;
+            let
+              newX = currentX,
+              newY = currentY;
 
-            if (event.key === 'ArrowLeft') {
+            if (event.key === 'ArrowLeft')
               newX -= step;
-            } else if (event.key === 'ArrowRight') {
+            else if (event.key === 'ArrowRight')
               newX += step;
-            } else if (event.key === 'ArrowUp') {
+            else if (event.key === 'ArrowUp')
               newY -= step;
-            } else if (event.key === 'ArrowDown') {
+            else if (event.key === 'ArrowDown')
               newY += step;
-            }
 
             newX = Math.round(Math.max(0, Math.min(400, newX)));
             newY = Math.round(Math.max(0, Math.min(400, newY)));
@@ -1642,11 +1869,12 @@ function rebuildCanvasSvgInteractionHandles(coordinatesMatrix: ComputedCoordinat
   }
 
   // Restore keyboard focus context securely
-  if (activeElementId) {
+  if (activeElementId)
+  {
     const elementToFocus = document.getElementById(activeElementId);
-    if (elementToFocus) {
+
+    if (elementToFocus)
       elementToFocus.focus();
-    }
   }
 }
 
@@ -1658,58 +1886,67 @@ function initializeHandleDragSequence(
   captureTargetG: SVGElement,
   onMoveUpdateCallback: (logicalX: number, logicalY: number) => void,
   onDragEndCallback?: () => void
-): void {
+): void
+{
   const paintboard = document.getElementById('paintboard');
-  if (!paintboard) {
+
+  if (!paintboard)
     return;
-  }
 
   // Request native pointer capture to follow coordinates securely outside canvas bounds
-  try {
+  try
+  {
     captureTargetG.setPointerCapture(startPointerEvent.pointerId);
-  } catch (e) {
+  } catch (e)
+  {
     // Ignore if not supported or not allowed in specific containment
   }
 
-  const pointerMoveHandler = (moveEvent: PointerEvent) => {
-    const parentContainerRect = paintboard.getBoundingClientRect();
-    
-    // Add border width to offset calculation if it exists
-    const borderLeft = parseInt(window.getComputedStyle(paintboard).borderLeftWidth) || 0;
-    const borderTop = parseInt(window.getComputedStyle(paintboard).borderTopWidth) || 0;
+  const pointerMoveHandler = (moveEvent: PointerEvent) =>
+  {
+    const
+      parentContainerRect = paintboard.getBoundingClientRect(),
+      // Add border width to offset calculation if it exists
+      borderLeft = parseInt(window.getComputedStyle(paintboard).borderLeftWidth) || 0,
+      borderTop = parseInt(window.getComputedStyle(paintboard).borderTopWidth) || 0;
     
     // Convert physical cursor coordinate into logical coordinate ratios inside drafting boundary
-    const normalizedWidth = paintboard.clientWidth;
-    const normalizedHeight = paintboard.clientHeight;
-    const offsetPaddingX = parentContainerRect.left + borderLeft;
-    const offsetPaddingY = parentContainerRect.top + borderTop;
+    const
+      normalizedWidth = paintboard.clientWidth,
+      normalizedHeight = paintboard.clientHeight,
+      offsetPaddingX = parentContainerRect.left + borderLeft,
+      offsetPaddingY = parentContainerRect.top + borderTop;
 
-    let relativeX = (moveEvent.clientX - offsetPaddingX) / normalizedWidth;
-    let relativeY = (moveEvent.clientY - offsetPaddingY) / normalizedHeight;
+    let
+      relativeX = (moveEvent.clientX - offsetPaddingX) / normalizedWidth,
+      relativeY = (moveEvent.clientY - offsetPaddingY) / normalizedHeight;
 
-    // Safety clamps
-    relativeX = Math.max(-0.05, Math.min(1.05, relativeX));
-    relativeY = Math.max(-0.05, Math.min(1.05, relativeY));
+      // Safety clamps
+      relativeX = Math.max(-0.05, Math.min(1.05, relativeX));
+      relativeY = Math.max(-0.05, Math.min(1.05, relativeY));
 
-    const logicalX = relativeX * 400;
-    const logicalY = relativeY * 400;
+    const
+      logicalX = relativeX * 400,
+      logicalY = relativeY * 400;
 
     onMoveUpdateCallback(logicalX, logicalY);
   };
 
-  const pointerUpHandler = (releaseEvent: PointerEvent) => {
-    try {
+  const pointerUpHandler = (releaseEvent: PointerEvent) =>
+  {
+    try
+    {
       captureTargetG.releasePointerCapture(releaseEvent.pointerId);
-    } catch (e) {
+    } catch (e)
+    {
       // Ignore
     }
     window.removeEventListener('pointermove', pointerMoveHandler);
     window.removeEventListener('pointerup', pointerUpHandler);
     window.removeEventListener('pointercancel', pointerUpHandler);
     
-    if (onDragEndCallback) {
+    if (onDragEndCallback)
       onDragEndCallback();
-    }
   };
 
   window.addEventListener('pointermove', pointerMoveHandler);
@@ -1727,15 +1964,22 @@ function applyDragShiftToAnchor(
   previousAnchor: Coordinate,
   logicalX: number,
   logicalY: number
-): void {
-  const horizontalOffsetReference = command.type === 'from' || (command as any).syntaxModifier === 'to' ? 0 : previousAnchor.xCoordinate;
-  const verticalOffsetReference = command.type === 'from' || (command as any).syntaxModifier === 'to' ? 0 : previousAnchor.yCoordinate;
+): void
+{
+  const
+    horizontalOffsetReference = command.type === 'from' || (command as any).syntaxModifier === 'to'
+      ? 0
+      : previousAnchor.xCoordinate,
+    verticalOffsetReference = command.type === 'from' || (command as any).syntaxModifier === 'to'
+      ? 0
+      : previousAnchor.yCoordinate,
+  targetLogicalX = logicalX - horizontalOffsetReference,
+  targetLogicalY = logicalY - verticalOffsetReference;
 
-  const targetLogicalX = logicalX - horizontalOffsetReference;
-  const targetLogicalY = logicalY - verticalOffsetReference;
-
-  switch (command.type) {
-    case 'from': {
+  switch (command.type)
+  {
+    case 'from':
+    {
       command.xCoordinate = convertPxToUnit(targetLogicalX, command.horizontalUnit);
       command.yCoordinate = convertPxToUnit(targetLogicalY, command.verticalUnit);
       
@@ -1745,7 +1989,8 @@ function applyDragShiftToAnchor(
       break;
     }
 
-    case 'line': {
+    case 'line':
+    {
       command.xCoordinate = convertPxToUnit(targetLogicalX, command.horizontalUnit);
       command.yCoordinate = convertPxToUnit(targetLogicalY, command.verticalUnit);
       
@@ -1754,21 +1999,24 @@ function applyDragShiftToAnchor(
       break;
     }
 
-    case 'hline': {
+    case 'hline':
+    {
       command.value = convertPxToUnit(targetLogicalX, command.unit);
       
       stablePushCoordinateValueToSidebarInputs(command.identifier, 'value', command.value);
       break;
     }
 
-    case 'vline': {
+    case 'vline':
+    {
       command.value = convertPxToUnit(targetLogicalY, command.unit);
       
       stablePushCoordinateValueToSidebarInputs(command.identifier, 'value', command.value);
       break;
     }
 
-    case 'curve': {
+    case 'curve':
+    {
       command.xCoordinate = convertPxToUnit(targetLogicalX, command.horizontalUnit);
       command.yCoordinate = convertPxToUnit(targetLogicalY, command.verticalUnit);
       
@@ -1777,7 +2025,8 @@ function applyDragShiftToAnchor(
       break;
     }
 
-    case 'arc': {
+    case 'arc':
+    {
       command.xCoordinate = convertPxToUnit(targetLogicalX, command.horizontalUnit);
       command.yCoordinate = convertPxToUnit(targetLogicalY, command.verticalUnit);
       
@@ -1798,19 +2047,25 @@ function applyDragShiftToControlPoint(
   logicalY: number
 ): void {
   // If Curve uses relative 'by', the control points represent vector offsets from curveStartingAnchor
-  const relativeOffsetReferenceX = command.syntaxModifier === 'to' ? 0 : curveStartingAnchor.xCoordinate;
-  const relativeOffsetReferenceY = command.syntaxModifier === 'to' ? 0 : curveStartingAnchor.yCoordinate;
+  const
+    relativeOffsetReferenceX = command.syntaxModifier === 'to'
+      ? 0
+      : curveStartingAnchor.xCoordinate,
+    relativeOffsetReferenceY = command.syntaxModifier === 'to'
+      ? 0
+      : curveStartingAnchor.yCoordinate,
+    targetLogicalX = logicalX - relativeOffsetReferenceX,
+    targetLogicalY = logicalY - relativeOffsetReferenceY;
 
-  const targetLogicalX = logicalX - relativeOffsetReferenceX;
-  const targetLogicalY = logicalY - relativeOffsetReferenceY;
-
-  if (controlPointSelection === 'first') {
+  if (controlPointSelection === 'first')
+  {
     command.firstControlCircle.xCoordinate = convertPxToUnit(targetLogicalX, command.firstControlHorizontalUnit);
     command.firstControlCircle.yCoordinate = convertPxToUnit(targetLogicalY, command.firstControlVerticalUnit);
     
     stablePushCoordinateValueToSidebarInputs(command.identifier, 'firstControlCircle-xCoordinate', command.firstControlCircle.xCoordinate);
     stablePushCoordinateValueToSidebarInputs(command.identifier, 'firstControlCircle-yCoordinate', command.firstControlCircle.yCoordinate);
-  } else {
+  } else
+  {
     command.secondControlCircle.xCoordinate = convertPxToUnit(targetLogicalX, command.secondControlHorizontalUnit);
     command.secondControlCircle.yCoordinate = convertPxToUnit(targetLogicalY, command.secondControlVerticalUnit);
     
@@ -1829,41 +2084,39 @@ function stablePushCoordinateValueToSidebarInputs(
   commandIdentifier: string,
   inputPropertySuffix: string,
   newValue: number
-): void {
-  const targetElementId = `input-${commandIdentifier}-${inputPropertySuffix}`;
-  const inputElement = document.getElementById(targetElementId) as HTMLInputElement | null;
-  if (inputElement) {
+): void
+{
+  const
+    targetElementId = `input-${commandIdentifier}-${inputPropertySuffix}`,
+    inputElement = document.getElementById(targetElementId) as HTMLInputElement | null;
+
+  if (inputElement)
     inputElement.value = newValue.toString();
-  }
 }
 
 // ==========================================
 // Focus and Selection Actions
 // ==========================================
 
-function setFocusedActiveCommand(commandIdentifier: string | null): void {
+function setFocusedActiveCommand(commandIdentifier: string | null): void
+{
   selectedCommandIdentifier = commandIdentifier;
 
   // Visual re-border for card list
   const cards = document.querySelectorAll('.command-item-card');
-  cards.forEach(card => {
-    const elementId = card.getAttribute('data-id');
-    if (elementId === commandIdentifier) {
-      card.classList.add('selected-active');
-    } else {
-      card.classList.remove('selected-active');
-    }
+  cards.forEach(card =>
+  {
+    card.classList.toggle('selected-active', card.getAttribute('data-id') === commandIdentifier);
   });
 
   // Highlight points in SVG overlay
   const anchorGroups = document.querySelectorAll('.anchor-node-g');
-  anchorGroups.forEach(group => {
-    const groupId = group.getAttribute('id');
-    if (groupId === `anchor-handle-${commandIdentifier}`) {
-      group.classList.add('selected-active');
-    } else {
-      group.classList.remove('selected-active');
-    }
+  anchorGroups.forEach(group =>
+  {
+    group.classList.toggle(
+      'selected-active',
+      group.getAttribute('id') === `anchor-handle-${commandIdentifier}`
+    );
   });
 }
 
@@ -1871,36 +2124,46 @@ function setFocusedActiveCommand(commandIdentifier: string | null): void {
 // Sidebar Commands List builder (stable keyboard input)
 // ==========================================
 
-function stableRebuildCommandsSidebarDOM(): void {
+function stableRebuildCommandsSidebarDOM(): void
+{
   const container = document.getElementById('commandsListStack');
-  if (!container) {
+
+  if (!container)
     return;
-  }
 
   container.innerHTML = '';
 
-  for (let index = 0; index < commandsStack.length; index = index + 1) {
-    const command = commandsStack[index];
-    const isFirstCommand = index === 0;
-    const isLastCommand = index === commandsStack.length - 1;
+  for (let index = 0; index < commandsStack.length; index = index + 1)
+  {
+    const
+      command = commandsStack[index],
+      isFirstCommand = index === 0,
+      isLastCommand = index === commandsStack.length - 1
+
     let isSecondToLast = false;
     
-    if (commandsStack.length > 2 && commandsStack[commandsStack.length - 1].type === 'close') {
+    if (commandsStack.length > 2 && commandsStack[commandsStack.length - 1].type === 'close')
       isSecondToLast = index === commandsStack.length - 2;
-    }
 
     const commandCard = document.createElement('div');
-    commandCard.setAttribute('class', `command-item-card${selectedCommandIdentifier === command.identifier ? ' selected-active' : ''}`);
+    commandCard.setAttribute(
+      'class',
+      `command-item-card${selectedCommandIdentifier === command.identifier
+        ? ' selected-active'
+        : ''
+      }`
+    );
     commandCard.setAttribute('data-id', command.identifier);
     commandCard.setAttribute('role', 'listitem');
 
     // Make clicking the card focus it
-    commandCard.addEventListener('click', (event: MouseEvent) => {
+    commandCard.addEventListener('click', (event: MouseEvent) =>
+    {
       // Direct click on input elements should not override input event triggers
       const targetTag = (event.target as HTMLElement).tagName.toLowerCase();
-      if (targetTag !== 'input' && targetTag !== 'select' && targetTag !== 'button') {
+
+      if (targetTag !== 'input' && targetTag !== 'select' && targetTag !== 'button')
         setFocusedActiveCommand(command.identifier);
-      }
     });
 
     // Subheader section with Reorder arrows and delete buttons
@@ -1933,11 +2196,17 @@ function stableRebuildCommandsSidebarDOM(): void {
     const arrowUp = document.createElement('button');
     arrowUp.setAttribute('type', 'button');
     arrowUp.setAttribute('class', 'reorder-arrow-btn');
-    arrowUp.setAttribute('aria-label', currentLanguage === 'en' ? `Move command ${index + 1} up` : `Déplacer la commande ${index + 1} vers le haut`);
+    arrowUp.setAttribute(
+      'aria-label',
+      currentLanguage === 'en'
+        ? `Move command ${index + 1} up`
+        : `Déplacer la commande ${index + 1} vers le haut`
+    );
     arrowUp.innerHTML = '▲';
     // The "from" command at position 0 cannot move. The command at position 1 cannot move above "from".
     arrowUp.disabled = isFirstCommand || index === 1;
-    arrowUp.addEventListener('click', (event: MouseEvent) => {
+    arrowUp.addEventListener('click', (event: MouseEvent) =>
+    {
       event.stopPropagation();
       swapCommandsInStack(index, index - 1);
     });
@@ -1947,11 +2216,17 @@ function stableRebuildCommandsSidebarDOM(): void {
     const arrowDown = document.createElement('button');
     arrowDown.setAttribute('type', 'button');
     arrowDown.setAttribute('class', 'reorder-arrow-btn');
-    arrowDown.setAttribute('aria-label', currentLanguage === 'en' ? `Move command ${index + 1} down` : `Déplacer l'étape ${index + 1} vers le bas`);
+    arrowDown.setAttribute(
+      'aria-label',
+      currentLanguage === 'en'
+        ? `Move command ${index + 1} down`
+        : `Déplacer l'étape ${index + 1} vers le bas`
+    );
     arrowDown.innerHTML = '▼';
     // Cannot move the last element if it is "close" or if it is already the end.
     arrowDown.disabled = isLastCommand || isSecondToLast || (command.type === 'close');
-    arrowDown.addEventListener('click', (event: MouseEvent) => {
+    arrowDown.addEventListener('click', (event: MouseEvent) =>
+    {
       event.stopPropagation();
       swapCommandsInStack(index, index + 1);
     });
@@ -1961,10 +2236,16 @@ function stableRebuildCommandsSidebarDOM(): void {
     const deleteBtn = document.createElement('button');
     deleteBtn.setAttribute('type', 'button');
     deleteBtn.setAttribute('class', 'delete-row-btn');
-    deleteBtn.setAttribute('aria-label', currentLanguage === 'en' ? `Delete command step ${index + 1}` : `Supprimer l'étape de commande ${index + 1}`);
+    deleteBtn.setAttribute(
+      'aria-label',
+      currentLanguage === 'en'
+        ? `Delete command step ${index + 1}`
+        : `Supprimer l'étape de commande ${index + 1}`
+    );
     deleteBtn.innerHTML = '✕';
     deleteBtn.disabled = isFirstCommand;
-    deleteBtn.addEventListener('click', (event: MouseEvent) => {
+    deleteBtn.addEventListener('click', (event: MouseEvent) =>
+    {
       event.stopPropagation();
       removeCommandFromStack(command.identifier);
     });
@@ -1977,159 +2258,351 @@ function stableRebuildCommandsSidebarDOM(): void {
     const inputsColumns = document.createElement('div');
     inputsColumns.setAttribute('class', 'inputs-columns-layout');
 
-    switch (command.type) {
-      case 'from': {
+    switch (command.type)
+    {
+      case 'from':
+      {
         const fromCommandRef = command as FromCommand;
         
         // Horizontal coordinate (X)
-        inputsColumns.appendChild(buildNumericParameterControlCell(fromCommandRef.identifier, 'xCoordinate', 'X (horiz)', fromCommandRef.xCoordinate, (newValue: number) => {
-          fromCommandRef.xCoordinate = newValue;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildNumericParameterControlCell(
+          fromCommandRef.identifier,
+          'xCoordinate',
+          'X (horiz)',
+          fromCommandRef.xCoordinate,
+          (newValue: number) =>
+          {
+            fromCommandRef.xCoordinate = newValue;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
         
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(fromCommandRef.identifier, 'horizontalUnit', currentLanguage === 'en' ? 'X Unit' : 'Unité X', fromCommandRef.horizontalUnit, (newUnit: Unit) => {
-          fromCommandRef.horizontalUnit = newUnit;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(
+          fromCommandRef.identifier,
+          'horizontalUnit',
+          currentLanguage === 'en'
+            ? 'X Unit'
+            : 'Unité X',
+          fromCommandRef.horizontalUnit, (newUnit: Unit) =>
+          {
+            fromCommandRef.horizontalUnit = newUnit;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
         // Vertical coordinate (Y)
-        inputsColumns.appendChild(buildNumericParameterControlCell(fromCommandRef.identifier, 'yCoordinate', 'Y (vrt)', fromCommandRef.yCoordinate, (newValue: number) => {
-          fromCommandRef.yCoordinate = newValue;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildNumericParameterControlCell(
+          fromCommandRef.identifier,
+          'yCoordinate',
+          'Y (vrt)',
+          fromCommandRef.yCoordinate, (newValue: number) =>
+          {
+            fromCommandRef.yCoordinate = newValue;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(fromCommandRef.identifier, 'verticalUnit', currentLanguage === 'en' ? 'Y Unit' : 'Unité Y', fromCommandRef.verticalUnit, (newUnit: Unit) => {
-          fromCommandRef.verticalUnit = newUnit;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(
+          fromCommandRef.identifier,
+          'verticalUnit',
+          currentLanguage === 'en'
+            ? 'Y Unit'
+            : 'Unité Y',
+          fromCommandRef.verticalUnit, (newUnit: Unit) =>
+          {
+            fromCommandRef.verticalUnit = newUnit;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
         break;
       }
 
-      case 'line': {
+      case 'line':
+      {
         const lineCommandRef = command as LineCommand;
 
         // Modifier [to | by] dropdown
-        inputsColumns.appendChild(buildSyntaxModifierDropdownCell(lineCommandRef.identifier, 'syntaxModifier', 'Mode', lineCommandRef.syntaxModifier, (newModifier: 'to' | 'by') => {
-          lineCommandRef.syntaxModifier = newModifier;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildSyntaxModifierDropdownCell(
+          lineCommandRef.identifier,
+          'syntaxModifier',
+          'Mode',
+          lineCommandRef.syntaxModifier,
+          (newModifier: 'to' | 'by') =>
+          {
+            lineCommandRef.syntaxModifier = newModifier;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
         // Horizontal coordinate (X)
-        inputsColumns.appendChild(buildNumericParameterControlCell(lineCommandRef.identifier, 'xCoordinate', 'X', lineCommandRef.xCoordinate, (newValue: number) => {
-          lineCommandRef.xCoordinate = newValue;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildNumericParameterControlCell(
+          lineCommandRef.identifier,
+          'xCoordinate',
+          'X',
+          lineCommandRef.xCoordinate,
+          (newValue: number) =>
+          {
+            lineCommandRef.xCoordinate = newValue;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(lineCommandRef.identifier, 'horizontalUnit', currentLanguage === 'en' ? 'X Unit' : 'Unité X', lineCommandRef.horizontalUnit, (newUnit: Unit) => {
-          lineCommandRef.horizontalUnit = newUnit;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(
+          lineCommandRef.identifier,
+          'horizontalUnit',
+          currentLanguage === 'en'
+            ? 'X Unit'
+            : 'Unité X',
+          lineCommandRef.horizontalUnit, (newUnit: Unit) =>
+          {
+            lineCommandRef.horizontalUnit = newUnit;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
         // Vertical coordinate (Y)
-        inputsColumns.appendChild(buildNumericParameterControlCell(lineCommandRef.identifier, 'yCoordinate', 'Y', lineCommandRef.yCoordinate, (newValue: number) => {
-          lineCommandRef.yCoordinate = newValue;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildNumericParameterControlCell(
+          lineCommandRef.identifier,
+          'yCoordinate',
+          'Y',
+          lineCommandRef.yCoordinate, (newValue: number) =>
+          {
+            lineCommandRef.yCoordinate = newValue;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(lineCommandRef.identifier, 'verticalUnit', currentLanguage === 'en' ? 'Y Unit' : 'Unité Y', lineCommandRef.verticalUnit, (newUnit: Unit) => {
-          lineCommandRef.verticalUnit = newUnit;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(
+          lineCommandRef.identifier,
+          'verticalUnit',
+          currentLanguage === 'en'
+            ? 'Y Unit' :
+            'Unité Y',
+          lineCommandRef.verticalUnit, (newUnit: Unit) =>
+          {
+            lineCommandRef.verticalUnit = newUnit;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
         break;
       }
 
-      case 'hline': {
+      case 'hline':
+      {
         const hlineCommandRef = command as HorizontalLineCommand;
 
         // Modifier [to | by] dropdown
-        inputsColumns.appendChild(buildSyntaxModifierDropdownCell(hlineCommandRef.identifier, 'syntaxModifier', 'Mode', hlineCommandRef.syntaxModifier, (newModifier: 'to' | 'by') => {
-          hlineCommandRef.syntaxModifier = newModifier;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildSyntaxModifierDropdownCell(
+          hlineCommandRef.identifier,
+          'syntaxModifier',
+          'Mode',
+          hlineCommandRef.syntaxModifier,
+          (newModifier: 'to' | 'by') =>
+          {
+            hlineCommandRef.syntaxModifier = newModifier;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
-        inputsColumns.appendChild(buildNumericParameterControlCell(hlineCommandRef.identifier, 'value', currentLanguage === 'en' ? 'Value' : 'Valeur', hlineCommandRef.value, (newValue: number) => {
-          hlineCommandRef.value = newValue;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildNumericParameterControlCell(
+          hlineCommandRef.identifier,
+          'value',
+          currentLanguage === 'en'
+            ? 'Value' :
+            'Valeur',
+          hlineCommandRef.value, (newValue: number) =>
+          {
+            hlineCommandRef.value = newValue;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(hlineCommandRef.identifier, 'unit', currentLanguage === 'en' ? 'Unit' : 'Unité', hlineCommandRef.unit, (newUnit: Unit) => {
-          hlineCommandRef.unit = newUnit;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(
+          hlineCommandRef.identifier,
+          'unit',
+          currentLanguage === 'en'
+            ? 'Unit'
+            : 'Unité',
+          hlineCommandRef.unit, (newUnit: Unit) =>
+          {
+            hlineCommandRef.unit = newUnit;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
         break;
       }
 
-      case 'vline': {
+      case 'vline':
+      {
         const vlineCommandRef = command as VerticalLineCommand;
 
         // Modifier [to | by] dropdown
-        inputsColumns.appendChild(buildSyntaxModifierDropdownCell(vlineCommandRef.identifier, 'syntaxModifier', 'Mode', vlineCommandRef.syntaxModifier, (newModifier: 'to' | 'by') => {
-          vlineCommandRef.syntaxModifier = newModifier;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildSyntaxModifierDropdownCell(
+          vlineCommandRef.identifier,
+          'syntaxModifier',
+          'Mode',
+          vlineCommandRef.syntaxModifier,
+          (newModifier: 'to' | 'by') =>
+          {
+            vlineCommandRef.syntaxModifier = newModifier;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
-        inputsColumns.appendChild(buildNumericParameterControlCell(vlineCommandRef.identifier, 'value', currentLanguage === 'en' ? 'Value' : 'Valeur', vlineCommandRef.value, (newValue: number) => {
-          vlineCommandRef.value = newValue;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildNumericParameterControlCell(
+          vlineCommandRef.identifier,
+          'value',
+          currentLanguage === 'en'
+            ? 'Value'
+            : 'Valeur',
+          vlineCommandRef.value, (newValue: number) =>
+          {
+            vlineCommandRef.value = newValue;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(vlineCommandRef.identifier, 'unit', currentLanguage === 'en' ? 'Unit' : 'Unité', vlineCommandRef.unit, (newUnit: Unit) => {
-          vlineCommandRef.unit = newUnit;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(
+          vlineCommandRef.identifier,
+          'unit',
+          currentLanguage === 'en'
+            ? 'Unit' :
+            'Unité',
+          vlineCommandRef.unit,
+          (newUnit: Unit) =>
+          {
+            vlineCommandRef.unit = newUnit;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
         break;
       }
 
-      case 'curve': {
+      case 'curve':
+      {
         const curveCommandRef = command as CurveCommand;
 
         // Modifier [to | by] dropdown
-        inputsColumns.appendChild(buildSyntaxModifierDropdownCell(curveCommandRef.identifier, 'syntaxModifier', 'Mode', curveCommandRef.syntaxModifier, (newModifier: 'to' | 'by') => {
-          curveCommandRef.syntaxModifier = newModifier;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildSyntaxModifierDropdownCell(
+          curveCommandRef.identifier,
+          'syntaxModifier',
+          'Mode',
+          curveCommandRef.syntaxModifier,
+          (newModifier: 'to' | 'by') =>
+          {
+            curveCommandRef.syntaxModifier = newModifier;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
         // EndPoint Coordinates
-        inputsColumns.appendChild(buildNumericParameterControlCell(curveCommandRef.identifier, 'xCoordinate', currentLanguage === 'en' ? 'End X' : 'Fin X', curveCommandRef.xCoordinate, (newValue: number) => {
-          curveCommandRef.xCoordinate = newValue;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildNumericParameterControlCell(
+          curveCommandRef.identifier,
+          'xCoordinate',
+          currentLanguage === 'en'
+            ? 'End X'
+            : 'Fin X',
+          curveCommandRef.xCoordinate,
+          (newValue: number) =>
+          {
+            curveCommandRef.xCoordinate = newValue;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(curveCommandRef.identifier, 'horizontalUnit', currentLanguage === 'en' ? 'End X Unit' : 'Unité Fin X', curveCommandRef.horizontalUnit, (newUnit: Unit) => {
-          curveCommandRef.horizontalUnit = newUnit;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(
+          curveCommandRef.identifier,
+          'horizontalUnit',
+          currentLanguage === 'en'
+            ? 'End X Unit'
+            : 'Unité Fin X',
+          curveCommandRef.horizontalUnit, (newUnit: Unit) =>
+          {
+            curveCommandRef.horizontalUnit = newUnit;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
-        inputsColumns.appendChild(buildNumericParameterControlCell(curveCommandRef.identifier, 'yCoordinate', currentLanguage === 'en' ? 'End Y' : 'Fin Y', curveCommandRef.yCoordinate, (newValue: number) => {
-          curveCommandRef.yCoordinate = newValue;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildNumericParameterControlCell(
+          curveCommandRef.identifier,
+          'yCoordinate',
+          currentLanguage === 'en'
+            ? 'End Y'
+            : 'Fin Y',
+          curveCommandRef.yCoordinate,
+          (newValue: number) =>
+          {
+            curveCommandRef.yCoordinate = newValue;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(curveCommandRef.identifier, 'verticalUnit', currentLanguage === 'en' ? 'End Y Unit' : 'Unité Fin Y', curveCommandRef.verticalUnit, (newUnit: Unit) => {
-          curveCommandRef.verticalUnit = newUnit;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(
+          curveCommandRef.identifier,
+          'verticalUnit',
+          currentLanguage === 'en'
+            ? 'End Y Unit'
+            : 'Unité Fin Y',
+          curveCommandRef.verticalUnit,
+          (newUnit: Unit) =>
+          {
+            curveCommandRef.verticalUnit = newUnit;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
         // Ctrl 1 Coordinates
-        inputsColumns.appendChild(buildNumericParameterControlCell(curveCommandRef.identifier, 'firstControlCircle-xCoordinate', 'Ctrl1 X', curveCommandRef.firstControlCircle.xCoordinate, (newValue: number) => {
-          curveCommandRef.firstControlCircle.xCoordinate = newValue;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildNumericParameterControlCell(
+          curveCommandRef.identifier,
+          'firstControlCircle-xCoordinate',
+          'Ctrl1 X',
+          curveCommandRef.firstControlCircle.xCoordinate,
+          (newValue: number) =>
+          {
+            curveCommandRef.firstControlCircle.xCoordinate = newValue;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(curveCommandRef.identifier, 'firstControlHorizontalUnit', currentLanguage === 'en' ? 'Ctrl1 X Unit' : 'Unité Ctrl1 X', curveCommandRef.firstControlHorizontalUnit, (newUnit: Unit) => {
-          curveCommandRef.firstControlHorizontalUnit = newUnit;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(
+          curveCommandRef.identifier,
+          'firstControlHorizontalUnit',
+          currentLanguage === 'en'
+            ? 'Ctrl1 X Unit'
+            : 'Unité Ctrl1 X',
+          curveCommandRef.firstControlHorizontalUnit,
+          (newUnit: Unit) =>
+          {
+            curveCommandRef.firstControlHorizontalUnit = newUnit;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
-        inputsColumns.appendChild(buildNumericParameterControlCell(curveCommandRef.identifier, 'firstControlCircle-yCoordinate', 'Ctrl1 Y', curveCommandRef.firstControlCircle.yCoordinate, (newValue: number) => {
-          curveCommandRef.firstControlCircle.yCoordinate = newValue;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildNumericParameterControlCell(
+          curveCommandRef.identifier,
+          'firstControlCircle-yCoordinate',
+          'Ctrl1 Y',
+          curveCommandRef.firstControlCircle.yCoordinate,
+          (newValue: number) =>
+          {
+            curveCommandRef.firstControlCircle.yCoordinate = newValue;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(curveCommandRef.identifier, 'firstControlVerticalUnit', currentLanguage === 'en' ? 'Ctrl1 Y Unit' : 'Unité Ctrl1 Y', curveCommandRef.firstControlVerticalUnit, (newUnit: Unit) => {
-          curveCommandRef.firstControlVerticalUnit = newUnit;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(
+          curveCommandRef.identifier,
+          'firstControlVerticalUnit',
+          currentLanguage === 'en'
+            ? 'Ctrl1 Y Unit'
+            : 'Unité Ctrl1 Y',
+          curveCommandRef.firstControlVerticalUnit,
+          (newUnit: Unit) =>
+          {
+            curveCommandRef.firstControlVerticalUnit = newUnit;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
         // Option to Toggle Cubic (Ctrl 2) structure
         const controlToggleCell = document.createElement('div');
@@ -2141,7 +2614,12 @@ function stableRebuildCommandsSidebarDOM(): void {
 
         const ctrlSelect = document.createElement('select');
         ctrlSelect.setAttribute('class', 'action-select-dropdown');
-        ctrlSelect.setAttribute('aria-label', currentLanguage === 'en' ? `Curve type for step ${index + 1}` : `Type de courbe pour l'étape ${index + 1}`);
+        ctrlSelect.setAttribute(
+          'aria-label',
+          currentLanguage === 'en'
+            ? `Curve type for step ${index + 1}`
+            : `Type de courbe pour l'étape ${index + 1}`
+        );
 
         const quadraticOption = document.createElement('option');
         quadraticOption.value = 'quadratic';
@@ -2159,95 +2637,208 @@ function stableRebuildCommandsSidebarDOM(): void {
         controlToggleCell.appendChild(ctrlSelect);
         inputsColumns.appendChild(controlToggleCell);
 
-        ctrlSelect.addEventListener('change', () => {
+        ctrlSelect.addEventListener('change', () =>
+        {
           const isSelectedCubic = ctrlSelect.value === 'cubic';
           curveCommandRef.hasSecondControlCircle = isSelectedCubic;
-          if (isSelectedCubic && curveCommandRef.secondControlCircle.xCoordinate === 0 && curveCommandRef.secondControlCircle.yCoordinate === 0) {
+
+          if (isSelectedCubic
+            && curveCommandRef.secondControlCircle.xCoordinate === 0
+            && curveCommandRef.secondControlCircle.yCoordinate === 0)
+          {
             // Place it with default safe coordinates near end point
             curveCommandRef.secondControlCircle.xCoordinate = Math.round(curveCommandRef.xCoordinate * 0.8);
             curveCommandRef.secondControlCircle.yCoordinate = Math.round(curveCommandRef.yCoordinate * 0.8);
             curveCommandRef.secondControlHorizontalUnit = curveCommandRef.horizontalUnit;
             curveCommandRef.secondControlVerticalUnit = curveCommandRef.verticalUnit;
           }
+
           stableRebuildCommandsSidebarDOM();
           updateVisualClippedLayoutAndCanvas();
         });
 
         // Show Ctrl 2 fields if Cubic active
-        if (curveCommandRef.hasSecondControlCircle) {
-          inputsColumns.appendChild(buildNumericParameterControlCell(curveCommandRef.identifier, 'secondControlCircle-xCoordinate', 'Ctrl2 X', curveCommandRef.secondControlCircle.xCoordinate, (newValue: number) => {
-            curveCommandRef.secondControlCircle.xCoordinate = newValue;
-            updateVisualClippedLayoutAndCanvas();
-          }));
+        if (curveCommandRef.hasSecondControlCircle)
+        {
+          inputsColumns.appendChild(buildNumericParameterControlCell(
+            curveCommandRef.identifier,
+            'secondControlCircle-xCoordinate',
+            'Ctrl2 X',
+            curveCommandRef.secondControlCircle.xCoordinate, (newValue: number) =>
+            {
+              curveCommandRef.secondControlCircle.xCoordinate = newValue;
+              updateVisualClippedLayoutAndCanvas();
+            }
+          ));
 
-          inputsColumns.appendChild(buildDropdownUnitParameterCell(curveCommandRef.identifier, 'secondControlHorizontalUnit', currentLanguage === 'en' ? 'Ctrl2 X Unit' : 'Unité Ctrl2 X', curveCommandRef.secondControlHorizontalUnit, (newUnit: Unit) => {
-            curveCommandRef.secondControlHorizontalUnit = newUnit;
-            updateVisualClippedLayoutAndCanvas();
-          }));
+          inputsColumns.appendChild(buildDropdownUnitParameterCell(
+            curveCommandRef.identifier,
+            'secondControlHorizontalUnit',
+            currentLanguage === 'en'
+              ? 'Ctrl2 X Unit'
+              : 'Unité Ctrl2 X',
+            curveCommandRef.secondControlHorizontalUnit,
+            (newUnit: Unit) =>
+            {
+              curveCommandRef.secondControlHorizontalUnit = newUnit;
+              updateVisualClippedLayoutAndCanvas();
+            }
+          ));
 
-          inputsColumns.appendChild(buildNumericParameterControlCell(curveCommandRef.identifier, 'secondControlCircle-yCoordinate', 'Ctrl2 Y', curveCommandRef.secondControlCircle.yCoordinate, (newValue: number) => {
-            curveCommandRef.secondControlCircle.yCoordinate = newValue;
-            updateVisualClippedLayoutAndCanvas();
-          }));
+          inputsColumns.appendChild(buildNumericParameterControlCell(
+            curveCommandRef.identifier,
+            'secondControlCircle-yCoordinate',
+            'Ctrl2 Y',
+            curveCommandRef.secondControlCircle.yCoordinate,
+            (newValue: number) =>
+            {
+              curveCommandRef.secondControlCircle.yCoordinate = newValue;
+              updateVisualClippedLayoutAndCanvas();
+            }
+          ));
 
-          inputsColumns.appendChild(buildDropdownUnitParameterCell(curveCommandRef.identifier, 'secondControlVerticalUnit', currentLanguage === 'en' ? 'Ctrl2 Y Unit' : 'Unité Ctrl2 Y', curveCommandRef.secondControlVerticalUnit, (newUnit: Unit) => {
-            curveCommandRef.secondControlVerticalUnit = newUnit;
-            updateVisualClippedLayoutAndCanvas();
-          }));
+          inputsColumns.appendChild(buildDropdownUnitParameterCell(
+            curveCommandRef.identifier,
+            'secondControlVerticalUnit',
+            currentLanguage === 'en'
+              ? 'Ctrl2 Y Unit'
+              : 'Unité Ctrl2 Y',
+            curveCommandRef.secondControlVerticalUnit,
+            (newUnit: Unit) =>
+            {
+              curveCommandRef.secondControlVerticalUnit = newUnit;
+              updateVisualClippedLayoutAndCanvas();
+            }
+          ));
         }
         break;
       }
 
-      case 'arc': {
+      case 'arc':
+      {
         const arcCommandRef = command as ArcCommand;
 
         // Modifier [to | by] dropdown
-        inputsColumns.appendChild(buildSyntaxModifierDropdownCell(arcCommandRef.identifier, 'syntaxModifier', 'Mode', arcCommandRef.syntaxModifier, (newModifier: 'to' | 'by') => {
-          arcCommandRef.syntaxModifier = newModifier;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildSyntaxModifierDropdownCell(
+          arcCommandRef.identifier,
+          'syntaxModifier',
+          'Mode',
+          arcCommandRef.syntaxModifier,
+          (newModifier: 'to' | 'by') =>
+          {
+            arcCommandRef.syntaxModifier = newModifier;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
         // End point position coordinates
-        inputsColumns.appendChild(buildNumericParameterControlCell(arcCommandRef.identifier, 'xCoordinate', currentLanguage === 'en' ? 'Anchor X' : 'Ancre X', arcCommandRef.xCoordinate, (newValue: number) => {
-          arcCommandRef.xCoordinate = newValue;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildNumericParameterControlCell(
+          arcCommandRef.identifier,
+          'xCoordinate',
+          currentLanguage === 'en'
+            ? 'Anchor X'
+            : 'Ancre X',
+          arcCommandRef.xCoordinate,
+          (newValue: number) =>
+          {
+            arcCommandRef.xCoordinate = newValue;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(arcCommandRef.identifier, 'horizontalUnit', currentLanguage === 'en' ? 'X Unit' : 'Unité X', arcCommandRef.horizontalUnit, (newUnit: Unit) => {
-          arcCommandRef.horizontalUnit = newUnit;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(
+          arcCommandRef.identifier,
+          'horizontalUnit',
+          currentLanguage === 'en'
+            ? 'X Unit'
+            : 'Unité X',
+          arcCommandRef.horizontalUnit, (newUnit: Unit) =>
+          {
+            arcCommandRef.horizontalUnit = newUnit;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
-        inputsColumns.appendChild(buildNumericParameterControlCell(arcCommandRef.identifier, 'yCoordinate', currentLanguage === 'en' ? 'Anchor Y' : 'Ancre Y', arcCommandRef.yCoordinate, (newValue: number) => {
-          arcCommandRef.yCoordinate = newValue;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildNumericParameterControlCell(
+          arcCommandRef.identifier,
+          'yCoordinate',
+          currentLanguage === 'en'
+            ? 'Anchor Y'
+            : 'Ancre Y',
+          arcCommandRef.yCoordinate,
+          (newValue: number) =>
+          {
+            arcCommandRef.yCoordinate = newValue;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(arcCommandRef.identifier, 'verticalUnit', currentLanguage === 'en' ? 'Y Unit' : 'Unité Y', arcCommandRef.verticalUnit, (newUnit: Unit) => {
-          arcCommandRef.verticalUnit = newUnit;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(
+          arcCommandRef.identifier,
+          'verticalUnit',
+          currentLanguage === 'en'
+            ? 'Y Unit'
+            : 'Unité Y',
+          arcCommandRef.verticalUnit, (newUnit: Unit) =>
+          {
+            arcCommandRef.verticalUnit = newUnit;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
         // Radii definitions (RX, RY)
-        inputsColumns.appendChild(buildNumericParameterControlCell(arcCommandRef.identifier, 'radiusX', currentLanguage === 'en' ? 'Radius X' : 'Rayon DX', arcCommandRef.radiusX, (newValue: number) => {
-          arcCommandRef.radiusX = newValue;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildNumericParameterControlCell(
+          arcCommandRef.identifier,
+          'radiusX',
+          currentLanguage === 'en'
+            ? 'Radius X'
+            : 'Rayon DX',
+          arcCommandRef.radiusX,
+          (newValue: number) =>
+          {
+            arcCommandRef.radiusX = newValue;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(arcCommandRef.identifier, 'radiusXUnit', currentLanguage === 'en' ? 'Radius X Unit' : 'Unité Rayon X', arcCommandRef.radiusXUnit, (newUnit: Unit) => {
-          arcCommandRef.radiusXUnit = newUnit;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(
+          arcCommandRef.identifier,
+          'radiusXUnit',
+          currentLanguage === 'en'
+            ? 'Radius X Unit'
+            : 'Unité Rayon X',
+          arcCommandRef.radiusXUnit, (newUnit: Unit) =>
+          {
+            arcCommandRef.radiusXUnit = newUnit;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
-        inputsColumns.appendChild(buildNumericParameterControlCell(arcCommandRef.identifier, 'radiusY', currentLanguage === 'en' ? 'Radius Y' : 'Rayon DY', arcCommandRef.radiusY, (newValue: number) => {
-          arcCommandRef.radiusY = newValue;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildNumericParameterControlCell(
+          arcCommandRef.identifier,
+          'radiusY',
+          currentLanguage === 'en'
+            ? 'Radius Y'
+            : 'Rayon DY',
+          arcCommandRef.radiusY, (newValue: number) =>
+          {
+            arcCommandRef.radiusY = newValue;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(arcCommandRef.identifier, 'radiusYUnit', currentLanguage === 'en' ? 'Radius Y Unit' : 'Unité Rayon Y', arcCommandRef.radiusYUnit, (newUnit: Unit) => {
-          arcCommandRef.radiusYUnit = newUnit;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(
+          arcCommandRef.identifier,
+          'radiusYUnit',
+          currentLanguage === 'en'
+            ? 'Radius Y Unit'
+            : 'Unité Rayon Y',
+          arcCommandRef.radiusYUnit, (newUnit: Unit) =>
+          {
+            arcCommandRef.radiusYUnit = newUnit;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
 
         // Sweep options (large/small, cw/ccw, rot)
         const sizeCell = document.createElement('div');
@@ -2259,7 +2850,11 @@ function stableRebuildCommandsSidebarDOM(): void {
 
         const sizeSelect = document.createElement('select');
         sizeSelect.setAttribute('class', 'action-select-dropdown');
-        sizeSelect.setAttribute('aria-label', currentLanguage === 'en' ? `Ellipse size of the arc for step ${index + 1}` : `Taille de l'ellipse de l'arc de l'étape ${index + 1}`);
+        sizeSelect.setAttribute(
+          'aria-label',
+          currentLanguage === 'en'
+            ? `Ellipse size of the arc for step ${index + 1}`
+            : `Taille de l'ellipse de l'arc de l'étape ${index + 1}`);
 
         const smallOption = document.createElement('option');
         smallOption.value = 'small';
@@ -2277,7 +2872,8 @@ function stableRebuildCommandsSidebarDOM(): void {
         sizeCell.appendChild(sizeSelect);
         inputsColumns.appendChild(sizeCell);
 
-        sizeSelect.addEventListener('change', () => {
+        sizeSelect.addEventListener('change', () =>
+        {
           arcCommandRef.arcSize = sizeSelect.value as 'small' | 'large';
           updateVisualClippedLayoutAndCanvas();
         });
@@ -2291,7 +2887,12 @@ function stableRebuildCommandsSidebarDOM(): void {
 
         const dirSelect = document.createElement('select');
         dirSelect.setAttribute('class', 'action-select-dropdown');
-        dirSelect.setAttribute('aria-label', currentLanguage === 'en' ? `Rotation direction of the arc for step ${index + 1}` : `Sens de rotation de l'arc de l'étape ${index + 1}`);
+        dirSelect.setAttribute(
+          'aria-label',
+          currentLanguage === 'en'
+            ? `Rotation direction of the arc for step ${index + 1}`
+            : `Sens de rotation de l'arc de l'étape ${index + 1}`
+        );
 
         const cwOption = document.createElement('option');
         cwOption.value = 'cw';
@@ -2309,20 +2910,29 @@ function stableRebuildCommandsSidebarDOM(): void {
         directionCell.appendChild(dirSelect);
         inputsColumns.appendChild(directionCell);
 
-        dirSelect.addEventListener('change', () => {
+        dirSelect.addEventListener('change', () =>
+        {
           arcCommandRef.sweepDirection = dirSelect.value as 'cw' | 'ccw';
           updateVisualClippedLayoutAndCanvas();
         });
 
         // Rotation degrees
-        inputsColumns.appendChild(buildNumericParameterControlCell(arcCommandRef.identifier, 'rotationAngle', 'Rotation (deg)', arcCommandRef.rotationAngle, (newValue: number) => {
-          arcCommandRef.rotationAngle = newValue;
-          updateVisualClippedLayoutAndCanvas();
-        }));
+        inputsColumns.appendChild(buildNumericParameterControlCell(
+          arcCommandRef.identifier,
+          'rotationAngle',
+          'Rotation (deg)',
+          arcCommandRef.rotationAngle,
+          (newValue: number) =>
+          {
+            arcCommandRef.rotationAngle = newValue;
+            updateVisualClippedLayoutAndCanvas();
+          }
+        ));
         break;
       }
 
-      case 'close': {
+      case 'close':
+      {
         const closePrompt = document.createElement('p');
         closePrompt.setAttribute('class', 'close-command-meta-prompt');
         closePrompt.textContent = currentLanguage === 'en'
@@ -2345,7 +2955,8 @@ function buildNumericParameterControlCell(
   captionTitle: string,
   currentValue: number,
   onInputValueUpdate: (value: number) => void
-): HTMLDivElement {
+): HTMLDivElement
+{
   const containerCell = document.createElement('div');
   containerCell.setAttribute('class', 'field-parameters-cell');
 
@@ -2361,16 +2972,19 @@ function buildNumericParameterControlCell(
   numericInput.setAttribute('step', '1');
   numericInput.setAttribute('aria-label', `${captionTitle} de la commande`);
 
-  numericInput.addEventListener('input', () => {
+  numericInput.addEventListener('input', () =>
+  {
     let resultingNumber = parseFloat(numericInput.value);
-    if (isNaN(resultingNumber)) {
+
+    if (isNaN(resultingNumber))
       resultingNumber = 0;
-    }
+
     onInputValueUpdate(resultingNumber);
   });
 
   containerCell.appendChild(caption);
   containerCell.appendChild(numericInput);
+
   return containerCell;
 }
 
@@ -2380,7 +2994,8 @@ function buildDropdownUnitParameterCell(
   captionTitle: string,
   currentUnit: Unit,
   onUnitValueUpdate: (unit: Unit) => void
-): HTMLDivElement {
+): HTMLDivElement
+{
   const containerCell = document.createElement('div');
   containerCell.setAttribute('class', 'field-parameters-cell');
 
@@ -2390,7 +3005,7 @@ function buildDropdownUnitParameterCell(
 
   const unitSelector = document.createElement('select');
   unitSelector.setAttribute('class', 'unit-dropdown-selector');
-  unitSelector.setAttribute('aria-label', `${captionTitle} de la coordonnee`);
+  unitSelector.setAttribute('aria-label', `${captionTitle} de la coordonnée`);
 
   const pxOption = document.createElement('option');
   pxOption.setAttribute('value', 'px');
@@ -2413,7 +3028,8 @@ function buildDropdownUnitParameterCell(
   containerCell.appendChild(caption);
   containerCell.appendChild(unitSelector);
 
-  unitSelector.addEventListener('change', () => {
+  unitSelector.addEventListener('change', () =>
+  {
     onUnitValueUpdate(unitSelector.value as Unit);
   });
 
@@ -2426,7 +3042,8 @@ function buildSyntaxModifierDropdownCell(
   captionTitle: string,
   currentModifier: 'to' | 'by',
   onModifierUpdate: (modifier: 'to' | 'by') => void
-): HTMLDivElement {
+): HTMLDivElement
+{
   const containerCell = document.createElement('div');
   containerCell.setAttribute('class', 'field-toggle-cell');
 
@@ -2453,7 +3070,8 @@ function buildSyntaxModifierDropdownCell(
   containerCell.appendChild(caption);
   containerCell.appendChild(modifierSelect);
 
-  modifierSelect.addEventListener('change', () => {
+  modifierSelect.addEventListener('change', () =>
+  {
     onModifierUpdate(modifierSelect.value as 'to' | 'by');
   });
 
@@ -2464,7 +3082,8 @@ function buildSyntaxModifierDropdownCell(
 // Operational Command Action Handlers
 // ==========================================
 
-function loadSelectedPresetTemplate(preset: ShapePreset): void {
+function loadSelectedPresetTemplate(preset: ShapePreset): void
+{
   commandsStack = deepDuplicateStack(preset.commands);
   selectedCommandIdentifier = commandsStack[0].identifier;
   
@@ -2478,13 +3097,17 @@ function loadSelectedPresetTemplate(preset: ShapePreset): void {
   renderPresetButtonCardsList();
 
   const presetName = presetLocalizations[currentLanguage][shapePresets.indexOf(preset)]?.name || preset.name;
-  announceToScreenReader(currentLanguage === 'en' ? `Preset loaded: ${presetName}` : `Préréglage chargé : ${presetName}`);
+  announceToScreenReader(currentLanguage === 'en'
+    ? `Preset loaded: ${presetName}`
+    : `Préréglage chargé : ${presetName}`
+  );
 
   // Auto-expand commands card on preset loading
   toggleCollapsibleSection('commandsCard', 'expand');
 }
 
-function createAndAppendCommandBlock(type: CommandType): void {
+function createAndAppendCommandBlock(type: CommandType): void
+{
   const newIdentifier = `cmd-user-${Date.now()}`;
   let newCommand: ShapeCommand;
 
@@ -2493,32 +3116,49 @@ function createAndAppendCommandBlock(type: CommandType): void {
 
   // Find index of currently selected command
   let insertIndex = -1;
-  if (selectedCommandIdentifier) {
+
+  if (selectedCommandIdentifier)
     insertIndex = commandsStack.findIndex((cmd: ShapeCommand) => cmd.identifier === selectedCommandIdentifier);
-  }
 
   // Derive logical coordinates based on the preceding point coordinates at output
   const matrix = computeWholeCoordinatesMatrix(commandsStack);
   
   let previousPoint: Coordinate;
-  if (insertIndex !== -1 && insertIndex < matrix.length) {
-    previousPoint = matrix[insertIndex].absoluteEnd;
-  } else if (matrix.length > 0) {
-    previousPoint = matrix[matrix.length - 1].absoluteEnd;
-  } else {
-    previousPoint = { xCoordinate: 100, yCoordinate: 100 };
-  }
-  
-  // Decide placing coordinates offset slightly from preceding position to be highly visible
-  const derivedX = Math.round(Math.min(360, Math.max(40, previousPoint.xCoordinate + 40)));
-  const derivedY = Math.round(Math.min(360, Math.max(40, previousPoint.yCoordinate + 40)));
 
-  switch (type) {
+  if (insertIndex !== -1 && insertIndex < matrix.length)
+    previousPoint = matrix[insertIndex].absoluteEnd;
+  else if (matrix.length > 0)
+    previousPoint = matrix[matrix.length - 1].absoluteEnd;
+  else
+    previousPoint = { xCoordinate: 100, yCoordinate: 100 };
+
+  // Decide placing coordinates offset slightly from preceding position to be highly visible
+  const
+    derivedX = Math.round(Math.min(360, Math.max(40, previousPoint.xCoordinate + 40))),
+    derivedY = Math.round(Math.min(360, Math.max(40, previousPoint.yCoordinate + 40)));
+
+  switch (type)
+  {
     case 'from':
-      newCommand = { identifier: newIdentifier, type: 'from', xCoordinate: derivedX, yCoordinate: derivedY, horizontalUnit: 'px', verticalUnit: 'px' };
+      newCommand = {
+        identifier: newIdentifier,
+        type: 'from',
+        xCoordinate: derivedX,
+        yCoordinate: derivedY,
+        horizontalUnit: 'px',
+        verticalUnit: 'px'
+      };
       break;
     case 'line':
-      newCommand = { identifier: newIdentifier, type: 'line', syntaxModifier: 'to', xCoordinate: derivedX, yCoordinate: derivedY, horizontalUnit: 'px', verticalUnit: 'px' };
+      newCommand = {
+        identifier: newIdentifier,
+        type: 'line',
+        syntaxModifier: 'to',
+        xCoordinate: derivedX,
+        yCoordinate: derivedY,
+        horizontalUnit: 'px',
+        verticalUnit: 'px'
+      };
       break;
     case 'hline':
       newCommand = { identifier: newIdentifier, type: 'hline', syntaxModifier: 'to', value: derivedX, unit: 'px' };
@@ -2535,7 +3175,10 @@ function createAndAppendCommandBlock(type: CommandType): void {
         yCoordinate: derivedY,
         horizontalUnit: 'px',
         verticalUnit: 'px',
-        firstControlCircle: { xCoordinate: Math.round((previousPoint.xCoordinate + derivedX) / 2), yCoordinate: previousPoint.yCoordinate },
+        firstControlCircle: {
+          xCoordinate: Math.round((previousPoint.xCoordinate + derivedX) / 2),
+          yCoordinate: previousPoint.yCoordinate
+        },
         firstControlHorizontalUnit: 'px',
         firstControlVerticalUnit: 'px',
         hasSecondControlCircle: false,
@@ -2567,20 +3210,20 @@ function createAndAppendCommandBlock(type: CommandType): void {
       break;
   }
 
-  if (insertIndex !== -1) {
+  if (insertIndex !== -1)
+  {
     const selectedCmd = commandsStack[insertIndex];
-    if (selectedCmd.type === 'close') {
+    if (selectedCmd.type === 'close')
       commandsStack.splice(insertIndex, 0, newCommand);
-    } else {
+    else
       commandsStack.splice(insertIndex + 1, 0, newCommand);
-    }
-  } else {
+  } else
+  {
     // Double-check to insert lines or arcs before the existing close commands if any close exists!
-    if (commandsStack.length > 1 && commandsStack[commandsStack.length - 1].type === 'close') {
+    if (commandsStack.length > 1 && commandsStack[commandsStack.length - 1].type === 'close')
       commandsStack.splice(commandsStack.length - 1, 0, newCommand);
-    } else {
+    else
       commandsStack.push(newCommand);
-    }
   }
 
   selectedCommandIdentifier = newIdentifier;
@@ -2590,17 +3233,20 @@ function createAndAppendCommandBlock(type: CommandType): void {
 }
 
 /**
- * Double clicking on the Canvas places a new node exactly where requested.
+ * Double-clicking on the Canvas places a new node exactly where requested.
  */
-function handleCanvasDoubleClick(logicalX: number, logicalY: number): void {
-  const newIdentifier = `cmd-dbl-${Date.now()}`;
-  const roundedX = Math.round(logicalX);
-  const roundedY = Math.round(logicalY);
+function handleCanvasDoubleClick(logicalX: number, logicalY: number): void
+{
+  const
+    newIdentifier = `cmd-dbl-${Date.now()}`,
+    roundedX = Math.round(logicalX),
+    roundedY = Math.round(logicalY);
 
   // Auto-expand commands card on canvas double click insertion
   toggleCollapsibleSection('commandsCard', 'expand');
 
-  const command: ShapeCommand = {
+  const command: ShapeCommand =
+  {
     identifier: newIdentifier,
     type: 'line',
     syntaxModifier: 'to',
@@ -2611,61 +3257,72 @@ function handleCanvasDoubleClick(logicalX: number, logicalY: number): void {
   };
 
   let insertIndex = -1;
-  if (selectedCommandIdentifier) {
-    insertIndex = commandsStack.findIndex((cmd: ShapeCommand) => cmd.identifier === selectedCommandIdentifier);
-  }
 
-  if (insertIndex !== -1) {
+  if (selectedCommandIdentifier)
+    insertIndex = commandsStack.findIndex((cmd: ShapeCommand) => cmd.identifier === selectedCommandIdentifier);
+
+  if (insertIndex !== -1)
+  {
     const selectedCmd = commandsStack[insertIndex];
-    if (selectedCmd.type === 'close') {
+
+    if (selectedCmd.type === 'close')
       commandsStack.splice(insertIndex, 0, command);
-    } else {
+    else
       commandsStack.splice(insertIndex + 1, 0, command);
-    }
-  } else {
+  } else
+  {
     // Safe insertion before the final close
-    if (commandsStack.length > 1 && commandsStack[commandsStack.length - 1].type === 'close') {
+    if (commandsStack.length > 1 && commandsStack[commandsStack.length - 1].type === 'close')
       commandsStack.splice(commandsStack.length - 1, 0, command);
-    } else {
+    else
       commandsStack.push(command);
-    }
   }
 
   selectedCommandIdentifier = newIdentifier;
   stableRebuildCommandsSidebarDOM();
   updateVisualClippedLayoutAndCanvas();
-  announceToScreenReader(currentLanguage === 'en' ? `Added point on canvas at X: ${roundedX}, Y: ${roundedY}` : `Point ajouté sur le canevas à l'emplacement X: ${roundedX}, Y: ${roundedY}`);
+  announceToScreenReader(currentLanguage === 'en'
+    ? `Added point on canvas at X: ${roundedX}, Y: ${roundedY}`
+    : `Point ajouté sur le canevas à l'emplacement X: ${roundedX}, Y: ${roundedY}`
+  );
 }
 
-function removeCommandFromStack(commandIdentifier: string): void {
+function removeCommandFromStack(commandIdentifier: string): void
+{
   // Safe filtering: you cannot delete the base starting "from" command
   const index = commandsStack.findIndex(command => command.identifier === commandIdentifier);
-  if (index === 0) {
+
+  if (index === 0)
     return;
-  }
 
   const deletedType = commandsStack[index].type;
   commandsStack.splice(index, 1);
   
   // Re-adjust focus selection
-  if (selectedCommandIdentifier === commandIdentifier) {
-    selectedCommandIdentifier = commandsStack.length > 0 ? commandsStack[0].identifier : null;
-  }
+  if (selectedCommandIdentifier === commandIdentifier)
+    selectedCommandIdentifier = commandsStack.length > 0
+      ? commandsStack[0].identifier
+      : null;
 
   stableRebuildCommandsSidebarDOM();
   updateVisualClippedLayoutAndCanvas();
   announceToScreenReader(currentLanguage === 'en' ? `Removed step: ${deletedType}` : `Étape supprimée : ${deletedType}`);
 }
 
-function swapCommandsInStack(indexOne: number, indexTwo: number): void {
-  if (indexOne < 1 || indexTwo < 1 || indexOne >= commandsStack.length || indexTwo >= commandsStack.length) {
+function swapCommandsInStack(indexOne: number, indexTwo: number): void
+{
+  if (indexOne < 1
+    || indexTwo < 1
+    || indexOne >= commandsStack.length
+    || indexTwo >= commandsStack.length)
+  {
     return; // Block messing with position 0 or out of bounds indices
   }
 
   // Block moving elements if close command of path should be kept at the end
-  if (commandsStack[indexOne].type === 'close' || commandsStack[indexTwo].type === 'close') {
+  if (commandsStack[indexOne].type === 'close'
+    || commandsStack[indexTwo].type === 'close')
     return;
-  }
 
   const temporaryPlaceholder = commandsStack[indexOne];
   commandsStack[indexOne] = commandsStack[indexTwo];
@@ -2673,22 +3330,28 @@ function swapCommandsInStack(indexOne: number, indexTwo: number): void {
 
   stableRebuildCommandsSidebarDOM();
   updateVisualClippedLayoutAndCanvas();
-  announceToScreenReader(currentLanguage === 'en' ? 'Step order updated' : 'Ordre des étapes mis à jour');
+  announceToScreenReader(currentLanguage === 'en'
+    ? 'Step order updated' :
+    'Ordre des étapes mis à jour');
 }
 
 // ==========================================
 // Copy to Clipboard Operations
 // ==========================================
 
-function copyGeneratedCodeToClipboard(): void {
+function copyGeneratedCodeToClipboard(): void
+{
   const codeContentText = currentSelectedCodeTab === 'static'
     ? compileShapeCodeString(commandsStack)
     : compileCSSAnimationCodeString();
 
-  navigator.clipboard.writeText(codeContentText).then(() => {
+  navigator.clipboard.writeText(codeContentText).then(() =>
+  {
     // Show copy notification toast
     const toast = document.getElementById('copySuccessToast');
-    if (toast) {
+
+    if (toast)
+    {
       toast.classList.add('visible-state');
       toast.setAttribute('aria-hidden', 'false');
       
@@ -2705,12 +3368,12 @@ function copyGeneratedCodeToClipboard(): void {
 // Transition Animation Simulator Engine
 // ==========================================
 
-function saveCurrentStateForAnimation(slotSelection: 'A' | 'B'): void {
-  if (slotSelection === 'A') {
+function saveCurrentStateForAnimation(slotSelection: 'A' | 'B'): void
+{
+  if (slotSelection === 'A')
     stateACommands = deepDuplicateStack(commandsStack);
-  } else {
+  else
     stateBCommands = deepDuplicateStack(commandsStack);
-  }
 
   refreshAnimationIndicatorsUI();
 
@@ -2719,9 +3382,12 @@ function saveCurrentStateForAnimation(slotSelection: 'A' | 'B'): void {
   toggleCollapsibleSection('outputCard', 'expand');
 
   // Highlight and select the CSS Animation tab automatically
-  const tabStaticBtn = document.getElementById('tabStaticCode');
-  const tabAnimationBtn = document.getElementById('tabAnimationCode');
-  if (tabStaticBtn && tabAnimationBtn) {
+  const
+    tabStaticBtn = document.getElementById('tabStaticCode'),
+    tabAnimationBtn = document.getElementById('tabAnimationCode');
+
+  if (tabStaticBtn && tabAnimationBtn)
+  {
     currentSelectedCodeTab = 'animation';
     tabAnimationBtn.classList.add('active');
     tabAnimationBtn.setAttribute('aria-selected', 'true');
@@ -2731,12 +3397,18 @@ function saveCurrentStateForAnimation(slotSelection: 'A' | 'B'): void {
 
   // Instant visual feedback when saving a state
   const animationElement = document.getElementById('animatedClippedElement');
-  if (animationElement) {
+
+  if (animationElement)
+  {
     animationElement.style.transition = 'none';
     const activeCommands = slotSelection === 'A' ? stateACommands : stateBCommands;
-    if (activeCommands) {
-      const cleanCss = compileShapeCodeString(activeCommands);
-      const clipValue = `shape(${cleanCss.replace('clip-path: shape(', '').slice(0, -2)})`;
+
+    if (activeCommands)
+    {
+      const
+        cleanCss = compileShapeCodeString(activeCommands),
+        clipValue = `shape(${cleanCss.replace('clip-path: shape(', '').slice(0, -2)})`;
+
       animationElement.style.clipPath = clipValue;
     }
   }
@@ -2744,28 +3416,36 @@ function saveCurrentStateForAnimation(slotSelection: 'A' | 'B'): void {
   updateVisualClippedLayoutAndCanvas();
 }
 
-function refreshAnimationIndicatorsUI(): void {
-  const indicatorAField = document.getElementById('indicatorStateA');
-  const indicatorBField = document.getElementById('indicatorStateB');
+function refreshAnimationIndicatorsUI(): void
+{
+  const
+    indicatorAField = document.getElementById('indicatorStateA'),
+    indicatorBField = document.getElementById('indicatorStateB');
 
-  if (indicatorAField) {
-    if (stateACommands) {
+  if (indicatorAField)
+  {
+    if (stateACommands)
+    {
       indicatorAField.innerHTML = currentLanguage === 'en'
         ? `State A: <strong>${stateACommands.length} points saved</strong>`
         : `État A : <strong>${stateACommands.length} points enregistrés</strong>`;
-    } else {
+    } else
+    {
       indicatorAField.innerHTML = currentLanguage === 'en'
         ? `State A: <strong class="amber-highlight">Not saved</strong>`
         : `État A : <strong class="amber-highlight">Non enregistré</strong>`;
     }
   }
 
-  if (indicatorBField) {
-    if (stateBCommands) {
+  if (indicatorBField)
+  {
+    if (stateBCommands)
+    {
       indicatorBField.innerHTML = currentLanguage === 'en'
         ? `State B: <strong>${stateBCommands.length} points saved</strong>`
         : `État B : <strong>${stateBCommands.length} points enregistrés</strong>`;
-    } else {
+    } else
+    {
       indicatorBField.innerHTML = currentLanguage === 'en'
         ? `State B: <strong class="amber-highlight">Not saved</strong>`
         : `État B : <strong class="amber-highlight">Non enregistré</strong>`;
@@ -2773,10 +3453,13 @@ function refreshAnimationIndicatorsUI(): void {
   }
 
   const animationElement = document.getElementById('animatedClippedElement');
-  if (animationElement) {
-    if (!stateACommands && !stateBCommands) {
+
+  if (animationElement)
+  {
+    if (!stateACommands && !stateBCommands)
       animationElement.style.clipPath = 'none';
-    } else if (stateACommands && !stateBCommands) {
+    else if (stateACommands && !stateBCommands)
+    {
       animationElement.style.transition = 'none';
       const cleanCss = compileShapeCodeString(stateACommands);
       animationElement.style.clipPath = `shape(${cleanCss.replace('clip-path: shape(', '').slice(0, -2)})`;
@@ -2785,48 +3468,66 @@ function refreshAnimationIndicatorsUI(): void {
 
   // Compare shapes compatibility
   const triggerButton = document.getElementById('triggerTransitionTestButton') as HTMLButtonElement | null;
-  if (triggerButton) {
-    if (stateACommands && stateBCommands) {
+
+  if (triggerButton)
+  {
+    if (stateACommands && stateBCommands)
+    {
       // Validate compatible lengths
       const lengthCheck = stateACommands.length === stateBCommands.length;
       let typesMatchCheck = true;
       
-      if (lengthCheck) {
-        for (let index = 0; index < stateACommands.length; index = index + 1) {
-          if (stateACommands[index].type !== stateBCommands[index].type) {
+      if (lengthCheck)
+      {
+        for (let index = 0; index < stateACommands.length; index = index + 1)
+        {
+          if (stateACommands[index].type !== stateBCommands[index].type)
+          {
             typesMatchCheck = false;
             break;
           }
         }
       }
 
-      if (lengthCheck && typesMatchCheck) {
+      if (lengthCheck && typesMatchCheck)
+      {
         triggerButton.disabled = false;
-        triggerButton.textContent = currentLanguage === 'en' ? '▶ Play Animation' : '▶ Lancer l\'Animation';
-      } else {
+        triggerButton.textContent = currentLanguage === 'en'
+          ? '▶ Play Animation'
+          : '▶ Lancer l\'Animation';
+      } else
+      {
         triggerButton.disabled = true;
-        triggerButton.textContent = currentLanguage === 'en' ? 'Incompatible (Different structures)' : 'Incompatible (Structures différentes)';
+        triggerButton.textContent = currentLanguage === 'en'
+          ? 'Incompatible (Different structures)'
+          : 'Incompatible (Structures différentes)';
       }
-    } else {
+    } else
+    {
       triggerButton.disabled = true;
-      triggerButton.textContent = currentLanguage === 'en' ? 'Save A and B to test' : 'Enregistrez A et B pour tester';
+      triggerButton.textContent = currentLanguage === 'en'
+        ? 'Save A and B to test'
+        : 'Enregistrez A et B pour tester';
     }
   }
 }
 
-function performAnimationTransitionTest(): void {
-  if (!stateACommands || !stateBCommands) {
+function performAnimationTransitionTest(): void
+{
+  if (!stateACommands || !stateBCommands)
     return;
-  }
 
   // Ensure cards are expanded to see the animation
   toggleCollapsibleSection('animationPresetCard', 'expand');
   toggleCollapsibleSection('outputCard', 'expand');
 
   // Highlight and select the CSS Animation tab automatically
-  const tabStaticBtn = document.getElementById('tabStaticCode');
-  const tabAnimationBtn = document.getElementById('tabAnimationCode');
-  if (tabStaticBtn && tabAnimationBtn) {
+  const
+    tabStaticBtn = document.getElementById('tabStaticCode'),
+    tabAnimationBtn = document.getElementById('tabAnimationCode');
+
+  if (tabStaticBtn && tabAnimationBtn)
+  {
     currentSelectedCodeTab = 'animation';
     tabAnimationBtn.classList.add('active');
     tabAnimationBtn.setAttribute('aria-selected', 'true');
@@ -2835,11 +3536,13 @@ function performAnimationTransitionTest(): void {
     updateVisualClippedLayoutAndCanvas();
   }
 
-  const animationElement = document.getElementById('animatedClippedElement');
-  const durationSlider = document.getElementById('animationDurationRange') as HTMLInputElement | null;
-  const durationInSeconds = durationSlider ? durationSlider.value : '1.2';
+  const
+    animationElement = document.getElementById('animatedClippedElement'),
+    durationSlider = document.getElementById('animationDurationRange') as HTMLInputElement | null,
+    durationInSeconds = durationSlider ? durationSlider.value : '1.2';
 
-  if (animationElement) {
+  if (animationElement)
+  {
     // 1. Instantly reset to State A without transition
     animationElement.style.transition = 'none';
     const cssA = compileShapeCodeString(stateACommands);
@@ -2849,8 +3552,10 @@ function performAnimationTransitionTest(): void {
     void animationElement.offsetWidth;
 
     // 3. Play smooth transition to State B in the next frames
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
+    requestAnimationFrame(() =>
+    {
+      requestAnimationFrame(() =>
+      {
         animationElement.style.transition = `clip-path ${durationInSeconds}s cubic-bezier(0.4, 0, 0.2, 1)`;
         const cssB = compileShapeCodeString(stateBCommands);
         animationElement.style.clipPath = `shape(${cssB.replace('clip-path: shape(', '').slice(0, -2)})`;
@@ -2863,26 +3568,33 @@ function performAnimationTransitionTest(): void {
 // Setup Event listeners and Initializers
 // ==========================================
 
-function renderPresetButtonCardsList(): void {
+function renderPresetButtonCardsList(): void
+{
   const container = document.getElementById('presetsGridContainer');
-  if (!container) {
+
+  if (!container)
     return;
-  }
 
   container.innerHTML = '';
 
-  for (let index = 0; index < shapePresets.length; index = index + 1) {
-    const presetObj = shapePresets[index];
-    const isCurrentActive = commandsStack.length === presetObj.commands.length &&
-      (commandsStack[0] as FromCommand).xCoordinate === (presetObj.commands[0] as FromCommand).xCoordinate;
+  for (let index = 0; index < shapePresets.length; index = index + 1)
+  {
+    const
+      presetObj = shapePresets[index],
+      isCurrentActive = commandsStack.length === presetObj.commands.length &&
+        (commandsStack[0] as FromCommand).xCoordinate === (presetObj.commands[0] as FromCommand).xCoordinate,
+      presetName = presetLocalizations[currentLanguage][index]?.name || presetObj.name,
+      presetDesc = presetLocalizations[currentLanguage][index]?.description || presetObj.description,
+      btnCard = document.createElement('button');
 
-    const presetName = presetLocalizations[currentLanguage][index]?.name || presetObj.name;
-    const presetDesc = presetLocalizations[currentLanguage][index]?.description || presetObj.description;
-
-    const btnCard = document.createElement('button');
     btnCard.setAttribute('type', 'button');
-    btnCard.setAttribute('class', `preset-item-card${isCurrentActive ? ' active-setting' : ''}`);
-    btnCard.setAttribute('aria-label', currentLanguage === 'en' ? `Load preset ${presetName}: ${presetDesc}` : `Charger le préréglage ${presetName} : ${presetDesc}`);
+    btnCard.setAttribute(
+      'class',
+      `preset-item-card${isCurrentActive ? ' active-setting' : ''}`
+    );
+    btnCard.setAttribute('aria-label', currentLanguage === 'en'
+      ? `Load preset ${presetName}: ${presetDesc}`
+      : `Charger le préréglage ${presetName} : ${presetDesc}`);
     btnCard.setAttribute('title', presetDesc);
 
     const iconContainer = document.createElement('div');
@@ -2891,8 +3603,10 @@ function renderPresetButtonCardsList(): void {
     const iconShape = document.createElement('div');
     iconShape.setAttribute('class', 'preset-icon-shape');
 
-    const cssText = compileShapeCodeString(presetObj.commands);
-    const shapeValue = cssText.replace('clip-path:', '').replace(';', '').trim();
+    const
+      cssText = compileShapeCodeString(presetObj.commands),
+      shapeValue = cssText.replace('clip-path:', '').replace(';', '').trim();
+
     iconShape.style.clipPath = shapeValue;
 
     iconContainer.appendChild(iconShape);
@@ -2903,7 +3617,8 @@ function renderPresetButtonCardsList(): void {
     nameTitle.textContent = presetName;
     btnCard.appendChild(nameTitle);
 
-    btnCard.addEventListener('click', () => {
+    btnCard.addEventListener('click', () =>
+    {
       loadSelectedPresetTemplate(presetObj);
     });
 
@@ -2916,24 +3631,23 @@ function renderPresetButtonCardsList(): void {
  * @param cardId The HTML element ID of the details element (e.g. 'canvasCard')
  * @param forceState Optional explicit state to set: 'expand' or 'collapse'
  */
-function toggleCollapsibleSection(cardId: string, forceState?: 'expand' | 'collapse'): void {
+function toggleCollapsibleSection(cardId: string, forceState?: 'expand' | 'collapse'): void
+{
   const card = document.getElementById(cardId) as HTMLDetailsElement | null;
-  if (!card) {
+
+  if (!card)
     return;
-  }
-  
+
   let shouldExpand = !card.open;
-  if (forceState === 'expand') {
-    shouldExpand = true;
-  } else if (forceState === 'collapse') {
-    shouldExpand = false;
-  }
-  
-  if (shouldExpand) {
+  shouldExpand = (forceState === 'expand')
+
+  if (shouldExpand)
+  {
     card.open = true;
     localStorage.setItem('collapse_' + cardId, 'false');
     announceToScreenReader(currentLanguage === 'en' ? 'Section expanded' : 'Section développée');
-  } else {
+  } else
+  {
     card.open = false;
     localStorage.setItem('collapse_' + cardId, 'true');
     announceToScreenReader(currentLanguage === 'en' ? 'Section collapsed' : 'Section réduite');
@@ -2944,22 +3658,21 @@ function toggleCollapsibleSection(cardId: string, forceState?: 'expand' | 'colla
  * Configures details toggle listeners to track active expansion preference,
  * and restores saved states from localStorage on initialization.
  */
-function initializeCollapsibleSections(): void {
+function initializeCollapsibleSections(): void
+{
   const cards = ['canvasCard', 'animationPresetCard', 'presetsCard', 'commandsCard', 'outputCard'];
-  for (const cardId of cards) {
+
+  for (const cardId of cards)
+  {
     const card = document.getElementById(cardId) as HTMLDetailsElement | null;
-    if (!card) {
+
+    if (!card)
       continue;
-    }
-    
+
     // Restore saved states from localStorage
     const savedCollapseState = localStorage.getItem('collapse_' + cardId);
-    if (savedCollapseState === 'true') {
-      card.open = false;
-    } else if (savedCollapseState === 'false') {
-      card.open = true;
-    }
-    
+    card.open = !(savedCollapseState === 'true');
+
     // Track toggle state change event to save preferences natively
     card.addEventListener('toggle', () => {
       localStorage.setItem('collapse_' + cardId, card.open ? 'false' : 'true');
@@ -2967,25 +3680,32 @@ function initializeCollapsibleSections(): void {
   }
 }
 
-function initializeUIEventHandlers(): void {
+function initializeUIEventHandlers(): void
+{
   // Paintboard double-click handler
   const paintboard = document.getElementById('paintboard');
-  if (paintboard) {
-    paintboard.addEventListener('dblclick', (event: MouseEvent) => {
+
+  if (paintboard)
+  {
+    paintboard.addEventListener('dblclick', (event: MouseEvent) =>
+    {
       // Don't trigger if clicked on child handles or circles
-      if (event.target === paintboard || (event.target as HTMLElement).classList.contains('canvas-grid-lines')) {
-        const boardRect = paintboard.getBoundingClientRect();
-        const activeWidth = boardRect.width;
-        const activeHeight = boardRect.height;
-        const paddingLeft = boardRect.left;
-        const paddingTop = boardRect.top;
+      if (event.target === paintboard
+        || (event.target as HTMLElement).classList.contains('canvas-grid-lines'))
+      {
+        const
+          boardRect = paintboard.getBoundingClientRect(),
+          activeWidth = boardRect.width,
+          activeHeight = boardRect.height,
+          paddingLeft = boardRect.left,
+          paddingTop = boardRect.top,
 
-        // Fetch click position relative inside the grid square
-        const clickRatioX = (event.clientX - paddingLeft) / activeWidth;
-        const clickRatioY = (event.clientY - paddingTop) / activeHeight;
+          // Fetch click position relative inside the grid square
+          clickRatioX = (event.clientX - paddingLeft) / activeWidth,
+          clickRatioY = (event.clientY - paddingTop) / activeHeight,
 
-        const logicalX = clickRatioX * 400;
-        const logicalY = clickRatioY * 400;
+          logicalX = clickRatioX * 400,
+          logicalY = clickRatioY * 400;
 
         // Ensure we operate within the expected coordinate system
         handleCanvasDoubleClick(logicalX, logicalY);
@@ -2993,115 +3713,136 @@ function initializeUIEventHandlers(): void {
     });
 
     // Cursor position tracker
-    paintboard.addEventListener('pointermove', (event: PointerEvent) => {
+    paintboard.addEventListener('pointermove', (event: PointerEvent) =>
+    {
       const readout = document.getElementById('activeCoordinateReadout');
-      if (readout) {
-        const boardRect = paintboard.getBoundingClientRect();
-        const activeWidth = boardRect.width;
-        const activeHeight = boardRect.height;
-        const paddingLeft = boardRect.left;
-        const paddingTop = boardRect.top;
 
-        const ratioX = (event.clientX - paddingLeft) / activeWidth;
-        const ratioY = (event.clientY - paddingTop) / activeHeight;
+      if (readout)
+      {
+        const
+          boardRect = paintboard.getBoundingClientRect(),
+          activeWidth = boardRect.width,
+          activeHeight = boardRect.height,
+          paddingLeft = boardRect.left,
+          paddingTop = boardRect.top,
 
-        if (ratioX >= 0 && ratioX <= 1 && ratioY >= 0 && ratioY <= 1) {
-          const logicalX = Math.round(ratioX * 400);
-          const logicalY = Math.round(ratioY * 400);
+          ratioX = (event.clientX - paddingLeft) / activeWidth,
+          ratioY = (event.clientY - paddingTop) / activeHeight;
+
+        if (ratioX >= 0 && ratioX <= 1 && ratioY >= 0 && ratioY <= 1)
+        {
+          const
+            logicalX = Math.round(ratioX * 400),
+            logicalY = Math.round(ratioY * 400);
+
           readout.textContent = currentLanguage === 'en'
             ? `Cursor: ${logicalX}px , ${logicalY}px (${Math.round(ratioX * 100)}% , ${Math.round(ratioY * 100)}%)`
             : `Curseur : ${logicalX}px , ${logicalY}px (${Math.round(ratioX * 100)}% , ${Math.round(ratioY * 100)}%)`;
-        } else {
+        } else
           readout.textContent = currentLanguage === 'en' ? 'Cursor: -- , --' : 'Curseur : -- , --';
-        }
       }
     });
 
-    paintboard.addEventListener('pointerleave', () => {
+    paintboard.addEventListener('pointerleave', () =>
+    {
       const readout = document.getElementById('activeCoordinateReadout');
-      if (readout) {
+
+      if (readout)
         readout.textContent = currentLanguage === 'en' ? 'Cursor: -- , --' : 'Curseur : -- , --';
-      }
     });
   }
 
   // Background toggle handles
   const bgButtons = document.querySelectorAll('.background-toggle-group .action-toggle-button');
-  bgButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      bgButtons.forEach(btn => {
+  bgButtons.forEach(button =>
+  {
+    button.addEventListener('click', () =>
+    {
+      bgButtons.forEach(btn =>
+      {
         btn.classList.remove('active');
         btn.setAttribute('aria-pressed', 'false');
       });
       button.classList.add('active');
       button.setAttribute('aria-pressed', 'true');
 
-      const bgType = button.getAttribute('data-background');
-      const paintboardElement = document.getElementById('paintboard');
-      const photoElement = document.getElementById('previewPhoto');
+      const
+        bgType = button.getAttribute('data-background'),
+        paintboardElement = document.getElementById('paintboard'),
+        photoElement = document.getElementById('previewPhoto');
 
-      if (paintboardElement) {
+      if (paintboardElement)
+      {
         // Remove old classes
         paintboardElement.className = 'draft-board';
-        if (bgType === 'transparent') {
+
+        if (bgType === 'transparent')
           paintboardElement.classList.add('bg-transparent');
-        } else if (bgType === 'photo') {
+        else if (bgType === 'photo')
           paintboardElement.classList.add('bg-photo');
-        } else if (bgType === 'gradient') {
+        else if (bgType === 'gradient')
           paintboardElement.classList.add('bg-gradient');
-        }
       }
 
-      if (photoElement) {
-        if (bgType === 'photo') {
-          photoElement.classList.remove('hidden');
-        } else {
-          photoElement.classList.add('hidden');
-        }
-      }
+      if (photoElement)
+        photoElement.classList.toggle('hidden', (bgType !== 'photo'));
     });
   });
 
   // Action buttons: Add command via toolbar panels
   const addCommandButtons = document.querySelectorAll('.command-creator-toolbar .add-command-btn');
-  addCommandButtons.forEach(button => {
-    button.addEventListener('click', () => {
+  addCommandButtons.forEach(button =>
+  {
+    button.addEventListener('click', () =>
+    {
       const presetType = button.getAttribute('data-preset-type') as CommandType;
-      if (presetType) {
+
+      if (presetType)
         createAndAppendCommandBlock(presetType);
-      }
     });
   });
 
   // Batch conversions
   const convertPxBtn = document.getElementById('convertAllPxButton');
-  if (convertPxBtn) {
-    convertPxBtn.addEventListener('click', () => {
+
+  if (convertPxBtn)
+  {
+    convertPxBtn.addEventListener('click', () =>
+    {
       batchConvertAllCoordinates('px');
     });
   }
 
   const convertPercentBtn = document.getElementById('convertAllPercentButton');
-  if (convertPercentBtn) {
-    convertPercentBtn.addEventListener('click', () => {
+
+  if (convertPercentBtn)
+  {
+    convertPercentBtn.addEventListener('click', () =>
+    {
       batchConvertAllCoordinates('%');
     });
   }
 
   const convertRemBtn = document.getElementById('convertAllRemButton');
-  if (convertRemBtn) {
-    convertRemBtn.addEventListener('click', () => {
+  if (convertRemBtn)
+  {
+    convertRemBtn.addEventListener('click', () =>
+    {
       batchConvertAllCoordinates('rem');
     });
   }
 
   const parentFontSizeInp = document.getElementById('parentFontSizeInput') as HTMLInputElement;
-  if (parentFontSizeInp) {
-    parentFontSizeInp.addEventListener('input', () => {
+
+  if (parentFontSizeInp)
+  {
+    parentFontSizeInp.addEventListener('input', () =>
+    {
       let val = parseInt(parentFontSizeInp.value, 10);
-      if (isNaN(val) || val <= 0) {
+
+      if (isNaN(val) || val <= 0)
         return;
-      }
+
       parentFontSize = val;
       // Re-trigger visual layout and update generate CSS shape code instantly!
       updateVisualClippedLayoutAndCanvas();
@@ -3110,8 +3851,11 @@ function initializeUIEventHandlers(): void {
 
   // Copy Clipboard action
   const copyBtn = document.getElementById('copyClipboardCodeButton');
-  if (copyBtn) {
-    copyBtn.addEventListener('click', (event: Event) => {
+
+  if (copyBtn)
+  {
+    copyBtn.addEventListener('click', (event: Event) =>
+    {
       event.stopPropagation();
       event.preventDefault();
       copyGeneratedCodeToClipboard();
@@ -3120,7 +3864,9 @@ function initializeUIEventHandlers(): void {
 
   // Control action utilities
   const resetBtn = document.getElementById('resetPointsButton');
-  if (resetBtn) {
+
+  if (resetBtn)
+  {
     resetBtn.addEventListener('click', () => {
       // Re-load the Lionel Péramo bubble template
       loadSelectedPresetTemplate(shapePresets[0]);
@@ -3128,10 +3874,20 @@ function initializeUIEventHandlers(): void {
   }
 
   const clearBtn = document.getElementById('clearAllPointsButton');
-  if (clearBtn) {
-    clearBtn.addEventListener('click', () => {
+
+  if (clearBtn)
+  {
+    clearBtn.addEventListener('click', () =>
+    {
       commandsStack = [
-        { identifier: 'cmd-clear-1', type: 'from', xCoordinate: 200, yCoordinate: 200, horizontalUnit: 'px', verticalUnit: 'px' }
+        {
+          identifier: 'cmd-clear-1',
+          type: 'from',
+          xCoordinate: 200,
+          yCoordinate: 200,
+          horizontalUnit: 'px',
+          verticalUnit: 'px'
+        }
       ];
       selectedCommandIdentifier = commandsStack[0].identifier;
       stableRebuildCommandsSidebarDOM();
@@ -3141,23 +3897,33 @@ function initializeUIEventHandlers(): void {
 
   // Animation Workspace actions
   const saveAButton = document.getElementById('saveStateAButton');
-  if (saveAButton) {
-    saveAButton.addEventListener('click', () => {
+
+  if (saveAButton)
+  {
+    saveAButton.addEventListener('click', () =>
+    {
       saveCurrentStateForAnimation('A');
     });
   }
 
   const saveBButton = document.getElementById('saveStateBButton');
-  if (saveBButton) {
-    saveBButton.addEventListener('click', () => {
+
+  if (saveBButton)
+  {
+    saveBButton.addEventListener('click', () =>
+    {
       saveCurrentStateForAnimation('B');
     });
   }
 
-  const rangeSlider = document.getElementById('animationDurationRange') as HTMLInputElement | null;
-  const durationText = document.getElementById('durationValueOutput');
-  if (rangeSlider && durationText) {
-    rangeSlider.addEventListener('input', () => {
+  const
+    rangeSlider = document.getElementById('animationDurationRange') as HTMLInputElement | null,
+    durationText = document.getElementById('durationValueOutput');
+
+  if (rangeSlider && durationText)
+  {
+    rangeSlider.addEventListener('input', () =>
+    {
       durationText.textContent = rangeSlider.value;
       updateVisualClippedLayoutAndCanvas();
     });
@@ -3167,8 +3933,10 @@ function initializeUIEventHandlers(): void {
   const tabStaticBtn = document.getElementById('tabStaticCode');
   const tabAnimationBtn = document.getElementById('tabAnimationCode');
   
-  if (tabStaticBtn && tabAnimationBtn) {
-    tabStaticBtn.addEventListener('click', () => {
+  if (tabStaticBtn && tabAnimationBtn)
+  {
+    tabStaticBtn.addEventListener('click', () =>
+    {
       currentSelectedCodeTab = 'static';
       tabStaticBtn.classList.add('active');
       tabStaticBtn.setAttribute('aria-selected', 'true');
@@ -3177,7 +3945,8 @@ function initializeUIEventHandlers(): void {
       updateVisualClippedLayoutAndCanvas();
     });
     
-    tabAnimationBtn.addEventListener('click', () => {
+    tabAnimationBtn.addEventListener('click', () =>
+    {
       currentSelectedCodeTab = 'animation';
       tabAnimationBtn.classList.add('active');
       tabAnimationBtn.setAttribute('aria-selected', 'true');
@@ -3188,8 +3957,11 @@ function initializeUIEventHandlers(): void {
   }
 
   const playBtn = document.getElementById('triggerTransitionTestButton');
-  if (playBtn) {
-    playBtn.addEventListener('click', () => {
+
+  if (playBtn)
+  {
+    playBtn.addEventListener('click', () =>
+    {
       performAnimationTransitionTest();
     });
   }
@@ -3199,32 +3971,27 @@ function initializeUIEventHandlers(): void {
 // Initialization Entry Point on Loader
 // ==========================================
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', () =>
+{
   // Set up background default
   const paintboard = document.getElementById('paintboard');
-  if (paintboard) {
+
+  if (paintboard)
     paintboard.classList.add('bg-transparent');
-  }
 
   // Hook up theme switcher buttons
-  const themeBtns = document.querySelectorAll('.theme-switcher-group .theme-btn');
-  const applyTheme = (targetTheme: 'dark' | 'light') => {
-    if (targetTheme === 'light') {
-      document.body.classList.add('theme-light');
-      document.body.classList.remove('theme-dark');
-    } else {
-      document.body.classList.add('theme-dark');
-      document.body.classList.remove('theme-light');
-    }
-    
-    themeBtns.forEach(btn => {
-      const btnTheme = btn.getAttribute('data-theme');
-      if (btnTheme === targetTheme) {
-        btn.classList.add('active');
-      } else {
-        btn.classList.remove('active');
-      }
-    });
+  const
+    themeBtns = document.querySelectorAll('.theme-switcher-group .theme-btn'),
+    applyTheme = (targetTheme: 'dark' | 'light') =>
+    {
+      const lightTheme = targetTheme === 'light';
+      document.body.classList.toggle('theme-light', lightTheme);
+      document.body.classList.toggle('theme-dark', !lightTheme);
+
+      themeBtns.forEach(btn =>
+      {
+        btn.classList.toggle('active', btn.getAttribute('data-theme') === targetTheme);
+      });
     
     localStorage.setItem('theme', targetTheme);
   };
@@ -3232,35 +3999,39 @@ window.addEventListener('DOMContentLoaded', () => {
   // Get saved theme or detect preferred color scheme (fallback to dark)
   const savedTheme = localStorage.getItem('theme') as 'dark' | 'light' | null;
   let initialTheme: 'dark' | 'light' = 'dark';
-  if (savedTheme === 'dark' || savedTheme === 'light') {
+
+  if (savedTheme === 'dark' || savedTheme === 'light')
     initialTheme = savedTheme;
-  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+  else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches)
     initialTheme = 'light';
-  }
+
   applyTheme(initialTheme);
 
-  themeBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
+  themeBtns.forEach(btn =>
+  {
+    btn.addEventListener('click', () =>
+    {
       const selectedTheme = btn.getAttribute('data-theme') as 'dark' | 'light';
-      if (selectedTheme) {
+
+      if (selectedTheme)
         applyTheme(selectedTheme);
-      }
     });
   });
 
   // Hook up language switcher segmented buttons
   const switcherBtns = document.querySelectorAll('.language-switcher .lang-btn');
-  switcherBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
+  switcherBtns.forEach(btn =>
+  {
+    btn.addEventListener('click', () =>
+    {
       const selectedLanguage = btn.getAttribute('data-lang') as 'en' | 'fr';
-      if (selectedLanguage && selectedLanguage !== currentLanguage) {
+
+      if (selectedLanguage && selectedLanguage !== currentLanguage)
+      {
         currentLanguage = selectedLanguage;
-        switcherBtns.forEach(otherBtn => {
-          if (otherBtn === btn) {
-            otherBtn.classList.add('active');
-          } else {
-            otherBtn.classList.remove('active');
-          }
+        switcherBtns.forEach(otherBtn =>
+        {
+          otherBtn.classList.toggle('active', otherBtn === btn)
         });
         
         translatePageHTML();
@@ -3275,13 +4046,14 @@ window.addEventListener('DOMContentLoaded', () => {
   // Load the Speech bubble ("Bulle de discussion") as the initial starting workflow
   loadSelectedPresetTemplate(shapePresets[0]);
 
-  // Pre-load default slot values for transition to let user test immediately
+  // Preload default slot values for transition to let user test immediately
   stateACommands = deepDuplicateStack(shapePresets[0].commands);
   
   // State B represents a modified speech bubble with some changes
   const modifiedPresetB = deepDuplicateStack(shapePresets[0].commands);
   // Modify some coordinates to make the transition obviously visible on play
-  if (modifiedPresetB.length > 7) {
+  if (modifiedPresetB.length > 7)
+  {
     // shift tip and height down
     (modifiedPresetB[6] as any).yCoordinate = 390; // Tip curves down to the bottom
     (modifiedPresetB[7] as any).yCoordinate = 260;
@@ -3308,11 +4080,15 @@ window.addEventListener('DOMContentLoaded', () => {
 /**
  * Sends a polite verbal notification to screen readers via an aria-live div.
  */
-function announceToScreenReader(message: string): void {
+function announceToScreenReader(message: string): void
+{
   const announcer = document.getElementById('srLiveAnnouncer');
-  if (announcer) {
+
+  if (announcer)
+  {
     announcer.textContent = '';
-    setTimeout(() => {
+    setTimeout(() =>
+    {
       announcer.textContent = message;
     }, 50);
   }
