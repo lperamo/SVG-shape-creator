@@ -37,6 +37,25 @@ let
   parentFontSize: number = 16;
 
 /**
+ * Helper to select elements with translation attributes and run property assignments.
+ */
+function updateLocalizedElements(
+  attributeName: string,
+  updatePropertyCallback: (element: Element, translatedText: string) => void
+): void
+{
+  const targetElements = document.querySelectorAll(`[${attributeName}]`);
+
+  targetElements.forEach(element =>
+  {
+    const localizationKey = element.getAttribute(attributeName) as keyof LanguageDictionary;
+
+    if (localizationKey && localizationMatrix[currentLanguage][localizationKey])
+      updatePropertyCallback(element, localizationMatrix[currentLanguage][localizationKey]);
+  });
+}
+
+/**
  * Converts value from specified unit to pure pixels on 400x400 canvas.
  */
 function convertUnitToPx(value: number, unit: Unit): number
@@ -307,37 +326,24 @@ const presetLocalizations: Record<'en' | 'fr', PresetTranslation[]> = {
 
 function translatePageHTML(): void
 {
-  // Update HTML document lang tag
   document.documentElement.lang = currentLanguage;
 
   // Static standard textual blocks
-  const textElements = document.querySelectorAll('[data-i18n]');
-  textElements.forEach(element =>
+  updateLocalizedElements('data-i18n', (element, text) =>
   {
-    const key = element.getAttribute('data-i18n') as keyof LanguageDictionary;
-
-    if (key && localizationMatrix[currentLanguage][key])
-      element.textContent = localizationMatrix[currentLanguage][key];
+    element.textContent = text;
   });
 
   // HTML content block placeholders
-  const htmlElements = document.querySelectorAll('[data-i18n-html]');
-  htmlElements.forEach(element =>
+  updateLocalizedElements('data-i18n-html', (element, html) =>
   {
-    const key = element.getAttribute('data-i18n-html') as keyof LanguageDictionary;
-
-    if (key && localizationMatrix[currentLanguage][key])
-      element.innerHTML = localizationMatrix[currentLanguage][key];
+    element.innerHTML = html;
   });
 
   // Accessible aria attributes placeholders
-  const ariaElements = document.querySelectorAll('[data-i18n-aria]');
-  ariaElements.forEach(element =>
+  updateLocalizedElements('data-i18n-aria', (element, aria) =>
   {
-    const key = element.getAttribute('data-i18n-aria') as keyof LanguageDictionary;
-
-    if (key && localizationMatrix[currentLanguage][key])
-      element.setAttribute('aria-label', localizationMatrix[currentLanguage][key]);
+    element.setAttribute('aria-label', aria);
   });
 }
 
