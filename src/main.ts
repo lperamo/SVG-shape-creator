@@ -37,6 +37,39 @@ let
   parentFontSize: number = 16;
 
 /**
+ * Translates physical client pointer coordinates to logical paintboard space (0-400px).
+ */
+function computeLogicalCoordinates(
+  clientX: number,
+  clientY: number,
+  paintboardElement: HTMLElement,
+  shouldClamp: boolean = false
+): Coordinate
+{
+  const
+    containerRectangle = paintboardElement.getBoundingClientRect(),
+    borderLeftOffset = parseInt(window.getComputedStyle(paintboardElement).borderLeftWidth, 10) || 0,
+    borderTopOffset = parseInt(window.getComputedStyle(paintboardElement).borderTopWidth, 10) || 0,
+    usableWidth = paintboardElement.clientWidth || containerRectangle.width,
+    usableHeight = paintboardElement.clientHeight || containerRectangle.height;
+
+  let
+    ratioX = (clientX - (containerRectangle.left + borderLeftOffset)) / usableWidth,
+    ratioY = (clientY - (containerRectangle.top + borderTopOffset)) / usableHeight;
+
+  if (shouldClamp)
+  {
+    ratioX = Math.max(-.05, Math.min(1.05, ratioX));
+    ratioY = Math.max(-.05, Math.min(1.05, ratioY));
+  }
+
+  return {
+    xCoordinate: ratioX * 400,
+    yCoordinate: ratioY * 400
+  };
+}
+
+/**
  * Helper to select elements with translation attributes and run property assignments.
  */
 function updateLocalizedElements(
@@ -1191,7 +1224,11 @@ function batchConvertAllCoordinates(targetUnit: Unit): void
   {
     const
       currentCommand = commandsStack[index],
-      absoluteRecord = computedMatrix[index];
+      absoluteRecord = computedMatrix[index],
+      // This is now declared once at the top of the loop iteration
+      previousAnchor = index > 0
+        ? computedMatrix[index - 1].absoluteEnd
+        : { xCoordinate: 0, yCoordinate: 0 };
 
     // Helper functions to convert a 0-400 absolute pixel value into target units
     const projectCoordinate = (absolutePixelValue: number): number =>
@@ -1221,7 +1258,6 @@ function batchConvertAllCoordinates(targetUnit: Unit): void
         {
           // If relative "by", we calculate absolute difference from previous step
           const
-            previousAnchor = index > 0 ? computedMatrix[index - 1].absoluteEnd : { xCoordinate: 0, yCoordinate: 0 },
             differentialX = absoluteRecord.absoluteEnd.xCoordinate - previousAnchor.xCoordinate,
             differentialY = absoluteRecord.absoluteEnd.yCoordinate - previousAnchor.yCoordinate;
 
@@ -1240,12 +1276,7 @@ function batchConvertAllCoordinates(targetUnit: Unit): void
           currentCommand.value = projectCoordinate(absoluteRecord.absoluteEnd.xCoordinate);
         else
         {
-          const
-            previousAnchor = index > 0
-              ? computedMatrix[index - 1].absoluteEnd
-              : { xCoordinate: 0, yCoordinate: 0 },
-            differentialX = absoluteRecord.absoluteEnd.xCoordinate - previousAnchor.xCoordinate;
-
+          const differentialX = absoluteRecord.absoluteEnd.xCoordinate - previousAnchor.xCoordinate;
           currentCommand.value = projectCoordinate(differentialX);
         }
 
@@ -1259,9 +1290,7 @@ function batchConvertAllCoordinates(targetUnit: Unit): void
           currentCommand.value = projectCoordinate(absoluteRecord.absoluteEnd.yCoordinate);
         else
         {
-          const
-            previousAnchor = index > 0 ? computedMatrix[index - 1].absoluteEnd : { xCoordinate: 0, yCoordinate: 0 },
-            differentialY = absoluteRecord.absoluteEnd.yCoordinate - previousAnchor.yCoordinate;
+          const differentialY = absoluteRecord.absoluteEnd.yCoordinate - previousAnchor.yCoordinate;
           currentCommand.value = projectCoordinate(differentialY);
         }
 
@@ -1273,9 +1302,6 @@ function batchConvertAllCoordinates(targetUnit: Unit): void
       {
         // Calculate endpoint coordinates
         const
-          previousAnchor = index > 0
-            ? computedMatrix[index - 1].absoluteEnd
-            : { xCoordinate: 0, yCoordinate: 0 },
           referenceStartingPoint = currentCommand.syntaxModifier === 'to'
             ? { xCoordinate: 0, yCoordinate: 0 }
             : previousAnchor,
@@ -1318,17 +1344,9 @@ function batchConvertAllCoordinates(targetUnit: Unit): void
       case 'arc':
       {
         const
-          previousAnchor = index > 0
-            ? computedMatrix[index - 1].absoluteEnd
-            : { xCoordinate: 0, yCoordinate: 0 },
           referenceStartingPoint = currentCommand.syntaxModifier === 'to'
-            ? {
-              xCoordinate: 0,
-              yCoordinate: 0
-            }
-            : previousAnchor;
-
-        const
+            ? { xCoordinate: 0, yCoordinate: 0 }
+            : previousAnchor,
           differentialEndX = absoluteRecord.absoluteEnd.xCoordinate - referenceStartingPoint.xCoordinate,
           differentialEndY = absoluteRecord.absoluteEnd.yCoordinate - referenceStartingPoint.yCoordinate;
 
@@ -1337,7 +1355,6 @@ function batchConvertAllCoordinates(targetUnit: Unit): void
         currentCommand.horizontalUnit = targetUnit;
         currentCommand.verticalUnit = targetUnit;
 
-        // Radii conversion (now correctly pre-resolving the old unit to px before projection)
         const
           rxPx = convertUnitToPx(currentCommand.radiusX, currentCommand.radiusXUnit),
           ryPx = convertUnitToPx(currentCommand.radiusY, currentCommand.radiusYUnit);
@@ -1564,10 +1581,11 @@ function rebuildCanvasSvgInteractionHandles(coordinatesMatrix: ComputedCoordinat
     // Previous point node reference for relative calculation offsets
     const previousAnchor = index > 0
       ? coordinatesMatrix[index - 1].absoluteEnd
-      : { xCoordinate: 0, yCoordinate: 0 };
+      : { xCoordinate: 0, yCoordinate: 0 },
 
-    // Create the Main Anchor circular interact handle
-    const anchorGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      // Create the Main Anchor circular interact handle
+      anchorGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
     anchorGroup.setAttribute(
       'class',
       `anchor-node-g${selectedCommandIdentifier === command.identifier ? ' selected-active' : ''}`
@@ -1614,7 +1632,7 @@ function rebuildCanvasSvgInteractionHandles(coordinatesMatrix: ComputedCoordinat
       initializeHandleDragSequence(event, anchorGroup, (newLogicalX: number, newLogicalY: number) =>
       {
         // Drag logic for Main Anchor point
-        applyDragShiftToAnchor(command, index, previousAnchor, newLogicalX, newLogicalY);
+        applyDragShiftToAnchor(command, previousAnchor, newLogicalX, newLogicalY);
       });
     });
 
@@ -1654,7 +1672,7 @@ function rebuildCanvasSvgInteractionHandles(coordinatesMatrix: ComputedCoordinat
         newX = Math.round(Math.max(0, Math.min(400, newX)));
         newY = Math.round(Math.max(0, Math.min(400, newY)));
 
-        applyDragShiftToAnchor(command, index, previousAnchor, newX, newY);
+        applyDragShiftToAnchor(command, previousAnchor, newX, newY);
         announceToScreenReader(currentLanguage === 'en' ? `Moved point to ${newX}, ${newY}` : `Point déplacé à ${newX}, ${newY}`);
       }
     });
@@ -1938,31 +1956,14 @@ function initializeHandleDragSequence(
   const pointerMoveHandler = (moveEvent: PointerEvent) =>
   {
     const
-      parentContainerRect = paintboard.getBoundingClientRect(),
-      // Add border width to offset calculation if it exists
-      borderLeft = parseInt(window.getComputedStyle(paintboard).borderLeftWidth) || 0,
-      borderTop = parseInt(window.getComputedStyle(paintboard).borderTopWidth) || 0;
-    
-    // Convert physical cursor coordinate into logical coordinate ratios inside drafting boundary
-    const
-      normalizedWidth = paintboard.clientWidth,
-      normalizedHeight = paintboard.clientHeight,
-      offsetPaddingX = parentContainerRect.left + borderLeft,
-      offsetPaddingY = parentContainerRect.top + borderTop;
+      logicalCoordinates = computeLogicalCoordinates(
+        moveEvent.clientX,
+        moveEvent.clientY,
+        paintboard,
+        true
+      );
 
-    let
-      relativeX = (moveEvent.clientX - offsetPaddingX) / normalizedWidth,
-      relativeY = (moveEvent.clientY - offsetPaddingY) / normalizedHeight;
-
-      // Safety clamps
-      relativeX = Math.max(-0.05, Math.min(1.05, relativeX));
-      relativeY = Math.max(-0.05, Math.min(1.05, relativeY));
-
-    const
-      logicalX = relativeX * 400,
-      logicalY = relativeY * 400;
-
-    onMoveUpdateCallback(logicalX, logicalY);
+    onMoveUpdateCallback(logicalCoordinates.xCoordinate, logicalCoordinates.yCoordinate);
   };
 
   const pointerUpHandler = (releaseEvent: PointerEvent) =>
@@ -1993,80 +1994,37 @@ function initializeHandleDragSequence(
 
 function applyDragShiftToAnchor(
   command: ShapeCommand,
-  commandIndex: number,
   previousAnchor: Coordinate,
   logicalX: number,
   logicalY: number
 ): void
 {
   const
-    horizontalOffsetReference = command.type === 'from' || (command as any).syntaxModifier === 'to'
+    hasToModifier = 'syntaxModifier' in command && command.syntaxModifier === 'to',
+    horizontalOffsetReference = (command.type === 'from' || hasToModifier)
       ? 0
       : previousAnchor.xCoordinate,
-    verticalOffsetReference = command.type === 'from' || (command as any).syntaxModifier === 'to'
+    verticalOffsetReference = (command.type === 'from' || hasToModifier)
       ? 0
       : previousAnchor.yCoordinate,
-  targetLogicalX = logicalX - horizontalOffsetReference,
-  targetLogicalY = logicalY - verticalOffsetReference;
+    targetLogicalX = logicalX - horizontalOffsetReference,
+    targetLogicalY = logicalY - verticalOffsetReference;
 
-  switch (command.type)
+  if ('xCoordinate' in command && 'yCoordinate' in command)
   {
-    case 'from':
-    {
-      command.xCoordinate = convertPxToUnit(targetLogicalX, command.horizontalUnit);
-      command.yCoordinate = convertPxToUnit(targetLogicalY, command.verticalUnit);
-      
-      // Update the bound text inputs in sidebar directly to ensure stable keyboard focus
-      stablePushCoordinateValueToSidebarInputs(command.identifier, 'xCoordinate', command.xCoordinate);
-      stablePushCoordinateValueToSidebarInputs(command.identifier, 'yCoordinate', command.yCoordinate);
-      break;
-    }
+    command.xCoordinate = convertPxToUnit(targetLogicalX, command.horizontalUnit);
+    command.yCoordinate = convertPxToUnit(targetLogicalY, command.verticalUnit);
 
-    case 'line':
-    {
-      command.xCoordinate = convertPxToUnit(targetLogicalX, command.horizontalUnit);
-      command.yCoordinate = convertPxToUnit(targetLogicalY, command.verticalUnit);
-      
-      stablePushCoordinateValueToSidebarInputs(command.identifier, 'xCoordinate', command.xCoordinate);
-      stablePushCoordinateValueToSidebarInputs(command.identifier, 'yCoordinate', command.yCoordinate);
-      break;
-    }
-
-    case 'hline':
-    {
-      command.value = convertPxToUnit(targetLogicalX, command.unit);
-      
-      stablePushCoordinateValueToSidebarInputs(command.identifier, 'value', command.value);
-      break;
-    }
-
-    case 'vline':
-    {
-      command.value = convertPxToUnit(targetLogicalY, command.unit);
-      
-      stablePushCoordinateValueToSidebarInputs(command.identifier, 'value', command.value);
-      break;
-    }
-
-    case 'curve':
-    {
-      command.xCoordinate = convertPxToUnit(targetLogicalX, command.horizontalUnit);
-      command.yCoordinate = convertPxToUnit(targetLogicalY, command.verticalUnit);
-      
-      stablePushCoordinateValueToSidebarInputs(command.identifier, 'xCoordinate', command.xCoordinate);
-      stablePushCoordinateValueToSidebarInputs(command.identifier, 'yCoordinate', command.yCoordinate);
-      break;
-    }
-
-    case 'arc':
-    {
-      command.xCoordinate = convertPxToUnit(targetLogicalX, command.horizontalUnit);
-      command.yCoordinate = convertPxToUnit(targetLogicalY, command.verticalUnit);
-      
-      stablePushCoordinateValueToSidebarInputs(command.identifier, 'xCoordinate', command.xCoordinate);
-      stablePushCoordinateValueToSidebarInputs(command.identifier, 'yCoordinate', command.yCoordinate);
-      break;
-    }
+    stablePushCoordinateValueToSidebarInputs(command.identifier, 'xCoordinate', command.xCoordinate);
+    stablePushCoordinateValueToSidebarInputs(command.identifier, 'yCoordinate', command.yCoordinate);
+  } else if (command.type === 'hline')
+  {
+    command.value = convertPxToUnit(targetLogicalX, command.unit);
+    stablePushCoordinateValueToSidebarInputs(command.identifier, 'value', command.value);
+  } else if (command.type === 'vline')
+  {
+    command.value = convertPxToUnit(targetLogicalY, command.unit);
+    stablePushCoordinateValueToSidebarInputs(command.identifier, 'value', command.value);
   }
 
   updateVisualClippedLayoutAndCanvas();
@@ -3707,26 +3665,16 @@ function initializeUIEventHandlers(): void
   {
     paintboard.addEventListener('dblclick', (event: MouseEvent) =>
     {
-      // Don't trigger if clicked on child handles or circles
-      if (event.target === paintboard
-        || (event.target as HTMLElement).classList.contains('canvas-grid-lines'))
+      if (event.target === paintboard || (event.target as HTMLElement).classList.contains('canvas-grid-lines'))
       {
-        const
-          boardRect = paintboard.getBoundingClientRect(),
-          activeWidth = boardRect.width,
-          activeHeight = boardRect.height,
-          paddingLeft = boardRect.left,
-          paddingTop = boardRect.top,
+        const logicalCoordinates = computeLogicalCoordinates(
+          event.clientX,
+          event.clientY,
+          paintboard,
+          false
+        );
 
-          // Fetch click position relative inside the grid square
-          clickRatioX = (event.clientX - paddingLeft) / activeWidth,
-          clickRatioY = (event.clientY - paddingTop) / activeHeight,
-
-          logicalX = clickRatioX * 400,
-          logicalY = clickRatioY * 400;
-
-        // Ensure we operate within the expected coordinate system
-        handleCanvasDoubleClick(logicalX, logicalY);
+        handleCanvasDoubleClick(logicalCoordinates.xCoordinate, logicalCoordinates.yCoordinate);
       }
     });
 
@@ -3737,25 +3685,26 @@ function initializeUIEventHandlers(): void
 
       if (readout)
       {
+        const logicalCoordinates = computeLogicalCoordinates(
+          event.clientX,
+          event.clientY,
+          paintboard,
+          false
+        );
+
         const
-          boardRect = paintboard.getBoundingClientRect(),
-          activeWidth = boardRect.width,
-          activeHeight = boardRect.height,
-          paddingLeft = boardRect.left,
-          paddingTop = boardRect.top,
+          logicalX = Math.round(logicalCoordinates.xCoordinate),
+          logicalY = Math.round(logicalCoordinates.yCoordinate);
 
-          ratioX = (event.clientX - paddingLeft) / activeWidth,
-          ratioY = (event.clientY - paddingTop) / activeHeight;
-
-        if (ratioX >= 0 && ratioX <= 1 && ratioY >= 0 && ratioY <= 1)
+        if (logicalX >= 0 && logicalX <= 400 && logicalY >= 0 && logicalY <= 400)
         {
           const
-            logicalX = Math.round(ratioX * 400),
-            logicalY = Math.round(ratioY * 400);
+            percentX = Math.round((logicalX / 400) * 100),
+            percentY = Math.round((logicalY / 400) * 100);
 
           readout.textContent = currentLanguage === 'en'
-            ? `Cursor: ${logicalX}px , ${logicalY}px (${Math.round(ratioX * 100)}% , ${Math.round(ratioY * 100)}%)`
-            : `Curseur : ${logicalX}px , ${logicalY}px (${Math.round(ratioX * 100)}% , ${Math.round(ratioY * 100)}%)`;
+            ? `Cursor: ${logicalX}px , ${logicalY}px (${percentX}% , ${percentY}%)`
+            : `Curseur : ${logicalX}px , ${logicalY}px (${percentX}% , ${percentY}%)`;
         } else
           readout.textContent = currentLanguage === 'en' ? 'Cursor: -- , --' : 'Curseur : -- , --';
       }
