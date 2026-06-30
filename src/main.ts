@@ -3773,31 +3773,17 @@ function initializeUIEventHandlers(): void
   const convertPxBtn = document.getElementById('convertAllPxButton');
 
   if (convertPxBtn)
-  {
-    convertPxBtn.addEventListener('click', () =>
-    {
-      batchConvertAllCoordinates('px');
-    });
-  }
+    convertPxBtn.addEventListener('click', () => batchConvertAllCoordinates('px'));
 
   const convertPercentBtn = document.getElementById('convertAllPercentButton');
 
   if (convertPercentBtn)
-  {
-    convertPercentBtn.addEventListener('click', () =>
-    {
-      batchConvertAllCoordinates('%');
-    });
-  }
+    convertPercentBtn.addEventListener('click', () => batchConvertAllCoordinates('%'));
 
   const convertRemBtn = document.getElementById('convertAllRemButton');
+
   if (convertRemBtn)
-  {
-    convertRemBtn.addEventListener('click', () =>
-    {
-      batchConvertAllCoordinates('rem');
-    });
-  }
+    convertRemBtn.addEventListener('click', () => batchConvertAllCoordinates('rem'));
 
   const parentFontSizeInp = document.getElementById('parentFontSizeInput') as HTMLInputElement;
 
