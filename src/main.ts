@@ -34,7 +34,8 @@ let
   stateBCommands: ShapeCommand[] | null = null,
   currentSelectedCodeTab: 'static' | 'animation' = 'static',
 
-  parentFontSize: number = 16;
+  parentFontSize: number = 16,
+  isCurrentlyDragging: boolean = false;
 
 /**
  * Translates physical client pointer coordinates to logical paintboard space (0-400px).
@@ -1537,7 +1538,10 @@ function updateVisualClippedLayoutAndCanvas(): void
   }
 
   // Render Drag nodes inside Markers group
-  rebuildCanvasSvgInteractionHandles(coordinatesMatrix);
+  if (isCurrentlyDragging)
+    updateCanvasSvgInteractionHandles(coordinatesMatrix);
+  else
+    rebuildCanvasSvgInteractionHandles(coordinatesMatrix);
 
   // Update counter readouts
   const activeNodesCountField = document.getElementById('activeNodesReadout');
@@ -1546,6 +1550,96 @@ function updateVisualClippedLayoutAndCanvas(): void
     activeNodesCountField.textContent = currentLanguage === 'en'
       ? `Commands: ${commandsStack.length}`
       : `Commandes : ${commandsStack.length}`;
+}
+
+function updateCanvasSvgInteractionHandles(coordinatesMatrix: ComputedCoordinates[]): void
+{
+  for (let index = 0; index < commandsStack.length; index = index + 1)
+  {
+    const
+      command = commandsStack[index],
+      absoluteRecord = coordinatesMatrix[index];
+
+    if (command.type === 'close')
+      continue;
+
+    const previousAnchor = index > 0
+      ? coordinatesMatrix[index - 1].absoluteEnd
+      : { xCoordinate: 0, yCoordinate: 0 };
+
+    const anchorGroup = document.getElementById(`anchor-handle-${command.identifier}`);
+    if (anchorGroup)
+    {
+      const
+        circles = anchorGroup.getElementsByTagName('circle'),
+        endX = absoluteRecord.absoluteEnd.xCoordinate.toString(),
+        endY = absoluteRecord.absoluteEnd.yCoordinate.toString();
+
+      for (let circleIndex = 0; circleIndex < circles.length; circleIndex = circleIndex + 1)
+      {
+        circles[circleIndex].setAttribute('cx', endX);
+        circles[circleIndex].setAttribute('cy', endY);
+      }
+    }
+
+    if (command.type === 'curve' && absoluteRecord.absoluteControlOne)
+    {
+      const lineOne = document.getElementById(`line-one-${command.identifier}`);
+
+      if (lineOne)
+      {
+        lineOne.setAttribute('x1', previousAnchor.xCoordinate.toString());
+        lineOne.setAttribute('y1', previousAnchor.yCoordinate.toString());
+        lineOne.setAttribute('x2', absoluteRecord.absoluteControlOne.xCoordinate.toString());
+        lineOne.setAttribute('y2', absoluteRecord.absoluteControlOne.yCoordinate.toString());
+      }
+
+      const controlOneGroup = document.getElementById(`control-one-handle-${command.identifier}`);
+
+      if (controlOneGroup)
+      {
+        const
+          circles = controlOneGroup.getElementsByTagName('circle'),
+          ctrl1X = absoluteRecord.absoluteControlOne.xCoordinate.toString(),
+          ctrl1Y = absoluteRecord.absoluteControlOne.yCoordinate.toString();
+
+        for (let circleIndex = 0; circleIndex < circles.length; circleIndex = circleIndex + 1)
+        {
+          circles[circleIndex].setAttribute('cx', ctrl1X);
+          circles[circleIndex].setAttribute('cy', ctrl1Y);
+        }
+      }
+
+      if (command.hasSecondControlCircle && absoluteRecord.absoluteControlTwo)
+      {
+        const lineTwo = document.getElementById(`line-two-${command.identifier}`);
+
+        if (lineTwo)
+        {
+          lineTwo.setAttribute('x1', absoluteRecord.absoluteEnd.xCoordinate.toString());
+          lineTwo.setAttribute('y1', absoluteRecord.absoluteEnd.yCoordinate.toString());
+          lineTwo.setAttribute('x2', absoluteRecord.absoluteControlTwo.xCoordinate.toString());
+          lineTwo.setAttribute('y2', absoluteRecord.absoluteControlTwo.yCoordinate.toString());
+        }
+
+        const controlTwoGroup = document.getElementById(`control-two-handle-${command.identifier}`);
+
+        if (controlTwoGroup)
+        {
+          const
+            circles = controlTwoGroup.getElementsByTagName('circle'),
+            ctrl2X = absoluteRecord.absoluteControlTwo.xCoordinate.toString(),
+            ctrl2Y = absoluteRecord.absoluteControlTwo.yCoordinate.toString();
+
+          for (let circleIndex = 0; circleIndex < circles.length; circleIndex = circleIndex + 1)
+          {
+            circles[circleIndex].setAttribute('cx', ctrl2X);
+            circles[circleIndex].setAttribute('cy', ctrl2Y);
+          }
+        }
+      }
+    }
+  }
 }
 
 /**
@@ -1688,6 +1782,7 @@ function rebuildCanvasSvgInteractionHandles(coordinatesMatrix: ComputedCoordinat
         // Draw dashed connecting line for Control 1
         lineOne = document.createElementNS('http://www.w3.org/2000/svg', 'line');
 
+      lineOne.setAttribute('id', `line-one-${command.identifier}`);
       lineOne.setAttribute('class', 'svg-auxiliary-line');
       lineOne.setAttribute('x1', startOfCurveAnchor.xCoordinate.toString());
       lineOne.setAttribute('y1', startOfCurveAnchor.yCoordinate.toString());
@@ -1806,6 +1901,7 @@ function rebuildCanvasSvgInteractionHandles(coordinatesMatrix: ComputedCoordinat
           'http://www.w3.org/2000/svg',
           'line'
         );
+        lineTwo.setAttribute('id', `line-two-${command.identifier}`)
         lineTwo.setAttribute('class', 'svg-auxiliary-line');
         lineTwo.setAttribute('x1', absoluteRecord.absoluteEnd.xCoordinate.toString());
         lineTwo.setAttribute('y1', absoluteRecord.absoluteEnd.yCoordinate.toString());
@@ -1955,19 +2051,22 @@ function initializeHandleDragSequence(
 
   const pointerMoveHandler = (moveEvent: PointerEvent) =>
   {
-    const
-      logicalCoordinates = computeLogicalCoordinates(
-        moveEvent.clientX,
-        moveEvent.clientY,
-        paintboard,
-        true
-      );
+    isCurrentlyDragging = true;
+
+    const logicalCoordinates = computeLogicalCoordinates(
+      moveEvent.clientX,
+      moveEvent.clientY,
+      paintboard,
+      true
+    );
 
     onMoveUpdateCallback(logicalCoordinates.xCoordinate, logicalCoordinates.yCoordinate);
   };
 
   const pointerUpHandler = (releaseEvent: PointerEvent) =>
   {
+    isCurrentlyDragging = false;
+
     try
     {
       captureTargetG.releasePointerCapture(releaseEvent.pointerId);
@@ -1978,9 +2077,12 @@ function initializeHandleDragSequence(
     window.removeEventListener('pointermove', pointerMoveHandler);
     window.removeEventListener('pointerup', pointerUpHandler);
     window.removeEventListener('pointercancel', pointerUpHandler);
-    
+
     if (onDragEndCallback)
       onDragEndCallback();
+
+    // Trigger a final full structural sync
+    updateVisualClippedLayoutAndCanvas();
   };
 
   window.addEventListener('pointermove', pointerMoveHandler);
