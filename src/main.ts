@@ -844,6 +844,33 @@ interface ComputedCoordinates
 }
 
 /**
+ * Creates a standard form field container with its caption label.
+ */
+function createFieldWrapper(
+  captionTitle: string,
+  useToggleStyle: boolean = false
+): { container: HTMLDivElement; label: HTMLSpanElement }
+{
+  const container = document.createElement('div');
+
+  container.setAttribute(
+    'class',
+    useToggleStyle ? 'field-toggle-cell' : 'field-parameters-cell'
+  );
+
+  const label = document.createElement('span');
+  label.setAttribute('class', 'label-caption');
+  label.textContent = captionTitle;
+
+  container.appendChild(label);
+
+  return {
+    container,
+    label
+  };
+}
+
+/**
  * Iterates through the stack of commands sequentially, and calculates 
  * the physical coordinates (0-400px) of every anchor relative to standard grid size.
  */
@@ -2950,23 +2977,19 @@ function stableRebuildCommandsSidebarDOM(): void
 
 // Helper block generators for stable DOM inputs
 function buildNumericParameterControlCell(
-  commandId: string,
+  commandIdentifier: string,
   suffixLabel: string,
   captionTitle: string,
   currentValue: number,
   onInputValueUpdate: (value: number) => void
 ): HTMLDivElement
 {
-  const containerCell = document.createElement('div');
-  containerCell.setAttribute('class', 'field-parameters-cell');
+  const
+    { container } = createFieldWrapper(captionTitle),
+    numericInput = document.createElement('input');
 
-  const caption = document.createElement('span');
-  caption.setAttribute('class', 'label-caption');
-  caption.textContent = captionTitle;
-
-  const numericInput = document.createElement('input');
   numericInput.setAttribute('type', 'number');
-  numericInput.setAttribute('id', `input-${commandId}-${suffixLabel}`);
+  numericInput.setAttribute('id', `input-${commandIdentifier}-${suffixLabel}`);
   numericInput.setAttribute('class', 'interactive-numeric-input');
   numericInput.setAttribute('value', currentValue.toString());
   numericInput.setAttribute('step', '1');
@@ -2982,30 +3005,25 @@ function buildNumericParameterControlCell(
     onInputValueUpdate(resultingNumber);
   });
 
-  containerCell.appendChild(caption);
-  containerCell.appendChild(numericInput);
+  container.appendChild(numericInput);
 
-  return containerCell;
+  return container;
 }
 
 function buildDropdownUnitParameterCell(
-  commandId: string,
+  commandIdentifier: string,
   suffixLabel: string,
   captionTitle: string,
   currentUnit: Unit,
   onUnitValueUpdate: (unit: Unit) => void
 ): HTMLDivElement
 {
-  const containerCell = document.createElement('div');
-  containerCell.setAttribute('class', 'field-parameters-cell');
+  const
+    { container } = createFieldWrapper(captionTitle),
+    unitDropdownSelector = document.createElement('select');
 
-  const caption = document.createElement('span');
-  caption.setAttribute('class', 'label-caption');
-  caption.textContent = captionTitle;
-
-  const unitSelector = document.createElement('select');
-  unitSelector.setAttribute('class', 'unit-dropdown-selector');
-  unitSelector.setAttribute('aria-label', `${captionTitle} de la coordonnée`);
+  unitDropdownSelector.setAttribute('class', 'unit-dropdown-selector');
+  unitDropdownSelector.setAttribute('aria-label', `${captionTitle} de la coordonnée`);
 
   const pxOption = document.createElement('option');
   pxOption.setAttribute('value', 'px');
@@ -3022,38 +3040,33 @@ function buildDropdownUnitParameterCell(
   remOption.textContent = 'rem';
   remOption.selected = currentUnit === 'rem';
 
-  unitSelector.appendChild(pxOption);
-  unitSelector.appendChild(percentOption);
-  unitSelector.appendChild(remOption);
-  containerCell.appendChild(caption);
-  containerCell.appendChild(unitSelector);
+  unitDropdownSelector.appendChild(pxOption);
+  unitDropdownSelector.appendChild(percentOption);
+  unitDropdownSelector.appendChild(remOption);
+  container.appendChild(unitDropdownSelector);
 
-  unitSelector.addEventListener('change', () =>
+  unitDropdownSelector.addEventListener('change', () =>
   {
-    onUnitValueUpdate(unitSelector.value as Unit);
+    onUnitValueUpdate(unitDropdownSelector.value as Unit);
   });
 
-  return containerCell;
+  return container;
 }
 
 function buildSyntaxModifierDropdownCell(
-  commandId: string,
+  commandIdentifier: string,
   suffixLabel: string,
   captionTitle: string,
   currentModifier: 'to' | 'by',
   onModifierUpdate: (modifier: 'to' | 'by') => void
 ): HTMLDivElement
 {
-  const containerCell = document.createElement('div');
-  containerCell.setAttribute('class', 'field-toggle-cell');
+  const
+    { container } = createFieldWrapper(captionTitle, true),
+    modifierDropdownSelector = document.createElement('select');
 
-  const caption = document.createElement('span');
-  caption.setAttribute('class', 'label-caption');
-  caption.textContent = captionTitle;
-
-  const modifierSelect = document.createElement('select');
-  modifierSelect.setAttribute('class', 'action-select-dropdown');
-  modifierSelect.setAttribute('aria-label', `${captionTitle} syntaxModifier`);
+  modifierDropdownSelector.setAttribute('class', 'action-select-dropdown');
+  modifierDropdownSelector.setAttribute('aria-label', `${captionTitle} syntaxModifier`);
 
   const toOption = document.createElement('option');
   toOption.setAttribute('value', 'to');
@@ -3065,17 +3078,16 @@ function buildSyntaxModifierDropdownCell(
   byOption.textContent = currentLanguage === 'en' ? 'Relative (by)' : 'Relatif (by)';
   byOption.selected = currentModifier === 'by';
 
-  modifierSelect.appendChild(toOption);
-  modifierSelect.appendChild(byOption);
-  containerCell.appendChild(caption);
-  containerCell.appendChild(modifierSelect);
+  modifierDropdownSelector.appendChild(toOption);
+  modifierDropdownSelector.appendChild(byOption);
+  container.appendChild(modifierDropdownSelector);
 
-  modifierSelect.addEventListener('change', () =>
+  modifierDropdownSelector.addEventListener('change', () =>
   {
-    onModifierUpdate(modifierSelect.value as 'to' | 'by');
+    onModifierUpdate(modifierDropdownSelector.value as 'to' | 'by');
   });
 
-  return containerCell;
+  return container;
 }
 
 // ==========================================
