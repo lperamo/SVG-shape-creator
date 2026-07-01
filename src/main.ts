@@ -21,6 +21,18 @@ import {
 // Importing the SCSS style to let Vite understand it natively
 import './style.scss';
 
+type AllowedNumericKeys<T> = {
+  [K in keyof T]: T[K] extends number ? K : never;
+}[keyof T] & string;
+
+type AllowedUnitKeys<T> = {
+  [K in keyof T]: T[K] extends Unit ? K : never;
+}[keyof T] & string;
+
+type AllowedSyntaxKeys<T> = {
+  [K in keyof T]: T[K] extends 'to' | 'by' ? K : never;
+}[keyof T] & string;
+
 // ==========================================
 // Application Core State
 // ==========================================
@@ -2356,57 +2368,11 @@ function stableRebuildCommandsSidebarDOM(): void
       case 'from':
       {
         const fromCommandRef = command as FromCommand;
-        
-        // Horizontal coordinate (X)
-        inputsColumns.appendChild(buildNumericParameterControlCell(
-          fromCommandRef.identifier,
-          'xCoordinate',
-          'X (horiz)',
-          fromCommandRef.xCoordinate,
-          (newValue: number) =>
-          {
-            fromCommandRef.xCoordinate = newValue;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
-        
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(
-          fromCommandRef.identifier,
-          'horizontalUnit',
-          currentLanguage === 'en'
-            ? 'X Unit'
-            : 'Unité X',
-          fromCommandRef.horizontalUnit, (newUnit: Unit) =>
-          {
-            fromCommandRef.horizontalUnit = newUnit;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
 
-        // Vertical coordinate (Y)
-        inputsColumns.appendChild(buildNumericParameterControlCell(
-          fromCommandRef.identifier,
-          'yCoordinate',
-          'Y (vrt)',
-          fromCommandRef.yCoordinate, (newValue: number) =>
-          {
-            fromCommandRef.yCoordinate = newValue;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
-
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(
-          fromCommandRef.identifier,
-          'verticalUnit',
-          currentLanguage === 'en'
-            ? 'Y Unit'
-            : 'Unité Y',
-          fromCommandRef.verticalUnit, (newUnit: Unit) =>
-          {
-            fromCommandRef.verticalUnit = newUnit;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
+        inputsColumns.appendChild(buildNumericParameterControlCell(fromCommandRef, fromCommandRef, 'xCoordinate', 'xCoordinate', 'X (horiz)'));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(fromCommandRef, fromCommandRef, 'horizontalUnit', 'horizontalUnit', currentLanguage === 'en' ? 'X Unit' : 'Unité X'));
+        inputsColumns.appendChild(buildNumericParameterControlCell(fromCommandRef, fromCommandRef, 'yCoordinate', 'yCoordinate', 'Y (vrt)'));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(fromCommandRef, fromCommandRef, 'verticalUnit', 'verticalUnit', currentLanguage === 'en' ? 'Y Unit' : 'Unité Y'));
         break;
       }
 
@@ -2414,69 +2380,11 @@ function stableRebuildCommandsSidebarDOM(): void
       {
         const lineCommandRef = command as LineCommand;
 
-        // Modifier [to | by] dropdown
-        inputsColumns.appendChild(buildSyntaxModifierDropdownCell(
-          lineCommandRef.identifier,
-          'syntaxModifier',
-          'Mode',
-          lineCommandRef.syntaxModifier,
-          (newModifier: 'to' | 'by') =>
-          {
-            lineCommandRef.syntaxModifier = newModifier;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
-
-        // Horizontal coordinate (X)
-        inputsColumns.appendChild(buildNumericParameterControlCell(
-          lineCommandRef.identifier,
-          'xCoordinate',
-          'X',
-          lineCommandRef.xCoordinate,
-          (newValue: number) =>
-          {
-            lineCommandRef.xCoordinate = newValue;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
-
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(
-          lineCommandRef.identifier,
-          'horizontalUnit',
-          currentLanguage === 'en'
-            ? 'X Unit'
-            : 'Unité X',
-          lineCommandRef.horizontalUnit, (newUnit: Unit) =>
-          {
-            lineCommandRef.horizontalUnit = newUnit;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
-
-        // Vertical coordinate (Y)
-        inputsColumns.appendChild(buildNumericParameterControlCell(
-          lineCommandRef.identifier,
-          'yCoordinate',
-          'Y',
-          lineCommandRef.yCoordinate, (newValue: number) =>
-          {
-            lineCommandRef.yCoordinate = newValue;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
-
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(
-          lineCommandRef.identifier,
-          'verticalUnit',
-          currentLanguage === 'en'
-            ? 'Y Unit' :
-            'Unité Y',
-          lineCommandRef.verticalUnit, (newUnit: Unit) =>
-          {
-            lineCommandRef.verticalUnit = newUnit;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
+        inputsColumns.appendChild(buildSyntaxModifierDropdownCell(lineCommandRef, 'syntaxModifier', 'Mode'));
+        inputsColumns.appendChild(buildNumericParameterControlCell(lineCommandRef, lineCommandRef, 'xCoordinate', 'xCoordinate', 'X'));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(lineCommandRef, lineCommandRef, 'horizontalUnit', 'horizontalUnit', currentLanguage === 'en' ? 'X Unit' : 'Unité X'));
+        inputsColumns.appendChild(buildNumericParameterControlCell(lineCommandRef, lineCommandRef, 'yCoordinate', 'yCoordinate', 'Y'));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(lineCommandRef, lineCommandRef, 'verticalUnit', 'verticalUnit', currentLanguage === 'en' ? 'Y Unit' : 'Unité Y'));
         break;
       }
 
@@ -2484,44 +2392,9 @@ function stableRebuildCommandsSidebarDOM(): void
       {
         const hlineCommandRef = command as HorizontalLineCommand;
 
-        // Modifier [to | by] dropdown
-        inputsColumns.appendChild(buildSyntaxModifierDropdownCell(
-          hlineCommandRef.identifier,
-          'syntaxModifier',
-          'Mode',
-          hlineCommandRef.syntaxModifier,
-          (newModifier: 'to' | 'by') =>
-          {
-            hlineCommandRef.syntaxModifier = newModifier;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
-
-        inputsColumns.appendChild(buildNumericParameterControlCell(
-          hlineCommandRef.identifier,
-          'value',
-          currentLanguage === 'en'
-            ? 'Value' :
-            'Valeur',
-          hlineCommandRef.value, (newValue: number) =>
-          {
-            hlineCommandRef.value = newValue;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
-
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(
-          hlineCommandRef.identifier,
-          'unit',
-          currentLanguage === 'en'
-            ? 'Unit'
-            : 'Unité',
-          hlineCommandRef.unit, (newUnit: Unit) =>
-          {
-            hlineCommandRef.unit = newUnit;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
+        inputsColumns.appendChild(buildSyntaxModifierDropdownCell(hlineCommandRef, 'syntaxModifier', 'Mode'));
+        inputsColumns.appendChild(buildNumericParameterControlCell(hlineCommandRef, hlineCommandRef, 'value', 'value', currentLanguage === 'en' ? 'Value' : 'Valeur'));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(hlineCommandRef, hlineCommandRef, 'unit', 'unit', currentLanguage === 'en' ? 'Unit' : 'Unité'));
         break;
       }
 
@@ -2529,45 +2402,9 @@ function stableRebuildCommandsSidebarDOM(): void
       {
         const vlineCommandRef = command as VerticalLineCommand;
 
-        // Modifier [to | by] dropdown
-        inputsColumns.appendChild(buildSyntaxModifierDropdownCell(
-          vlineCommandRef.identifier,
-          'syntaxModifier',
-          'Mode',
-          vlineCommandRef.syntaxModifier,
-          (newModifier: 'to' | 'by') =>
-          {
-            vlineCommandRef.syntaxModifier = newModifier;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
-
-        inputsColumns.appendChild(buildNumericParameterControlCell(
-          vlineCommandRef.identifier,
-          'value',
-          currentLanguage === 'en'
-            ? 'Value'
-            : 'Valeur',
-          vlineCommandRef.value, (newValue: number) =>
-          {
-            vlineCommandRef.value = newValue;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
-
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(
-          vlineCommandRef.identifier,
-          'unit',
-          currentLanguage === 'en'
-            ? 'Unit' :
-            'Unité',
-          vlineCommandRef.unit,
-          (newUnit: Unit) =>
-          {
-            vlineCommandRef.unit = newUnit;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
+        inputsColumns.appendChild(buildSyntaxModifierDropdownCell(vlineCommandRef, 'syntaxModifier', 'Mode'));
+        inputsColumns.appendChild(buildNumericParameterControlCell(vlineCommandRef, vlineCommandRef, 'value', 'value', currentLanguage === 'en' ? 'Value' : 'Valeur'));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(vlineCommandRef, vlineCommandRef, 'unit', 'unit', currentLanguage === 'en' ? 'Unit' : 'Unité'));
         break;
       }
 
@@ -2575,127 +2412,17 @@ function stableRebuildCommandsSidebarDOM(): void
       {
         const curveCommandRef = command as CurveCommand;
 
-        // Modifier [to | by] dropdown
-        inputsColumns.appendChild(buildSyntaxModifierDropdownCell(
-          curveCommandRef.identifier,
-          'syntaxModifier',
-          'Mode',
-          curveCommandRef.syntaxModifier,
-          (newModifier: 'to' | 'by') =>
-          {
-            curveCommandRef.syntaxModifier = newModifier;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
+        inputsColumns.appendChild(buildSyntaxModifierDropdownCell(curveCommandRef, 'syntaxModifier', 'Mode'));
+        inputsColumns.appendChild(buildNumericParameterControlCell(curveCommandRef, curveCommandRef, 'xCoordinate', 'xCoordinate', currentLanguage === 'en' ? 'End X' : 'Fin X'));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(curveCommandRef, curveCommandRef, 'horizontalUnit', 'horizontalUnit', currentLanguage === 'en' ? 'End X Unit' : 'Unité Fin X'));
+        inputsColumns.appendChild(buildNumericParameterControlCell(curveCommandRef, curveCommandRef, 'yCoordinate', 'yCoordinate', currentLanguage === 'en' ? 'End Y' : 'Fin Y'));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(curveCommandRef, curveCommandRef, 'verticalUnit', 'verticalUnit', currentLanguage === 'en' ? 'End Y Unit' : 'Unité Fin Y'));
 
-        // EndPoint Coordinates
-        inputsColumns.appendChild(buildNumericParameterControlCell(
-          curveCommandRef.identifier,
-          'xCoordinate',
-          currentLanguage === 'en'
-            ? 'End X'
-            : 'Fin X',
-          curveCommandRef.xCoordinate,
-          (newValue: number) =>
-          {
-            curveCommandRef.xCoordinate = newValue;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
-
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(
-          curveCommandRef.identifier,
-          'horizontalUnit',
-          currentLanguage === 'en'
-            ? 'End X Unit'
-            : 'Unité Fin X',
-          curveCommandRef.horizontalUnit, (newUnit: Unit) =>
-          {
-            curveCommandRef.horizontalUnit = newUnit;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
-
-        inputsColumns.appendChild(buildNumericParameterControlCell(
-          curveCommandRef.identifier,
-          'yCoordinate',
-          currentLanguage === 'en'
-            ? 'End Y'
-            : 'Fin Y',
-          curveCommandRef.yCoordinate,
-          (newValue: number) =>
-          {
-            curveCommandRef.yCoordinate = newValue;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
-
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(
-          curveCommandRef.identifier,
-          'verticalUnit',
-          currentLanguage === 'en'
-            ? 'End Y Unit'
-            : 'Unité Fin Y',
-          curveCommandRef.verticalUnit,
-          (newUnit: Unit) =>
-          {
-            curveCommandRef.verticalUnit = newUnit;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
-
-        // Ctrl 1 Coordinates
-        inputsColumns.appendChild(buildNumericParameterControlCell(
-          curveCommandRef.identifier,
-          'firstControlCircle-xCoordinate',
-          'Ctrl1 X',
-          curveCommandRef.firstControlCircle.xCoordinate,
-          (newValue: number) =>
-          {
-            curveCommandRef.firstControlCircle.xCoordinate = newValue;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
-
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(
-          curveCommandRef.identifier,
-          'firstControlHorizontalUnit',
-          currentLanguage === 'en'
-            ? 'Ctrl1 X Unit'
-            : 'Unité Ctrl1 X',
-          curveCommandRef.firstControlHorizontalUnit,
-          (newUnit: Unit) =>
-          {
-            curveCommandRef.firstControlHorizontalUnit = newUnit;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
-
-        inputsColumns.appendChild(buildNumericParameterControlCell(
-          curveCommandRef.identifier,
-          'firstControlCircle-yCoordinate',
-          'Ctrl1 Y',
-          curveCommandRef.firstControlCircle.yCoordinate,
-          (newValue: number) =>
-          {
-            curveCommandRef.firstControlCircle.yCoordinate = newValue;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
-
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(
-          curveCommandRef.identifier,
-          'firstControlVerticalUnit',
-          currentLanguage === 'en'
-            ? 'Ctrl1 Y Unit'
-            : 'Unité Ctrl1 Y',
-          curveCommandRef.firstControlVerticalUnit,
-          (newUnit: Unit) =>
-          {
-            curveCommandRef.firstControlVerticalUnit = newUnit;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
+        // Control 1 Coordinates
+        inputsColumns.appendChild(buildNumericParameterControlCell(curveCommandRef, curveCommandRef.firstControlCircle, 'xCoordinate', 'firstControlCircle-xCoordinate', 'Ctrl1 X'));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(curveCommandRef, curveCommandRef, 'firstControlHorizontalUnit', 'firstControlHorizontalUnit', currentLanguage === 'en' ? 'Ctrl1 X Unit' : 'Unité Ctrl1 X'));
+        inputsColumns.appendChild(buildNumericParameterControlCell(curveCommandRef, curveCommandRef.firstControlCircle, 'yCoordinate', 'firstControlCircle-yCoordinate', 'Ctrl1 Y'));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(curveCommandRef, curveCommandRef, 'firstControlVerticalUnit', 'firstControlVerticalUnit', currentLanguage === 'en' ? 'Ctrl1 Y Unit' : 'Unité Ctrl1 Y'));
 
         // Option to Toggle Cubic (Ctrl 2) structure
         const controlToggleCell = document.createElement('div');
@@ -2739,7 +2466,6 @@ function stableRebuildCommandsSidebarDOM(): void
             && curveCommandRef.secondControlCircle.xCoordinate === 0
             && curveCommandRef.secondControlCircle.yCoordinate === 0)
           {
-            // Place it with default safe coordinates near end point
             curveCommandRef.secondControlCircle.xCoordinate = Math.round(curveCommandRef.xCoordinate * 0.8);
             curveCommandRef.secondControlCircle.yCoordinate = Math.round(curveCommandRef.yCoordinate * 0.8);
             curveCommandRef.secondControlHorizontalUnit = curveCommandRef.horizontalUnit;
@@ -2753,56 +2479,10 @@ function stableRebuildCommandsSidebarDOM(): void
         // Show Ctrl 2 fields if Cubic active
         if (curveCommandRef.hasSecondControlCircle)
         {
-          inputsColumns.appendChild(buildNumericParameterControlCell(
-            curveCommandRef.identifier,
-            'secondControlCircle-xCoordinate',
-            'Ctrl2 X',
-            curveCommandRef.secondControlCircle.xCoordinate, (newValue: number) =>
-            {
-              curveCommandRef.secondControlCircle.xCoordinate = newValue;
-              updateVisualClippedLayoutAndCanvas();
-            }
-          ));
-
-          inputsColumns.appendChild(buildDropdownUnitParameterCell(
-            curveCommandRef.identifier,
-            'secondControlHorizontalUnit',
-            currentLanguage === 'en'
-              ? 'Ctrl2 X Unit'
-              : 'Unité Ctrl2 X',
-            curveCommandRef.secondControlHorizontalUnit,
-            (newUnit: Unit) =>
-            {
-              curveCommandRef.secondControlHorizontalUnit = newUnit;
-              updateVisualClippedLayoutAndCanvas();
-            }
-          ));
-
-          inputsColumns.appendChild(buildNumericParameterControlCell(
-            curveCommandRef.identifier,
-            'secondControlCircle-yCoordinate',
-            'Ctrl2 Y',
-            curveCommandRef.secondControlCircle.yCoordinate,
-            (newValue: number) =>
-            {
-              curveCommandRef.secondControlCircle.yCoordinate = newValue;
-              updateVisualClippedLayoutAndCanvas();
-            }
-          ));
-
-          inputsColumns.appendChild(buildDropdownUnitParameterCell(
-            curveCommandRef.identifier,
-            'secondControlVerticalUnit',
-            currentLanguage === 'en'
-              ? 'Ctrl2 Y Unit'
-              : 'Unité Ctrl2 Y',
-            curveCommandRef.secondControlVerticalUnit,
-            (newUnit: Unit) =>
-            {
-              curveCommandRef.secondControlVerticalUnit = newUnit;
-              updateVisualClippedLayoutAndCanvas();
-            }
-          ));
+          inputsColumns.appendChild(buildNumericParameterControlCell(curveCommandRef, curveCommandRef.secondControlCircle, 'xCoordinate', 'secondControlCircle-xCoordinate', 'Ctrl2 X'));
+          inputsColumns.appendChild(buildDropdownUnitParameterCell(curveCommandRef, curveCommandRef, 'secondControlHorizontalUnit', 'secondControlHorizontalUnit', currentLanguage === 'en' ? 'Ctrl2 X Unit' : 'Unité Ctrl2 X'));
+          inputsColumns.appendChild(buildNumericParameterControlCell(curveCommandRef, curveCommandRef.secondControlCircle, 'yCoordinate', 'secondControlCircle-yCoordinate', 'Ctrl2 Y'));
+          inputsColumns.appendChild(buildDropdownUnitParameterCell(curveCommandRef, curveCommandRef, 'secondControlVerticalUnit', 'secondControlVerticalUnit', currentLanguage === 'en' ? 'Ctrl2 Y Unit' : 'Unité Ctrl2 Y'));
         }
         break;
       }
@@ -2811,132 +2491,22 @@ function stableRebuildCommandsSidebarDOM(): void
       {
         const arcCommandRef = command as ArcCommand;
 
-        // Modifier [to | by] dropdown
-        inputsColumns.appendChild(buildSyntaxModifierDropdownCell(
-          arcCommandRef.identifier,
-          'syntaxModifier',
-          'Mode',
-          arcCommandRef.syntaxModifier,
-          (newModifier: 'to' | 'by') =>
-          {
-            arcCommandRef.syntaxModifier = newModifier;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
-
-        // End point position coordinates
-        inputsColumns.appendChild(buildNumericParameterControlCell(
-          arcCommandRef.identifier,
-          'xCoordinate',
-          currentLanguage === 'en'
-            ? 'Anchor X'
-            : 'Ancre X',
-          arcCommandRef.xCoordinate,
-          (newValue: number) =>
-          {
-            arcCommandRef.xCoordinate = newValue;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
-
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(
-          arcCommandRef.identifier,
-          'horizontalUnit',
-          currentLanguage === 'en'
-            ? 'X Unit'
-            : 'Unité X',
-          arcCommandRef.horizontalUnit, (newUnit: Unit) =>
-          {
-            arcCommandRef.horizontalUnit = newUnit;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
-
-        inputsColumns.appendChild(buildNumericParameterControlCell(
-          arcCommandRef.identifier,
-          'yCoordinate',
-          currentLanguage === 'en'
-            ? 'Anchor Y'
-            : 'Ancre Y',
-          arcCommandRef.yCoordinate,
-          (newValue: number) =>
-          {
-            arcCommandRef.yCoordinate = newValue;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
-
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(
-          arcCommandRef.identifier,
-          'verticalUnit',
-          currentLanguage === 'en'
-            ? 'Y Unit'
-            : 'Unité Y',
-          arcCommandRef.verticalUnit, (newUnit: Unit) =>
-          {
-            arcCommandRef.verticalUnit = newUnit;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
+        inputsColumns.appendChild(buildSyntaxModifierDropdownCell(arcCommandRef, 'syntaxModifier', 'Mode'));
+        inputsColumns.appendChild(buildNumericParameterControlCell(arcCommandRef, arcCommandRef, 'xCoordinate', 'xCoordinate', currentLanguage === 'en' ? 'Anchor X' : 'Ancre X'));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(arcCommandRef, arcCommandRef, 'horizontalUnit', 'horizontalUnit', currentLanguage === 'en' ? 'X Unit' : 'Unité X'));
+        inputsColumns.appendChild(buildNumericParameterControlCell(arcCommandRef, arcCommandRef, 'yCoordinate', 'yCoordinate', currentLanguage === 'en' ? 'Anchor Y' : 'Ancre Y'));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(arcCommandRef, arcCommandRef, 'verticalUnit', 'verticalUnit', currentLanguage === 'en' ? 'Y Unit' : 'Unité Y'));
 
         // Radii definitions (RX, RY)
-        inputsColumns.appendChild(buildNumericParameterControlCell(
-          arcCommandRef.identifier,
-          'radiusX',
-          currentLanguage === 'en'
-            ? 'Radius X'
-            : 'Rayon DX',
-          arcCommandRef.radiusX,
-          (newValue: number) =>
-          {
-            arcCommandRef.radiusX = newValue;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
-
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(
-          arcCommandRef.identifier,
-          'radiusXUnit',
-          currentLanguage === 'en'
-            ? 'Radius X Unit'
-            : 'Unité Rayon X',
-          arcCommandRef.radiusXUnit, (newUnit: Unit) =>
-          {
-            arcCommandRef.radiusXUnit = newUnit;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
-
-        inputsColumns.appendChild(buildNumericParameterControlCell(
-          arcCommandRef.identifier,
-          'radiusY',
-          currentLanguage === 'en'
-            ? 'Radius Y'
-            : 'Rayon DY',
-          arcCommandRef.radiusY, (newValue: number) =>
-          {
-            arcCommandRef.radiusY = newValue;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
-
-        inputsColumns.appendChild(buildDropdownUnitParameterCell(
-          arcCommandRef.identifier,
-          'radiusYUnit',
-          currentLanguage === 'en'
-            ? 'Radius Y Unit'
-            : 'Unité Rayon Y',
-          arcCommandRef.radiusYUnit, (newUnit: Unit) =>
-          {
-            arcCommandRef.radiusYUnit = newUnit;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
+        inputsColumns.appendChild(buildNumericParameterControlCell(arcCommandRef, arcCommandRef, 'radiusX', 'radiusX', currentLanguage === 'en' ? 'Radius X' : 'Rayon DX'));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(arcCommandRef, arcCommandRef, 'radiusXUnit', 'radiusXUnit', currentLanguage === 'en' ? 'Radius X Unit' : 'Unité Rayon X'));
+        inputsColumns.appendChild(buildNumericParameterControlCell(arcCommandRef, arcCommandRef, 'radiusY', 'radiusY', currentLanguage === 'en' ? 'Radius Y' : 'Rayon DY'));
+        inputsColumns.appendChild(buildDropdownUnitParameterCell(arcCommandRef, arcCommandRef, 'radiusYUnit', 'radiusYUnit', currentLanguage === 'en' ? 'Radius Y Unit' : 'Unité Rayon Y'));
 
         // Sweep options (large/small, cw/ccw, rot)
         const sizeCell = document.createElement('div');
         sizeCell.setAttribute('class', 'field-toggle-cell');
-        
+
         const sizeLabel = document.createElement('span');
         sizeLabel.setAttribute('class', 'label-caption');
         sizeLabel.textContent = currentLanguage === 'en' ? 'Size' : 'Taille';
@@ -2947,7 +2517,8 @@ function stableRebuildCommandsSidebarDOM(): void
           'aria-label',
           currentLanguage === 'en'
             ? `Ellipse size of the arc for step ${index + 1}`
-            : `Taille de l'ellipse de l'arc de l'étape ${index + 1}`);
+            : `Taille de l'ellipse de l'arc de l'étape ${index + 1}`
+        );
 
         const smallOption = document.createElement('option');
         smallOption.value = 'small';
@@ -3010,17 +2581,7 @@ function stableRebuildCommandsSidebarDOM(): void
         });
 
         // Rotation degrees
-        inputsColumns.appendChild(buildNumericParameterControlCell(
-          arcCommandRef.identifier,
-          'rotationAngle',
-          'Rotation (deg)',
-          arcCommandRef.rotationAngle,
-          (newValue: number) =>
-          {
-            arcCommandRef.rotationAngle = newValue;
-            updateVisualClippedLayoutAndCanvas();
-          }
-        ));
+        inputsColumns.appendChild(buildNumericParameterControlCell(arcCommandRef, arcCommandRef, 'rotationAngle', 'rotationAngle', 'Rotation (deg)'));
         break;
       }
 
@@ -3042,12 +2603,12 @@ function stableRebuildCommandsSidebarDOM(): void
 }
 
 // Helper block generators for stable DOM inputs
-function buildNumericParameterControlCell(
-  commandIdentifier: string,
-  suffixLabel: string,
-  captionTitle: string,
-  currentValue: number,
-  onInputValueUpdate: (value: number) => void
+function buildNumericParameterControlCell<T extends ShapeCommand | Coordinate>(
+  command: ShapeCommand,
+  targetObject: T,
+  propertyKey: AllowedNumericKeys<T>,
+  idSuffix: string,
+  captionTitle: string
 ): HTMLDivElement
 {
   const
@@ -3055,9 +2616,9 @@ function buildNumericParameterControlCell(
     numericInput = document.createElement('input');
 
   numericInput.setAttribute('type', 'number');
-  numericInput.setAttribute('id', `input-${commandIdentifier}-${suffixLabel}`);
+  numericInput.setAttribute('id', `input-${command.identifier}-${idSuffix}`);
   numericInput.setAttribute('class', 'interactive-numeric-input');
-  numericInput.setAttribute('value', currentValue.toString());
+  numericInput.setAttribute('value', String(targetObject[propertyKey]));
   numericInput.setAttribute('step', '1');
   numericInput.setAttribute('aria-label', `${captionTitle} de la commande`);
 
@@ -3068,7 +2629,9 @@ function buildNumericParameterControlCell(
     if (isNaN(resultingNumber))
       resultingNumber = 0;
 
-    onInputValueUpdate(resultingNumber);
+    const targetRecord = targetObject as unknown as Record<string, number>;
+    targetRecord[propertyKey] = resultingNumber;
+    updateVisualClippedLayoutAndCanvas();
   });
 
   container.appendChild(numericInput);
@@ -3076,12 +2639,12 @@ function buildNumericParameterControlCell(
   return container;
 }
 
-function buildDropdownUnitParameterCell(
-  commandIdentifier: string,
-  suffixLabel: string,
-  captionTitle: string,
-  currentUnit: Unit,
-  onUnitValueUpdate: (unit: Unit) => void
+function buildDropdownUnitParameterCell<T extends ShapeCommand>(
+  command: ShapeCommand,
+  targetObject: T,
+  propertyKey: AllowedUnitKeys<T>,
+  idSuffix: string,
+  captionTitle: string
 ): HTMLDivElement
 {
   const
@@ -3091,40 +2654,42 @@ function buildDropdownUnitParameterCell(
   unitDropdownSelector.setAttribute('class', 'unit-dropdown-selector');
   unitDropdownSelector.setAttribute('aria-label', `${captionTitle} de la coordonnée`);
 
-  const pxOption = document.createElement('option');
-  pxOption.setAttribute('value', 'px');
-  pxOption.textContent = 'px';
-  pxOption.selected = currentUnit === 'px';
+  const
+    pixelOption = document.createElement('option'),
+    percentOption = document.createElement('option'),
+    remOption = document.createElement('option');
 
-  const percentOption = document.createElement('option');
+  pixelOption.setAttribute('value', 'px');
+  pixelOption.textContent = 'px';
+  pixelOption.selected = targetObject[propertyKey] === 'px';
+
   percentOption.setAttribute('value', '%');
   percentOption.textContent = '%';
-  percentOption.selected = currentUnit === '%';
+  percentOption.selected = targetObject[propertyKey] === '%';
 
-  const remOption = document.createElement('option');
   remOption.setAttribute('value', 'rem');
   remOption.textContent = 'rem';
-  remOption.selected = currentUnit === 'rem';
+  remOption.selected = targetObject[propertyKey] === 'rem';
 
-  unitDropdownSelector.appendChild(pxOption);
+  unitDropdownSelector.appendChild(pixelOption);
   unitDropdownSelector.appendChild(percentOption);
   unitDropdownSelector.appendChild(remOption);
   container.appendChild(unitDropdownSelector);
 
   unitDropdownSelector.addEventListener('change', () =>
   {
-    onUnitValueUpdate(unitDropdownSelector.value as Unit);
+    const targetRecord = targetObject as unknown as Record<string, Unit>;
+    targetRecord[propertyKey] = unitDropdownSelector.value as Unit;
+    updateVisualClippedLayoutAndCanvas();
   });
 
   return container;
 }
 
-function buildSyntaxModifierDropdownCell(
-  commandIdentifier: string,
-  suffixLabel: string,
-  captionTitle: string,
-  currentModifier: 'to' | 'by',
-  onModifierUpdate: (modifier: 'to' | 'by') => void
+function buildSyntaxModifierDropdownCell<T extends ShapeCommand>(
+  command: T,
+  propertyKey: AllowedSyntaxKeys<T>,
+  captionTitle: string
 ): HTMLDivElement
 {
   const
@@ -3134,15 +2699,17 @@ function buildSyntaxModifierDropdownCell(
   modifierDropdownSelector.setAttribute('class', 'action-select-dropdown');
   modifierDropdownSelector.setAttribute('aria-label', `${captionTitle} syntaxModifier`);
 
-  const toOption = document.createElement('option');
+  const
+    toOption = document.createElement('option'),
+    byOption = document.createElement('option');
+
   toOption.setAttribute('value', 'to');
   toOption.textContent = currentLanguage === 'en' ? 'Absolute (to)' : 'Absolu (to)';
-  toOption.selected = currentModifier === 'to';
+  toOption.selected = command[propertyKey] === 'to';
 
-  const byOption = document.createElement('option');
   byOption.setAttribute('value', 'by');
   byOption.textContent = currentLanguage === 'en' ? 'Relative (by)' : 'Relatif (by)';
-  byOption.selected = currentModifier === 'by';
+  byOption.selected = command[propertyKey] === 'by';
 
   modifierDropdownSelector.appendChild(toOption);
   modifierDropdownSelector.appendChild(byOption);
@@ -3150,7 +2717,9 @@ function buildSyntaxModifierDropdownCell(
 
   modifierDropdownSelector.addEventListener('change', () =>
   {
-    onModifierUpdate(modifierDropdownSelector.value as 'to' | 'by');
+    const targetRecord = command as unknown as Record<string, 'to' | 'by'>;
+    targetRecord[propertyKey] = modifierDropdownSelector.value as 'to' | 'by';
+    updateVisualClippedLayoutAndCanvas();
   });
 
   return container;
