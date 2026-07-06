@@ -1,0 +1,140 @@
+@use '../configuration/variables' as *;
+
+/* Component: App Header Block */
+.application-header {
+  margin-bottom: 24px;
+  padding: 16px 20px;
+  background-color: var(--color-panel-slate);
+  border: 1px solid var(--color-input-focus);
+  border-radius: $border-radius-standard;
+
+  .header-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 8px;
+
+    .branding-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 0;
+
+      .logo-accent {
+        width: 16px;
+        height: 16px;
+        background-color: var(--color-brand-primary);
+        border-radius: 4px; /* Sleek square rounded logo */
+        box-shadow: 0 0 12px var(--color-brand-primary);
+      }
+
+      .header-title {
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--color-text-luxury);
+        margin: 0;
+      }
+
+      .badge-tag {
+        background-color: oklch(0.60 0.17 250 / 0.1);
+        color: var(--color-brand-primary);
+        font-size: 11px;
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: $border-radius-pill;
+        border: 1px solid oklch(0.60 0.17 250 / 0.25);
+      }
+    }
+  }
+
+  .header-controls-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .theme-switcher-group {
+    display: inline-flex;
+    background-color: var(--color-input-background);
+    border: 1px solid var(--color-input-border);
+    border-radius: $border-radius-standard;
+    padding: 2px;
+    gap: 2px;
+    align-items: center;
+
+    .theme-btn {
+      background: none;
+      border: none;
+      color: var(--color-text-subtle);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px;
+      width: 25px;
+      height: 25px;
+      border-radius: calc($border-radius-standard - 2px);
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+
+      &:hover:not(.active) {
+        color: var(--color-text-luxury);
+        background-color: oklch(0.60 0.17 250 / 0.08);
+      }
+
+      &.active {
+        color: var(--color-text-luxury);
+        background-color: var(--color-brand-primary);
+        box-shadow: 0 0 8px var(--color-brand-primary);
+      }
+
+      svg {
+        stroke: currentColor;
+        display: block;
+      }
+    }
+  }
+
+  .language-switcher {
+    display: inline-flex;
+    background-color: var(--color-input-background);
+    border: 1px solid var(--color-input-border);
+    border-radius: $border-radius-standard;
+    padding: 2px;
+    gap: 2px;
+    align-items: center;
+
+    .lang-btn {
+      background: none;
+      border: none;
+      color: var(--color-text-subtle);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: calc($border-radius-standard - 2px);
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+
+      &:hover:not(.active) {
+        color: var(--color-text-luxury);
+        background-color: oklch(0.60 0.17 250 / 0.08);
+      }
+
+      &.active {
+        color: var(--color-text-luxury);
+        background-color: var(--color-brand-primary);
+        box-shadow: 0 0 8px var(--color-brand-primary);
+      }
+    }
+  }
+
+  .header-description {
+    font-size: 13px;
+    color: var(--color-text-subtle);
+    max-width: 850px;
+    margin: 0;
+    line-height: 1.5;
+  }
+}

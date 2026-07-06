@@ -1,0 +1,89 @@
+@use 'variables' as *;
+
+:root {
+  --color-canvas-slate: oklch(0.12 0.012 255); /* #0F1115 Deep dark canvas background */
+  --color-panel-slate: oklch(0.16 0.012 255);  /* #161B22 Slightly lighter panel */
+  --color-field-slate: oklch(0.11 0.012 255);  /* #0D1117 Deep terminal block background */
+  --color-input-focus: oklch(0.24 0.015 255);  /* #2D333B Sleek boundary border */
+  --color-brand-primary: oklch(0.60 0.17 250); /* #3B82F6 Sleek vibrant accent blue */
+  --color-brand-primary-hover: oklch(0.66 0.16 250); /* Lightened vibrant accent blue */
+  --color-cyan-accent: oklch(0.70 0.12 210);   /* Sleek cyan/teal for control handles */
+  --color-gold-highlight: oklch(0.85 0.12 100); /* Amber yellow for active nodes */
+  --color-emerald-active: oklch(0.72 0.14 145); /* Elegant crisp green */
+  --color-emerald-hover: oklch(0.78 0.13 145);
+  --color-risk-danger: oklch(0.58 0.18 28);    /* Deep ruby red for action warning */
+  --color-risk-danger-hover: oklch(0.64 0.17 28);
+
+  --color-text-luxury: oklch(0.95 0.01 255);   /* High contrast near-white */
+  --color-text-subtle: oklch(0.82 0.01 255);   /* High quality cool grey details */
+  --color-text-muted: oklch(0.70 0.01 255);    /* Clear helper gray with contrast > 7:1 */
+
+  --box-shadow-elevation: 0 4px 16px oklch(0.05 0.005 255 / 0.6);
+}
+
+/* Fallback light theme layout following design rules */
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-canvas-slate: oklch(0.98 0.005 255);
+    --color-panel-slate: oklch(0.96 0.005 255);
+    --color-field-slate: oklch(0.93 0.005 255);
+    --color-input-focus: oklch(0.86 0.01 255);
+    --color-brand-primary: oklch(0.56 0.18 250);
+    --color-brand-primary-hover: oklch(0.50 0.18 250);
+    --color-cyan-accent: oklch(0.48 0.14 210);
+    --color-gold-highlight: oklch(0.72 0.15 85);
+    --color-emerald-active: oklch(0.48 0.15 145);
+    --color-emerald-hover: oklch(0.42 0.15 145);
+    --color-risk-danger: oklch(0.50 0.18 28);
+    --color-risk-danger-hover: oklch(0.44 0.18 28);
+
+    --color-text-luxury: oklch(0.12 0.01 255);
+    --color-text-subtle: oklch(0.32 0.01 255);
+    --color-text-muted: oklch(0.38 0.01 255);
+
+    --box-shadow-elevation: 0 4px 12px oklch(0.20 0.01 255 / 0.12);
+  }
+}
+
+
+body.theme-light {
+  --color-canvas-slate: oklch(0.98 0.005 255);
+  --color-panel-slate: oklch(0.96 0.005 255);
+  --color-field-slate: oklch(0.93 0.005 255);
+  --color-input-focus: oklch(0.86 0.01 255);
+  --color-brand-primary: oklch(0.56 0.18 250);
+  --color-brand-primary-hover: oklch(0.50 0.18 250);
+  --color-cyan-accent: oklch(0.48 0.14 210);
+  --color-gold-highlight: oklch(0.72 0.15 85);
+  --color-emerald-active: oklch(0.48 0.15 145);
+  --color-emerald-hover: oklch(0.42 0.15 145);
+  --color-risk-danger: oklch(0.50 0.18 28);
+  --color-risk-danger-hover: oklch(0.44 0.18 28);
+
+  --color-text-luxury: oklch(0.12 0.01 255);
+  --color-text-subtle: oklch(0.32 0.01 255);
+  --color-text-muted: oklch(0.38 0.01 255);
+
+  --box-shadow-elevation: 0 4px 12px oklch(0.20 0.01 255 / 0.12);
+}
+
+body.theme-dark {
+  --color-canvas-slate: oklch(0.12 0.012 255); /* Deep dark canvas background */
+  --color-panel-slate: oklch(0.16 0.012 255);  /* Slightly lighter panel */
+  --color-field-slate: oklch(0.11 0.012 255);  /* Deep terminal block background */
+  --color-input-focus: oklch(0.24 0.015 255);  /* Sleek boundary border */
+  --color-brand-primary: oklch(0.60 0.17 250); /* Sleek vibrant accent blue */
+  --color-brand-primary-hover: oklch(0.66 0.16 250); /* Lightened vibrant accent blue */
+  --color-cyan-accent: oklch(0.70 0.12 210);   /* Sleek cyan/teal for control handles */
+  --color-gold-highlight: oklch(0.85 0.12 100); /* Amber yellow for active nodes */
+  --color-emerald-active: oklch(0.72 0.14 145); /* Elegant crisp green */
+  --color-emerald-hover: oklch(0.78 0.13 145);
+  --color-risk-danger: oklch(0.58 0.18 28);    /* Deep ruby red for action warning */
+  --color-risk-danger-hover: oklch(0.64 0.17 28);
+
+  --color-text-luxury: oklch(0.95 0.01 255);   /* High contrast near-white */
+  --color-text-subtle: oklch(0.82 0.01 255);   /* High quality cool grey details */
+  --color-text-muted: oklch(0.70 0.01 255);    /* Clear helper gray with contrast > 7:1 */
+
+  --box-shadow-elevation: 0 4px 16px oklch(0.05 0.005 255 / 0.6);
+}

@@ -1,0 +1,10 @@
+@use 'shapePresets';
+@use 'commands';
+@use 'generatedCode';
+
+/* Right Config Sidebar sections wrapper */
+.configuration-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}

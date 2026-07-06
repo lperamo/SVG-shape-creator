@@ -1,0 +1,123 @@
+@use '../configuration/variables' as *;
+
+/* Component: Code Output Sheet Block */
+.output-card {
+  background-color: var(--color-panel-slate);
+  border-radius: $border-radius-standard;
+  border: 1px solid var(--color-input-focus);
+  padding: 20px;
+  box-shadow: var(--box-shadow-elevation);
+
+  .output-summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 12px;
+    width: 100%;
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .copy-code-btn {
+      background-color: var(--color-brand-primary);
+      border: none;
+      color: oklch(1 0 0);
+      font-family: $font-sans;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px oklch(0 0 0 / 0.15);
+      transition: background-color 0.1s ease;
+
+      &:hover {
+        background-color: var(--color-brand-primary-hover);
+      }
+
+      &:active {
+        transform: translateY(0.5px);
+      }
+    }
+  }
+
+  .code-tabs-row {
+    display: flex;
+    margin-bottom: 12px;
+
+    .code-tabs-group {
+      display: flex;
+      background-color: var(--color-field-slate);
+      border: 1px solid var(--color-input-focus);
+      border-radius: 6px;
+      padding: 2px;
+
+      .code-tab-button {
+        background: none;
+        border: none;
+        font-family: $font-sans;
+        font-size: 11px;
+        font-weight: 500;
+        padding: 4px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.1s ease, color 0.1s ease;
+
+        &:not(.active):not(:hover) {
+          color: var(--color-text-subtle);
+          background-color: transparent;
+        }
+        &:not(.active):hover {
+          color: var(--color-text-luxury);
+          background-color: var(--color-input-focus);
+        }
+        &.active {
+          background-color: var(--color-brand-primary);
+          color: oklch(1 0 0);
+        }
+      }
+    }
+  }
+
+  .code-preview-scroll-wrapper {
+    background-color: var(--color-field-slate);
+    border: 1px solid var(--color-input-focus);
+    border-radius: 8px;
+    padding: 14px;
+    overflow-x: auto;
+
+    .code-terminal-block {
+      margin: 0;
+      color: var(--color-brand-primary);
+      font-size: 12px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+  }
+}
+
+/* Component: Instructions & TIP drawer style */
+.info-collapsible-tip {
+  margin-top: 16px;
+  border-top: 1px dashed var(--color-input-focus);
+  padding-top: 14px;
+
+  .tip-heading {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-cyan-accent);
+    margin: 0 0 6px 0;
+  }
+
+  .tip-body {
+    font-size: 11.5px;
+    color: var(--color-text-subtle);
+    margin: 0;
+    line-height: 1.5;
+  }
+}

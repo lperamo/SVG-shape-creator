@@ -1,0 +1,62 @@
+@use '../../configuration/generic';
+@use '../../configuration/themes' as *;
+@use '../../configuration/variables' as *;
+
+@use '../../partials/header';
+@use '../../partials/animation';
+@use '../../partials/interactivePreview';
+@use '../../partials/rightPart';
+@use '../../partials/footer';
+
+@use '../../components/toastNotificationBanner';
+
+/* Component: Application Container Grid Layout */
+.application-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Component: main 2-column workspace layout */
+.workspace-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr;
+
+  @media (min-width: 1024px) {
+    align-items: start;
+    grid-template-columns: 520px 1fr;
+  }
+}
+
+/* Print CSS Stylesheets stylesheet */
+@media print {
+  body {
+    background-color: oklch(1 0 0);
+    color: oklch(0 0 0);
+  }
+  .application-container {
+    max-width: 100%;
+    padding: 0;
+  }
+  .canvas-grid-lines,
+  .canvas-interactive-svg,
+  .canvas-footer,
+  .command-creator-toolbar,
+  .reorder-arrow-btn,
+  .delete-row-btn,
+  .background-toggle-group,
+  .presets-card,
+  .animation-preset-card {
+    display: none !important;
+  }
+  .canvas-card {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+  }
+  .output-card {
+    border: 1px solid oklch(0.85 0 0);
+    box-shadow: none;
+  }
+}

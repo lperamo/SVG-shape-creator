@@ -1,0 +1,96 @@
+@use 'variables' as *;
+
+/* Base application wrapper context - Avoid general resets */
+body {
+  background-color: var(--color-canvas-slate);
+  color: var(--color-text-luxury);
+  font-family: $font-sans;
+  margin: 0;
+  min-height: 100vh;
+  padding: 0;
+}
+
+code, pre {
+  font-family: $font-monospace;
+}
+
+/* Card Collapsible/Accordion states via native details/summary */
+details {
+  summary {
+    list-style: none;
+    cursor: pointer;
+    user-select: none;
+    outline: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 16px;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-brand-primary);
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+
+    .section-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0;
+      color: var(--color-text-luxury);
+      transition: color 0.15s ease;
+      font-size: 15px;
+      font-weight: 600;
+
+      &:hover {
+        color: var(--color-brand-primary);
+
+        .chevron-svg {
+          color: var(--color-brand-primary);
+        }
+      }
+    }
+  }
+
+  .chevron-svg {
+    flex-shrink: 0;
+    color: var(--color-text-subtle);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &:not([open]) {
+    padding-bottom: 12px;
+
+    summary {
+      margin-bottom: 0;
+    }
+
+    .chevron-svg {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+/* Screen reader only utility class */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* High contrast outline states for keyboard input accessibility (RGAA) */
+a:focus, button:focus, input:focus, select:focus {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: 2px;
+}

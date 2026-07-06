@@ -1,0 +1,392 @@
+@use '../configuration/variables' as *;
+
+/* Left Workspace sections wrapper */
+.canvas-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Component: Visual Canvas Card Container */
+.canvas-card {
+  background-color: var(--color-panel-slate);
+  border-radius: $border-radius-standard;
+  border: 1px solid var(--color-input-focus);
+  padding: 20px;
+  box-shadow: var(--box-shadow-elevation);
+
+  .canvas-sub-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+
+    .section-help {
+      font-size: 12px;
+      color: var(--color-text-subtle);
+      margin: 0;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .label-heading {
+        font-size: 12px;
+        color: var(--color-text-muted);
+        font-weight: 500;
+      }
+
+      .background-toggle-group {
+        display: flex;
+        background-color: var(--color-field-slate);
+        border: 1px solid var(--color-input-focus);
+        border-radius: 6px;
+        padding: 2px;
+
+        .action-toggle-button {
+          background: none;
+          border: none;
+          font-family: $font-sans;
+          font-size: 11px;
+          font-weight: 500;
+          padding: 4px 8px;
+          border-radius: 4px;
+          cursor: pointer;
+
+          &:not(.active):not(:hover) {
+            color: var(--color-text-subtle);
+            background-color: transparent;
+          }
+          &:not(.active):hover {
+            color: var(--color-text-luxury);
+            background-color: var(--color-input-focus);
+          }
+          &.active {
+            background-color: var(--color-brand-primary);
+            color: oklch(1 0 0);
+          }
+        }
+      }
+    }
+  }
+
+  /* Drawing Stage frame with radial interactive sleek grid */
+  .draft-board-container {
+    width: 100%;
+    margin: 0 auto;
+
+    .draft-board-aspect-ratio {
+      position: relative;
+      width: 100%;
+      padding-bottom: 100%; /* 1:1 Aspect Ratio square draft */
+      background-color: var(--color-field-slate);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--color-input-focus);
+    }
+
+    .draft-board {
+      box-sizing: border-box;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      user-select: none;
+
+      /* Sleek Dotted Grid Backdrop */
+      &.bg-transparent {
+        background-image: radial-gradient(var(--color-input-focus) 1px, transparent 1px);
+        background-size: 20px 20px;
+        background-color: var(--color-field-slate);
+      }
+
+      &.bg-photo {
+        background-color: oklch(0.08 0.01 255);
+      }
+
+      &.bg-gradient {
+        background: radial-gradient(circle at center, oklch(0.20 0.04 250), oklch(0.08 0.01 250));
+      }
+    }
+  }
+
+  /* Interactive Cut Masking overlay element */
+  .clipped-element-visual {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 400px;
+    height: 400px;
+    transform-origin: top left;
+    transition: clip-path 0.15s ease-out;
+    pointer-events: none;
+    z-index: 1;
+
+    .background-photo-asset {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+
+      &.hidden {
+        display: none;
+      }
+    }
+
+    .background-gradient-asset {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-cyan-accent) 100%);
+    }
+  }
+
+  /* Coordinate axis overlays */
+  .canvas-grid-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    border: 1px solid oklch(1 0 0 / 0.05);
+
+    .grid-coordinate {
+      position: absolute;
+      color: var(--color-text-luxury);
+      font-family: $font-monospace;
+      font-size: 10px;
+      padding: 4px 6px;
+      background-color: var(--color-field-slate);
+      border: 1px solid var(--color-input-focus);
+      border-radius: 3px;
+      line-height: 1;
+
+      &.top-left { top: 4px; left: 4px; }
+      &.top-right { top: 4px; right: 4px; }
+      &.bottom-left { bottom: 4px; left: 4px; }
+      &.bottom-right { bottom: 4px; right: 4px; }
+    }
+  }
+
+  /* SVG Drag-and-Drop Controller overlay */
+  .canvas-interactive-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    overflow: visible;
+    pointer-events: none;
+    touch-action: none;
+
+    .svg-connecting-polyline {
+      fill: none;
+      stroke: var(--color-brand-primary);
+      stroke-width: 2.5;
+      stroke-dasharray: none;
+    }
+
+    .svg-auxiliary-line {
+      fill: none;
+      stroke: var(--color-text-subtle);
+      stroke-width: 1.5;
+      stroke-dasharray: 4 4;
+      opacity: 0.7;
+    }
+
+    /* Anchor circles on SVG visual panel */
+    .anchor-node-g {
+      pointer-events: auto;
+      cursor: grab;
+      touch-action: none;
+
+      &:active {
+        cursor: grabbing;
+      }
+
+      &:focus, &:focus-visible {
+        outline: none;
+      }
+
+      .anchor-ring-glow {
+        fill: var(--color-brand-primary);
+        opacity: 0.15;
+        r: 18px;
+        transition: r 0.2s ease, opacity 0.2s ease, fill 0.2s ease;
+      }
+
+      .anchor-circle {
+        fill: var(--color-panel-slate);
+        stroke: var(--color-brand-primary);
+        stroke-width: 2.5;
+        transition: stroke-width 0.15s ease;
+      }
+
+      .anchor-inner-dot {
+        fill: var(--color-brand-primary);
+      }
+
+      &:not(.selected-active):hover {
+        .anchor-ring-glow {
+          r: 25px;
+          opacity: 0.3;
+        }
+        .anchor-circle {
+          stroke: var(--color-cyan-accent);
+        }
+      }
+
+      &.selected-active {
+        .anchor-ring-glow {
+          r: 29px;
+          opacity: 0.45;
+          fill: var(--color-gold-highlight);
+        }
+        .anchor-circle {
+          stroke: var(--color-gold-highlight);
+          stroke-width: 3.5;
+        }
+        .anchor-inner-dot {
+          fill: var(--color-gold-highlight);
+        }
+      }
+
+      &:focus-visible {
+        .anchor-ring-glow {
+          r: 36px;
+          opacity: 0.65;
+          fill: var(--color-cyan-accent);
+        }
+        .anchor-circle {
+          stroke: var(--color-cyan-accent);
+          stroke-width: 4.5;
+        }
+      }
+    }
+
+    /* Control handles Bézier dots on SVG layer */
+    .control-handle-g {
+      pointer-events: auto;
+      cursor: grab;
+      touch-action: none;
+
+      &:active {
+        cursor: grabbing;
+      }
+
+      &:focus, &:focus-visible {
+        outline: none;
+      }
+
+      .ctrl-circle-glow {
+        fill: var(--color-cyan-accent);
+        opacity: 0.1;
+        r: 14px;
+        transition: r 0.2s ease, opacity 0.2s ease, fill 0.2s ease;
+      }
+
+      .control-point-outer {
+        fill: var(--color-field-slate);
+        stroke: var(--color-cyan-accent);
+        stroke-width: 1.5;
+      }
+
+      .control-point-inner {
+        fill: var(--color-cyan-accent);
+      }
+
+      &:not(.active-drag):hover {
+        .ctrl-circle-glow {
+          r: 21px;
+          opacity: 0.25;
+        }
+      }
+
+      &.active-drag {
+        .ctrl-circle-glow {
+          r: 25px;
+          opacity: 0.4;
+        }
+        .control-point-outer {
+          stroke: var(--color-gold-highlight);
+        }
+        .control-point-inner {
+          fill: var(--color-gold-highlight);
+        }
+      }
+
+      &:focus-visible {
+        .ctrl-circle-glow {
+          r: 28px;
+          opacity: 0.65;
+          fill: var(--color-gold-highlight);
+        }
+        .control-point-outer {
+          stroke: var(--color-gold-highlight);
+          stroke-width: 3.5;
+        }
+      }
+    }
+  }
+}
+
+/* Canvas metadata elements footer */
+.canvas-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14px;
+  font-family: $font-monospace;
+  font-size: 11px;
+
+  .canvas-meta-info {
+    display: flex;
+    gap: 16px;
+    color: var(--color-text-subtle);
+
+    .coordinate-readout {
+      color: var(--color-brand-primary);
+      font-weight: 600;
+    }
+  }
+
+  .canvas-zoom-controls {
+    display: flex;
+    gap: 8px;
+
+    .utility-action-button {
+      background: none;
+      font-size: 11px;
+      font-family: $font-sans;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 1px solid var(--color-input-focus);
+      color: var(--color-text-subtle);
+      transition: all 0.1s ease;
+
+      &:not(:hover) {
+        opacity: 0.85;
+      }
+      &:hover {
+        border-color: var(--color-brand-primary);
+        color: var(--color-text-luxury);
+        background-color: oklch(0.60 0.17 250 / 0.05);
+      }
+    }
+  }
+}
+
+.canvas-card {
+  summary {
+    .section-title {
+      font-size: 16px;
+    }
+  }
+}
