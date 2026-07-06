@@ -12,33 +12,35 @@
 
 /* Component: Application Container Grid Layout */
 .application-container {
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 24px;
+  margin          : 0 auto;
+  max-inline-size : 144rem * $font-size;
+  padding         : 2.4rem * $font-size;
 }
 
 /* Component: main 2-column workspace layout */
 .workspace-grid {
-  display: grid;
-  gap: 24px;
-  grid-template-columns: 1fr;
+  display               : grid;
+  gap                   : 2.4rem * $font-size;
+  grid-template-columns : 1fr;
 
-  @media (min-width: 1024px) {
-    align-items: start;
-    grid-template-columns: 520px 1fr;
+  @media (min-width : 102.4rem * $font-size) {
+    align-items           : start;
+    grid-template-columns : 52rem * $font-size 1fr;
   }
 }
 
 /* Print CSS Stylesheets stylesheet */
 @media print {
   body {
-    background-color: oklch(1 0 0);
-    color: oklch(0 0 0);
+    background-color : oklch(1 0 0);
+    color            : oklch(0 0 0);
   }
+
   .application-container {
-    max-width: 100%;
-    padding: 0;
+    max-inline-size : 100%;
+    padding         : 0;
   }
+
   .canvas-grid-lines,
   .canvas-interactive-svg,
   .canvas-footer,
@@ -48,15 +50,17 @@
   .background-toggle-group,
   .presets-card,
   .animation-preset-card {
-    display: none !important;
+    display : none !important;
   }
+
   .canvas-card {
-    border: none;
-    box-shadow: none;
-    background: transparent;
+    background : transparent;
+    border     : none;
+    box-shadow : none;
   }
+
   .output-card {
-    border: 1px solid oklch(0.85 0 0);
-    box-shadow: none;
+    border     : .1rem * $font-size solid oklch(.85 0 0);
+    box-shadow : none;
   }
 }

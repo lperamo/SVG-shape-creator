@@ -2,177 +2,178 @@
 
 /* Component: Animation workbench workspace */
 .animation-preset-card {
-  background-color: var(--color-panel-slate);
-  border-radius: $border-radius-standard;
-  border: 1px solid var(--color-input-focus);
-  padding: 20px;
-  box-shadow: var(--box-shadow-elevation);
+  background-color : var(--color-panel-slate);
+  border           : .1rem * $font-size solid var(--color-input-focus);
+  border-radius    : $border-radius-standard;
+  box-shadow       : var(--box-shadow-elevation);
+  padding          : 2rem * $font-size;
 
   .section-title {
-    font-size: 15px;
-    font-weight: 600;
-    margin: 0 0 6px 0;
+    font-size   : 1.5rem * $font-size;
+    font-weight : 600;
+    margin      : 0 0 .6rem * $font-size 0;
   }
 
   .section-help {
-    font-size: 12px;
-    color: var(--color-text-subtle);
-    margin: 0 0 16px 0;
-    line-height: 1.5;
+    color       : var(--color-text-subtle);
+    font-size   : 1.2rem * $font-size;
+    margin      : 0 0 1.6rem * $font-size 0;
+    line-height : 1.5;
   }
 
   .animation-workbench {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-    align-items: stretch;
+    align-items           : stretch;
+    display               : grid;
+    gap                   : 1.6rem * $font-size;
+    grid-template-columns : 1fr;
 
-    @media (min-width: 640px) {
-      grid-template-columns: 140px 1fr;
+    @media (min-width: 64rem * $font-size) {
+      grid-template-columns : 14rem * $font-size 1fr;
     }
   }
 
   .animation-stage {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--color-field-slate);
-    border-radius: 8px;
-    min-height: 140px;
-    height: 100%;
-    box-sizing: border-box;
-    border: 1px solid var(--color-input-focus);
+    align-items      : center;
+    background-color : var(--color-field-slate);
+    block-size       : 100%;
+    border           : .1rem * $font-size solid var(--color-input-focus);
+    border-radius    : .8rem * $font-size;
+    box-sizing       : border-box;
+    display          : flex;
+    justify-content  : center;
+    min-block-size   : 14rem * $font-size;
 
     .shifter-preview-box {
-      width: 100px;
-      height: 100px;
-      position: relative;
-      background-image: radial-gradient(var(--color-input-focus) 1px, transparent 1px);
-      background-size: 10px 10px;
-      border-radius: 4px;
-      overflow: hidden;
+      background-image : radial-gradient(var(--color-input-focus) .1rem * $font-size, transparent .1rem * $font-size);
+      background-size  : 1rem * $font-size 1rem * $font-size;
+      block-size       : 10rem * $font-size;
+      border-radius    : .4rem * $font-size;
+      inline-size      : 10rem * $font-size;
+      overflow         : hidden;
+      position         : relative;
 
       .shifter-moving-element {
-        width: 400px;
-        height: 400px;
-        position: absolute;
-        top: 0;
-        left: 0;
-        transform: scale(0.25);
-        transform-origin: top left;
-        background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-cyan-accent) 100%);
-        transition: clip-path 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-        pointer-events: none;
+        background         : linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-cyan-accent) 100%);
+        block-size         : 40rem * $font-size;
+        inline-size        : 40rem * $font-size;
+        inset-block-start  : 0;
+        inset-inline-start : 0;
+        pointer-events     : none;
+        position           : absolute;
+        transform          : scale(.25);
+        transform-origin   : top left;
+        transition         : clip-path 1.2s cubic-bezier(.4, 0, .2, 1);
       }
     }
   }
 
   .animation-controls {
-    display: flex;
-    flex-direction: column;
+    display        : flex;
+    flex-direction : column;
+    gap            : 1.4rem * $font-size;
     justify-content: flex-start;
-    gap: 14px;
 
     .state-actions-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
+      display   : flex;
+      flex-wrap : wrap;
+      gap       : 1rem * $font-size;
 
       .action-btn-green {
-        flex: 1 1 140px;
-        background-color: var(--color-field-slate);
-        border: 1px solid var(--color-brand-primary);
-        color: var(--color-brand-primary);
-        font-family: $font-sans;
-        font-weight: 500;
-        font-size: 11.5px;
-        padding: 8px 10px;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: all 0.1s ease;
-        white-space: nowrap;
-        text-align: center;
+        background-color : var(--color-field-slate);
+        border           : .1rem * $font-size solid var(--color-brand-primary);
+        border-radius    : .6rem * $font-size;
+        color            : var(--color-brand-primary);
+        cursor           : pointer;
+        flex             : 1 1 14rem * $font-size;
+        font-family      : $font-sans;
+        font-size        : 1.15rem * $font-size;
+        font-weight      : 500;
+        padding          : .8rem * $font-size 1rem * $font-size;
+        text-align       : center;
+        transition       : all .1s ease;
+        white-space      : nowrap;
 
         &:hover {
-          background-color: var(--color-brand-primary);
-          color: oklch(1 0 0);
+          background-color : var(--color-brand-primary);
+          color            : oklch(1 0 0);
         }
+
         &:active {
-          transform: translateY(1px);
+          transform : translateY(.1rem * $font-size);
         }
       }
     }
 
     .play-controls-row {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px 12px;
-      background-color: var(--color-field-slate);
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid var(--color-input-focus);
+      align-items      : center;
+      background-color : var(--color-field-slate);
+      border           : .1rem * $font-size solid var(--color-input-focus);
+      border-radius    : .8rem * $font-size;
+      display          : flex;
+      flex-wrap        : wrap;
+      gap              : 1rem * $font-size 1.2rem * $font-size;
+      padding          : 1rem * $font-size;
 
       .range-field-label {
-        font-size: 11px;
-        color: var(--color-text-subtle);
-        white-space: nowrap;
-        font-family: $font-monospace;
+        color       : var(--color-text-subtle);
+        font-family : $font-monospace;
+        font-size   : 1.1rem * $font-size;
+        white-space : nowrap;
       }
 
       .sc-range-slider {
-        flex: 1 1 100px;
-        min-width: 80px;
-        accent-color: var(--color-brand-primary);
-        cursor: pointer;
+        accent-color    : var(--color-brand-primary);
+        cursor          : pointer;
+        flex            : 1 1 10rem * $font-size;
+        min-inline-size : 8rem * $font-size;
       }
 
       .btn-play-trigger {
-        background-color: var(--color-brand-primary);
-        color: oklch(1 0 0);
-        border: none;
-        font-family: $font-sans;
-        font-size: 11.5px;
-        font-weight: 600;
-        padding: 7px 14px;
-        border-radius: 6px;
-        cursor: pointer;
-        box-shadow: 0 2px 8px oklch(0 0 0 / 0.2);
-        transition: all 0.1s ease;
-        white-space: nowrap;
+        background-color : var(--color-brand-primary);
+        border           : none;
+        border-radius    : .6rem * $font-size;
+        box-shadow       : 0 .2rem * $font-size .8rem * $font-size oklch(0 0 0 / .2);
+        color            : oklch(1 0 0);
+        cursor           : pointer;
+        font-family      : $font-sans;
+        font-size        : 1.15rem * $font-size;
+        font-weight      : 600;
+        padding          : .7rem * $font-size 1.4rem * $font-size;
+        transition       : all .1s ease;
+        white-space      : nowrap;
 
         &:hover {
-          background-color: var(--color-brand-primary-hover);
+          background-color : var(--color-brand-primary-hover);
         }
 
         &:active {
-          transform: scale(0.97);
+          transform : scale(.97);
         }
       }
     }
 
     .states-indicator-bar {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 6px 12px;
-      font-size: 11px;
-      color: var(--color-text-muted);
-      border-top: 1px dashed var(--color-input-focus);
-      padding-top: 8px;
+      border-block-start  : .1rem * $font-size dashed var(--color-input-focus);
+      color               : var(--color-text-muted);
+      display             : flex;
+      flex-wrap           : wrap;
+      font-size           : 1.1rem * $font-size;
+      gap                 : .6rem * $font-size 1.2rem * $font-size;
+      justify-content     : space-between;
+      padding-block-start : .8rem * $font-size;
 
       .state-node-status {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        white-space: nowrap;
+        align-items : center;
+        display     : flex;
+        gap         : .4rem * $font-size;
+        white-space : nowrap;
 
         .amber-highlight {
-          color: var(--color-gold-highlight);
+          color : var(--color-gold-highlight);
         }
 
         strong:not(.amber-highlight) {
-          color: var(--color-emerald-active);
+          color : var(--color-emerald-active);
         }
       }
     }

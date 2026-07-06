@@ -2,72 +2,74 @@
 
 /* Left Workspace sections wrapper */
 .canvas-section {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+  display        : flex;
+  flex-direction : column;
+  gap            : 2.4rem * $font-size;
 }
 
 /* Component: Visual Canvas Card Container */
 .canvas-card {
-  background-color: var(--color-panel-slate);
-  border-radius: $border-radius-standard;
-  border: 1px solid var(--color-input-focus);
-  padding: 20px;
-  box-shadow: var(--box-shadow-elevation);
+  background-color : var(--color-panel-slate);
+  border           : .1rem * $font-size solid var(--color-input-focus);
+  border-radius    : $border-radius-standard;
+  box-shadow       : var(--box-shadow-elevation);
+  padding          : 2rem * $font-size;
 
   .canvas-sub-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 16px;
+    align-items     : center;
+    display         : flex;
+    flex-wrap       : wrap;
+    gap             : 1.2rem * $font-size;
+    justify-content : space-between;
+    margin-block-end: 1.6rem * $font-size;
 
     .section-help {
-      font-size: 12px;
-      color: var(--color-text-subtle);
-      margin: 0;
+      color  : var(--color-text-subtle);
+      font-size : 1.2rem * $font-size;
+      margin : 0;
     }
 
     .toolbar-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      align-items : center;
+      display     : flex;
+      gap         : .8rem * $font-size;
 
       .label-heading {
-        font-size: 12px;
-        color: var(--color-text-muted);
-        font-weight: 500;
+        color       : var(--color-text-muted);
+        font-size   : 1.2rem * $font-size;
+        font-weight : 500;
       }
 
       .background-toggle-group {
-        display: flex;
-        background-color: var(--color-field-slate);
-        border: 1px solid var(--color-input-focus);
-        border-radius: 6px;
-        padding: 2px;
+        background-color : var(--color-field-slate);
+        border           : .1rem * $font-size solid var(--color-input-focus);
+        border-radius    : .6rem * $font-size;
+        display          : flex;
+        padding          : .2rem * $font-size;
 
         .action-toggle-button {
-          background: none;
-          border: none;
-          font-family: $font-sans;
-          font-size: 11px;
-          font-weight: 500;
-          padding: 4px 8px;
-          border-radius: 4px;
-          cursor: pointer;
+          background    : none;
+          border        : none;
+          border-radius : .4rem * $font-size;
+          cursor        : pointer;
+          font-family   : $font-sans;
+          font-size     : 1.1rem * $font-size;
+          font-weight   : 500;
+          padding       : .4rem * $font-size .8rem * $font-size;
 
           &:not(.active):not(:hover) {
-            color: var(--color-text-subtle);
-            background-color: transparent;
+            background-color : transparent;
+            color            : var(--color-text-subtle);
           }
+
           &:not(.active):hover {
-            color: var(--color-text-luxury);
-            background-color: var(--color-input-focus);
+            background-color : var(--color-input-focus);
+            color            : var(--color-text-luxury);
           }
+
           &.active {
-            background-color: var(--color-brand-primary);
-            color: oklch(1 0 0);
+            background-color : var(--color-brand-primary);
+            color            : oklch(1 0 0);
           }
         }
       }
@@ -76,260 +78,284 @@
 
   /* Drawing Stage frame with radial interactive sleek grid */
   .draft-board-container {
-    width: 100%;
-    margin: 0 auto;
+    inline-size : 100%;
+    margin      : 0 auto;
 
     .draft-board-aspect-ratio {
-      position: relative;
-      width: 100%;
-      padding-bottom: 100%; /* 1:1 Aspect Ratio square draft */
-      background-color: var(--color-field-slate);
-      border-radius: 8px;
-      overflow: hidden;
-      border: 1px solid var(--color-input-focus);
+      background-color  : var(--color-field-slate);
+      border            : .1rem * $font-size solid var(--color-input-focus);
+      border-radius     : .8rem * $font-size;
+      inline-size       : 100%;
+      overflow          : hidden;
+      padding-block-end : 100%;
+      position          : relative;
     }
 
     .draft-board {
-      box-sizing: border-box;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      cursor: crosshair;
-      user-select: none;
+      block-size         : 100%;
+      box-sizing         : border-box;
+      cursor             : crosshair;
+      inset-block-start  : 0;
+      inset-inline-start : 0;
+      inline-size        : 100%;
+      position           : absolute;
+      user-select        : none;
 
       /* Sleek Dotted Grid Backdrop */
       &.bg-transparent {
-        background-image: radial-gradient(var(--color-input-focus) 1px, transparent 1px);
-        background-size: 20px 20px;
-        background-color: var(--color-field-slate);
+        background-color : var(--color-field-slate);
+        background-image : radial-gradient(var(--color-input-focus) .1rem * $font-size, transparent .1rem * $font-size);
+        background-size  : 2rem * $font-size 2rem * $font-size;
       }
 
       &.bg-photo {
-        background-color: oklch(0.08 0.01 255);
+        background-color : oklch(.08 .01 255);
       }
 
       &.bg-gradient {
-        background: radial-gradient(circle at center, oklch(0.20 0.04 250), oklch(0.08 0.01 250));
+        background : radial-gradient(circle at center, oklch(.2 .04 250), oklch(.08 .01 250));
       }
     }
   }
 
   /* Interactive Cut Masking overlay element */
   .clipped-element-visual {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 400px;
-    height: 400px;
-    transform-origin: top left;
-    transition: clip-path 0.15s ease-out;
-    pointer-events: none;
-    z-index: 1;
+    block-size         : 40rem * $font-size;
+    inline-size        : 40rem * $font-size;
+    inset-inline-start : 0;
+    pointer-events     : none;
+    position           : absolute;
+    inset-block-start  : 0;
+    transform-origin   : top left;
+    transition         : clip-path .15s ease-out;
+    z-index            : 1;
 
     .background-photo-asset {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+      block-size  : 100%;
+      inline-size : 100%;
+      object-fit  : cover;
 
       &.hidden {
-        display: none;
+        display : none;
       }
     }
 
     .background-gradient-asset {
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-cyan-accent) 100%);
+      background  : linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-cyan-accent) 100%);
+      block-size  : 100%;
+      inline-size : 100%;
     }
   }
 
   /* Coordinate axis overlays */
   .canvas-grid-lines {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    border: 1px solid oklch(1 0 0 / 0.05);
+    block-size         : 100%;
+    border             : .1rem * $font-size solid oklch(1 0 0 / .05);
+    inset-block-start  : 0;
+    inset-inline-start : 0;
+    inline-size        : 100%;
+    pointer-events     : none;
+    position           : absolute;
 
     .grid-coordinate {
-      position: absolute;
-      color: var(--color-text-luxury);
-      font-family: $font-monospace;
-      font-size: 10px;
-      padding: 4px 6px;
-      background-color: var(--color-field-slate);
-      border: 1px solid var(--color-input-focus);
-      border-radius: 3px;
-      line-height: 1;
+      background-color : var(--color-field-slate);
+      border           : .1rem * $font-size solid var(--color-input-focus);
+      border-radius    : .3rem * $font-size;
+      color            : var(--color-text-luxury);
+      font-family      : $font-monospace;
+      font-size        : 1rem * $font-size;
+      line-height      : 1;
+      padding          : .4rem * $font-size .6rem * $font-size;
+      position         : absolute;
 
-      &.top-left { top: 4px; left: 4px; }
-      &.top-right { top: 4px; right: 4px; }
-      &.bottom-left { bottom: 4px; left: 4px; }
-      &.bottom-right { bottom: 4px; right: 4px; }
+      &.top-left {
+        inset-block-start  : .4rem * $font-size;
+        inset-inline-start : .4rem * $font-size;
+      }
+
+      &.top-right {
+        inset-block-start : .4rem * $font-size;
+        inset-inline-end  : .4rem * $font-size;
+      }
+
+      &.bottom-left {
+        inset-block-end    : .4rem * $font-size;
+        inset-inline-start : .4rem * $font-size;
+      }
+
+      &.bottom-right {
+        inset-block-end  : .4rem * $font-size;
+        inset-inline-end : .4rem * $font-size;
+      }
     }
   }
 
   /* SVG Drag-and-Drop Controller overlay */
   .canvas-interactive-svg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 2;
-    overflow: visible;
-    pointer-events: none;
-    touch-action: none;
+    block-size         : 100%;
+    inset-block-start  : 0;
+    inset-inline-start : 0;
+    inline-size        : 100%;
+    overflow           : visible;
+    pointer-events     : none;
+    position           : absolute;
+    touch-action       : none;
+    z-index            : 2;
 
     .svg-connecting-polyline {
-      fill: none;
-      stroke: var(--color-brand-primary);
-      stroke-width: 2.5;
-      stroke-dasharray: none;
+      fill             : none;
+      stroke           : var(--color-brand-primary);
+      stroke-dasharray : none;
+      stroke-width     : .25rem * $font-size;
     }
 
     .svg-auxiliary-line {
-      fill: none;
-      stroke: var(--color-text-subtle);
-      stroke-width: 1.5;
-      stroke-dasharray: 4 4;
-      opacity: 0.7;
+      fill             : none;
+      opacity          : .7;
+      stroke           : var(--color-text-subtle);
+      stroke-dasharray : 4 4;
+      stroke-width     : 1.5;
     }
 
     /* Anchor circles on SVG visual panel */
     .anchor-node-g {
-      pointer-events: auto;
-      cursor: grab;
-      touch-action: none;
+      cursor         : grab;
+      pointer-events : auto;
+      touch-action   : none;
 
       &:active {
-        cursor: grabbing;
+        cursor : grabbing;
       }
 
-      &:focus, &:focus-visible {
-        outline: none;
+      &:focus,
+      &:focus-visible {
+        outline : none;
       }
 
       .anchor-ring-glow {
-        fill: var(--color-brand-primary);
-        opacity: 0.15;
-        r: 18px;
-        transition: r 0.2s ease, opacity 0.2s ease, fill 0.2s ease;
+        fill       : var(--color-brand-primary);
+        opacity    : .15;
+        r          : 1.8rem * $font-size;
+        transition : r .2s ease, opacity .2s ease, fill .2s ease;
       }
 
       .anchor-circle {
-        fill: var(--color-panel-slate);
-        stroke: var(--color-brand-primary);
-        stroke-width: 2.5;
-        transition: stroke-width 0.15s ease;
+        fill         : var(--color-panel-slate);
+        stroke       : var(--color-brand-primary);
+        stroke-width : 2.5;
+        transition   : stroke-width .15s ease;
       }
 
       .anchor-inner-dot {
-        fill: var(--color-brand-primary);
+        fill : var(--color-brand-primary);
       }
 
       &:not(.selected-active):hover {
         .anchor-ring-glow {
-          r: 25px;
-          opacity: 0.3;
+          opacity : .3;
+          r       : 2.5rem * $font-size;
         }
+
         .anchor-circle {
-          stroke: var(--color-cyan-accent);
+          stroke : var(--color-cyan-accent);
         }
       }
 
       &.selected-active {
         .anchor-ring-glow {
-          r: 29px;
-          opacity: 0.45;
-          fill: var(--color-gold-highlight);
+          fill    : var(--color-gold-highlight);
+          opacity : .45;
+          r       : 2.9rem * $font-size;
         }
+
         .anchor-circle {
-          stroke: var(--color-gold-highlight);
-          stroke-width: 3.5;
+          stroke       : var(--color-gold-highlight);
+          stroke-width : 3.5;
         }
+
         .anchor-inner-dot {
-          fill: var(--color-gold-highlight);
+          fill : var(--color-gold-highlight);
         }
       }
 
       &:focus-visible {
         .anchor-ring-glow {
-          r: 36px;
-          opacity: 0.65;
-          fill: var(--color-cyan-accent);
+          fill    : var(--color-cyan-accent);
+          opacity : .65;
+          r       : 3.6rem * $font-size;
         }
+
         .anchor-circle {
-          stroke: var(--color-cyan-accent);
-          stroke-width: 4.5;
+          stroke       : var(--color-cyan-accent);
+          stroke-width : 4.5;
         }
       }
     }
 
     /* Control handles Bézier dots on SVG layer */
     .control-handle-g {
-      pointer-events: auto;
-      cursor: grab;
-      touch-action: none;
+      cursor         : grab;
+      pointer-events : auto;
+      touch-action   : none;
 
       &:active {
-        cursor: grabbing;
+        cursor : grabbing;
       }
 
-      &:focus, &:focus-visible {
-        outline: none;
+      &:focus,
+      &:focus-visible {
+        outline : none;
       }
 
       .ctrl-circle-glow {
-        fill: var(--color-cyan-accent);
-        opacity: 0.1;
-        r: 14px;
-        transition: r 0.2s ease, opacity 0.2s ease, fill 0.2s ease;
+        fill       : var(--color-cyan-accent);
+        opacity    : .1;
+        r          : 1.4rem * $font-size;
+        transition : r .2s ease, opacity .2s ease, fill .2s ease;
       }
 
       .control-point-outer {
-        fill: var(--color-field-slate);
-        stroke: var(--color-cyan-accent);
-        stroke-width: 1.5;
+        fill         : var(--color-field-slate);
+        stroke       : var(--color-cyan-accent);
+        stroke-width : 1.5;
       }
 
       .control-point-inner {
-        fill: var(--color-cyan-accent);
+        fill : var(--color-cyan-accent);
       }
 
       &:not(.active-drag):hover {
         .ctrl-circle-glow {
-          r: 21px;
-          opacity: 0.25;
+          opacity : .25;
+          r       : 2.1rem * $font-size;
         }
       }
 
       &.active-drag {
         .ctrl-circle-glow {
-          r: 25px;
-          opacity: 0.4;
+          opacity : .4;
+          r       : 2.5rem * $font-size;
         }
+
         .control-point-outer {
-          stroke: var(--color-gold-highlight);
+          stroke : var(--color-gold-highlight);
         }
+
         .control-point-inner {
-          fill: var(--color-gold-highlight);
+          fill : var(--color-gold-highlight);
         }
       }
 
       &:focus-visible {
         .ctrl-circle-glow {
-          r: 28px;
-          opacity: 0.65;
-          fill: var(--color-gold-highlight);
+          fill    : var(--color-gold-highlight);
+          opacity : .65;
+          r       : 2.8rem * $font-size;
         }
+
         .control-point-outer {
-          stroke: var(--color-gold-highlight);
-          stroke-width: 3.5;
+          stroke       : var(--color-gold-highlight);
+          stroke-width : 3.5;
         }
       }
     }
@@ -338,46 +364,47 @@
 
 /* Canvas metadata elements footer */
 .canvas-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 14px;
-  font-family: $font-monospace;
-  font-size: 11px;
+  align-items        : center;
+  display            : flex;
+  font-family        : $font-monospace;
+  font-size          : 1.1rem * $font-size;
+  justify-content    : space-between;
+  margin-block-start : 1.4rem * $font-size;
 
   .canvas-meta-info {
-    display: flex;
-    gap: 16px;
-    color: var(--color-text-subtle);
+    color   : var(--color-text-subtle);
+    display : flex;
+    gap     : 1.6rem * $font-size;
 
     .coordinate-readout {
-      color: var(--color-brand-primary);
-      font-weight: 600;
+      color       : var(--color-brand-primary);
+      font-weight : 600;
     }
   }
 
   .canvas-zoom-controls {
-    display: flex;
-    gap: 8px;
+    display : flex;
+    gap     : .8rem * $font-size;
 
     .utility-action-button {
-      background: none;
-      font-size: 11px;
-      font-family: $font-sans;
-      padding: 4px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      border: 1px solid var(--color-input-focus);
-      color: var(--color-text-subtle);
-      transition: all 0.1s ease;
+      background    : none;
+      border        : .1rem * $font-size solid var(--color-input-focus);
+      border-radius : .4rem * $font-size;
+      color         : var(--color-text-subtle);
+      cursor        : pointer;
+      font-family   : $font-sans;
+      font-size     : 1.1rem * $font-size;
+      padding       : .4rem * $font-size 1rem * $font-size;
+      transition    : all .1s ease;
 
       &:not(:hover) {
-        opacity: 0.85;
+        opacity : .85;
       }
+
       &:hover {
-        border-color: var(--color-brand-primary);
-        color: var(--color-text-luxury);
-        background-color: oklch(0.60 0.17 250 / 0.05);
+        background-color : oklch(.6 .17 250 / .05);
+        border-color     : var(--color-brand-primary);
+        color            : var(--color-text-luxury);
       }
     }
   }
@@ -386,7 +413,7 @@
 .canvas-card {
   summary {
     .section-title {
-      font-size: 16px;
+      font-size : 1.6rem * $font-size;
     }
   }
 }

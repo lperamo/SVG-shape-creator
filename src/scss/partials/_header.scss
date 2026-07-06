@@ -2,139 +2,139 @@
 
 /* Component: App Header Block */
 .application-header {
-  margin-bottom: 24px;
-  padding: 16px 20px;
-  background-color: var(--color-panel-slate);
-  border: 1px solid var(--color-input-focus);
-  border-radius: $border-radius-standard;
+  background-color : var(--color-panel-slate);
+  border           : .1rem * $font-size solid var(--color-input-focus);
+  border-radius    : $border-radius-standard;
+  margin-block-end : 2.4rem * $font-size;
+  padding          : 1.6rem * $font-size 2rem * $font-size;
 
   .header-top-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 8px;
+    align-items      : center;
+    display          : flex;
+    flex-wrap        : wrap;
+    gap              : 1.2rem * $font-size;
+    justify-content  : space-between;
+    margin-block-end : .8rem * $font-size;
 
     .branding-group {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 0;
+      align-items      : center;
+      display          : inline-flex;
+      gap              : 1.2rem * $font-size;
+      margin-block-end : 0;
 
       .logo-accent {
-        width: 16px;
-        height: 16px;
-        background-color: var(--color-brand-primary);
-        border-radius: 4px; /* Sleek square rounded logo */
-        box-shadow: 0 0 12px var(--color-brand-primary);
+        background-color : var(--color-brand-primary);
+        block-size       : 1.6rem * $font-size;
+        border-radius    : .4rem * $font-size;
+        box-shadow       : 0 0 1.2rem * $font-size var(--color-brand-primary);
+        inline-size      : 1.6rem * $font-size;
       }
 
       .header-title {
-        font-size: 20px;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        color: var(--color-text-luxury);
-        margin: 0;
+        color          : var(--color-text-luxury);
+        font-size      : 2rem * $font-size;
+        font-weight    : 700;
+        letter-spacing : -.02em;
+        margin         : 0;
       }
 
       .badge-tag {
-        background-color: oklch(0.60 0.17 250 / 0.1);
-        color: var(--color-brand-primary);
-        font-size: 11px;
-        font-weight: 600;
-        padding: 4px 8px;
-        border-radius: $border-radius-pill;
-        border: 1px solid oklch(0.60 0.17 250 / 0.25);
+        background-color : oklch(.6 .17 250 / .1);
+        border           : .1rem * $font-size solid oklch(.6 .17 250 / .25);
+        border-radius    : $border-radius-pill;
+        color            : var(--color-brand-primary);
+        font-size        : 1.1rem * $font-size;
+        font-weight      : 600;
+        padding          : .4rem * $font-size .8rem * $font-size;
       }
     }
   }
 
   .header-controls-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    align-items : center;
+    display     : flex;
+    gap         : 1rem * $font-size;
   }
 
   .theme-switcher-group {
-    display: inline-flex;
-    background-color: var(--color-input-background);
-    border: 1px solid var(--color-input-border);
-    border-radius: $border-radius-standard;
-    padding: 2px;
-    gap: 2px;
-    align-items: center;
+    align-items      : center;
+    background-color : var(--color-input-background);
+    border           : .1rem * $font-size solid var(--color-input-border);
+    border-radius    : $border-radius-standard;
+    display          : inline-flex;
+    gap              : .2rem * $font-size;
+    padding          : .2rem * $font-size;
 
     .theme-btn {
-      background: none;
-      border: none;
-      color: var(--color-text-subtle);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 5px;
-      width: 25px;
-      height: 25px;
-      border-radius: calc($border-radius-standard - 2px);
-      cursor: pointer;
-      transition: all 0.2s ease-in-out;
+      align-items     : center;
+      background      : none;
+      block-size      : 2.5rem * $font-size;
+      border          : none;
+      border-radius   : calc($border-radius-standard - .2rem * $font-size);
+      color           : var(--color-text-subtle);
+      cursor          : pointer;
+      display         : inline-flex;
+      inline-size     : 2.5rem * $font-size;
+      justify-content : center;
+      padding         : .5rem * $font-size;
+      transition      : all .2s ease-in-out;
 
       &:hover:not(.active) {
-        color: var(--color-text-luxury);
-        background-color: oklch(0.60 0.17 250 / 0.08);
+        background-color : oklch(.6 .17 250 / .08);
+        color            : var(--color-text-luxury);
       }
 
       &.active {
-        color: var(--color-text-luxury);
-        background-color: var(--color-brand-primary);
-        box-shadow: 0 0 8px var(--color-brand-primary);
+        background-color : var(--color-brand-primary);
+        box-shadow       : 0 0 .8rem * $font-size var(--color-brand-primary);
+        color            : var(--color-text-luxury);
       }
 
       svg {
-        stroke: currentColor;
-        display: block;
+        display : block;
+        stroke  : currentColor;
       }
     }
   }
 
   .language-switcher {
-    display: inline-flex;
-    background-color: var(--color-input-background);
-    border: 1px solid var(--color-input-border);
-    border-radius: $border-radius-standard;
-    padding: 2px;
-    gap: 2px;
-    align-items: center;
+    align-items      : center;
+    background-color : var(--color-input-background);
+    border           : .1rem * $font-size solid var(--color-input-border);
+    border-radius    : $border-radius-standard;
+    display          : inline-flex;
+    gap              : .2rem * $font-size;
+    padding          : .2rem * $font-size;
 
     .lang-btn {
-      background: none;
-      border: none;
-      color: var(--color-text-subtle);
-      font-size: 11px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: calc($border-radius-standard - 2px);
-      cursor: pointer;
-      transition: all 0.2s ease-in-out;
+      background    : none;
+      border        : none;
+      border-radius : calc($border-radius-standard - .2rem * $font-size);
+      color         : var(--color-text-subtle);
+      cursor        : pointer;
+      font-size     : 1.1rem * $font-size;
+      font-weight   : 600;
+      padding       : .4rem * $font-size 1rem * $font-size;
+      transition    : all .2s ease-in-out;
 
       &:hover:not(.active) {
-        color: var(--color-text-luxury);
-        background-color: oklch(0.60 0.17 250 / 0.08);
+        background-color : oklch(.6 .17 250 / .08);
+        color            : var(--color-text-luxury);
       }
 
       &.active {
-        color: var(--color-text-luxury);
-        background-color: var(--color-brand-primary);
-        box-shadow: 0 0 8px var(--color-brand-primary);
+        background-color : var(--color-brand-primary);
+        box-shadow       : 0 0 .8rem * $font-size var(--color-brand-primary);
+        color            : var(--color-text-luxury);
       }
     }
   }
 
   .header-description {
-    font-size: 13px;
-    color: var(--color-text-subtle);
-    max-width: 850px;
-    margin: 0;
-    line-height: 1.5;
+    color           : var(--color-text-subtle);
+    font-size       : 1.3rem * $font-size;
+    line-height     : 1.5;
+    margin          : 0;
+    max-inline-size : 85rem * $font-size;
   }
 }

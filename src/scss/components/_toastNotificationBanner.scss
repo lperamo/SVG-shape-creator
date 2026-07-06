@@ -1,25 +1,27 @@
+@use '../configuration/variables' as *;
+
 /* Component: Toast notifier popups */
 .toast-notification-banner {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  background-color: var(--color-emerald-active);
-  color: oklch(0.12 0.012 255);
-  font-weight: 600;
-  font-size: 13px;
-  padding: 12px 20px;
-  border-radius: 6px;
-  box-shadow: var(--box-shadow-elevation);
-  z-index: 1000;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(20px);
-  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease, visibility 0.2s;
-  pointer-events: none;
+  background-color : var(--color-emerald-active);
+  border-radius    : .6rem * $font-size;
+  box-shadow       : var(--box-shadow-elevation);
+  color            : oklch(.12 .012 255);
+  font-size        : 1.3rem * $font-size;
+  font-weight      : 600;
+  inset-block-end  : 2.4rem * $font-size;
+  inset-inline-end : 2.4rem * $font-size;
+  opacity          : 0;
+  padding          : 1.2rem * $font-size 2rem * $font-size;
+  pointer-events   : none;
+  position         : fixed;
+  transform        : translateY(2rem * $font-size);
+  transition       : transform .25s cubic-bezier(.175, .885, .32, 1.275), opacity .2s ease, visibility .2s;
+  visibility       : hidden;
+  z-index          : 1000;
 
   &.visible-state {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
+    opacity    : 1;
+    transform  : translateY(0);
+    visibility : visible;
   }
 }

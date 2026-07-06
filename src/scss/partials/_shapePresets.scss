@@ -2,112 +2,116 @@
 
 /* Component: Presets Selector Card */
 .presets-card {
-  background-color: var(--color-panel-slate);
-  border-radius: $border-radius-standard;
-  border: 1px solid var(--color-input-focus);
-  padding: 20px;
-  box-shadow: var(--box-shadow-elevation);
+  background-color : var(--color-panel-slate);
+  border           : .1rem * $font-size solid var(--color-input-focus);
+  border-radius    : $border-radius-standard;
+  box-shadow       : var(--box-shadow-elevation);
+  padding          : 2rem * $font-size;
 
   .section-title {
-    font-size: 15px;
-    font-weight: 600;
-    margin: 0 0 4px 0;
+    font-size   : 1.5rem * $font-size;
+    font-weight : 600;
+    margin      : 0 0 .4rem * $font-size 0;
   }
 
   .section-help {
-    font-size: 12px;
-    color: var(--color-text-subtle);
-    margin: 0 0 14px 0;
+    color     : var(--color-text-subtle);
+    font-size : 1.2rem * $font-size;
+    margin    : 0 0 1.4rem * $font-size 0;
   }
 
   .presets-list {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
+    display               : grid;
+    gap                   : 1.2rem * $font-size;
+    grid-template-columns : repeat(3, 1fr);
 
-    @media (min-width: 480px) {
-      grid-template-columns: repeat(4, 1fr);
+    @media (min-width : 48rem * $font-size) {
+      grid-template-columns : repeat(4, 1fr);
     }
-    @media (min-width: 768px) {
-      grid-template-columns: repeat(5, 1fr);
+
+    @media (min-width : 76.8rem * $font-size) {
+      grid-template-columns : repeat(5, 1fr);
     }
-    @media (min-width: 1024px) {
-      grid-template-columns: repeat(6, 1fr);
+
+    @media (min-width : 102.4rem * $font-size) {
+      grid-template-columns : repeat(6, 1fr);
     }
 
     .preset-item-card {
-      background-color: var(--color-field-slate);
-      border: 1px solid var(--color-input-focus);
-      border-radius: 8px;
-      padding: 10px;
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.1s ease;
-      font-family: inherit;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 108px;
+      align-items      : center;
+      background-color : var(--color-field-slate);
+      border           : .1rem * $font-size solid var(--color-input-focus);
+      border-radius    : .8rem * $font-size;
+      cursor           : pointer;
+      display          : flex;
+      flex-direction   : column;
+      font-family      : inherit;
+      justify-content  : flex-start;
+      min-block-size   : 10.8rem * $font-size;
+      padding          : 1rem * $font-size;
+      text-align       : center;
+      transition       : all .1s ease;
 
       .preset-icon-container {
-        position: relative;
-        width: 48px;
-        height: 48px;
-        background-color: var(--color-canvas-slate);
-        border: 1px solid var(--color-input-focus);
-        border-radius: 6px;
-        overflow: hidden;
-        margin-bottom: 6px;
-        flex-shrink: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: border-color 0.1s ease, background-color 0.1s ease;
+        align-items      : center;
+        background-color : var(--color-canvas-slate);
+        block-size       : 4.8rem * $font-size;
+        border           : .1rem * $font-size solid var(--color-input-focus);
+        border-radius    : .6rem * $font-size;
+        display          : flex;
+        flex-shrink      : 0;
+        inline-size      : 4.8rem * $font-size;
+        justify-content  : center;
+        margin-block-end : .6rem * $font-size;
+        overflow         : hidden;
+        position         : relative;
+        transition       : border-color .1s ease, background-color .1s ease;
       }
 
       .preset-icon-shape {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 400px;
-        height: 400px;
-        background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-cyan-accent) 100%);
-        transform-origin: top left;
-        transform: scale(0.12);
-        pointer-events: none;
+        background         : linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-cyan-accent) 100%);
+        block-size         : 40rem * $font-size;
+        inline-size        : 40rem * $font-size;
+        inset-block-start  : 0;
+        inset-inline-start : 0;
+        pointer-events     : none;
+        position           : absolute;
+        transform          : scale(.12);
+        transform-origin   : top left;
       }
 
       .preset-name {
-        font-size: 11.5px;
-        font-weight: 600;
-        color: var(--color-text-luxury);
-        line-height: 1.25;
-        text-align: center;
-        word-break: break-word;
-        margin: 2px 0 0 0;
+        color       : var(--color-text-luxury);
+        font-size   : 1.15rem * $font-size;
+        font-weight : 600;
+        line-height : 1.25;
+        margin      : 2px 0 0 0;
+        text-align  : center;
+        word-break  : break-word;
       }
 
       &:not(.active-setting):not(:hover) {
-        border-color: var(--color-input-focus);
-        background-color: var(--color-field-slate);
+        background-color : var(--color-field-slate);
+        border-color     : var(--color-input-focus);
       }
+
       &:not(.active-setting):hover {
-        border-color: var(--color-brand-primary);
-        background-color: oklch(0.60 0.17 250 / 0.05);
+        background-color : oklch(.6 .17 250 / .05);
+        border-color     : var(--color-brand-primary);
 
         .preset-icon-container {
-          border-color: var(--color-brand-primary);
+          border-color : var(--color-brand-primary);
         }
       }
+
       &.active-setting {
-        border-color: var(--color-brand-primary);
-        background-color: oklch(0.60 0.17 250 / 0.1);
-        box-shadow: 0 0 10px oklch(0.60 0.17 250 / 0.15);
+        background-color : oklch(.6 .17 250 / .1);
+        border-color     : var(--color-brand-primary);
+        box-shadow       : 0 0 1rem * $font-size oklch(.6 .17 250 / .15);
 
         .preset-icon-container {
-          border-color: var(--color-brand-primary);
-          background-color: oklch(0.60 0.17 250 / 0.05);
+          background-color : oklch(.6 .17 250 / .05);
+          border-color     : var(--color-brand-primary);
         }
       }
     }

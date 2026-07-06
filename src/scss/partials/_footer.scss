@@ -1,31 +1,33 @@
+@use '../configuration/variables' as *;
+
 /* Component: Application Footer */
 .app-footer {
-  margin-top: 40px;
-  padding: 24px 0;
-  border-top: 1px solid var(--color-input-focus);
-  text-align: center;
+  border-block-start : .1rem * $font-size solid var(--color-input-focus);
+  margin-block-start : 4rem * $font-size;
+  padding            : 2.4rem * $font-size 0;
+  text-align         : center;
 
   .footer-text {
-    margin: 0 0 12px 0;
-    font-size: 13px;
-    color: var(--color-text-muted);
+    color     : var(--color-text-muted);
+    font-size : 1.3rem * $font-size;
+    margin    : 0 0 1.2rem * $font-size 0;
   }
 
   .footer-links {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
+    display         : flex;
+    gap             : 2rem * $font-size;
+    justify-content : center;
 
     a {
-      color: var(--color-brand-primary);
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 500;
-      transition: color 0.2s;
+      color           : var(--color-brand-primary);
+      font-size       : 1.3rem * $font-size;
+      font-weight     : 500;
+      text-decoration : none;
+      transition      : color .2s;
 
       &:hover {
-        text-decoration: underline;
-        color: var(--color-brand-primary-hover);
+        color           : var(--color-brand-primary-hover);
+        text-decoration : underline;
       }
     }
   }

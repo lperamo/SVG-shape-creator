@@ -1,10 +1,12 @@
+@use '../configuration/variables' as *;
+
 @use 'shapePresets';
 @use 'commands';
 @use 'generatedCode';
 
 /* Right Config Sidebar sections wrapper */
 .configuration-section {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+  display        : flex;
+  flex-direction : column;
+  gap            : 2.4rem * $font-size;
 }
