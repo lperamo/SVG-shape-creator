@@ -1,27 +1,93 @@
 # Project Summary: CSS shape() Generator
 
 ## Project Intent
-An interactive, high-fidelity browser-based graphical utility to edit and generate standard level 2 `clip-path: shape(...)` declarations. By replacing tedious coordinate calculations and constant browser refreshes with graphical anchors, users can draw, edit, and animate complex silhouettes in real time.
+An interactive browser-based graphical utility to edit and generate standard level 2 `clip-path: shape(...)`
+declarations. It replaces manual coordinate calculations and constant browser refreshes with graphical anchors to
+draw, edit, and animate complex silhouettes in real time.
 
 ## Specifications and Constraints
-- **Zero dependencies**: No bloated JavaScript or CSS frameworks are present; the application runs exclusively on pure vanilla TypeScript with clean, tailored SCSS styles. We completely avoided global stylesheet resets to prevent side-effects.
-- **Ergonomics & Performance**: Built with "stable input focus" so that typing values directly in the sidebar edits the shape dynamically, while mouse dragging on the interactive canvas updates values in the input field without losing keyboard target focus.
-- **No abbreviations**: Every single variable, parameter, and property is fully expanded (e.g., `xCoordinate` instead of `x`, `syntaxModifier` instead of `subType`, `firstControlCircle` instead of `ctrlRef`).
-- **Sleek Interface & Modern Colors**: Upgraded with a professional **Sleek Interface** developer-centric visuals. Color styling is designed exclusively using modern `oklch` color spaces (`oklch(L C H)`), delivering rich midnight dark panel layers (`#0F1115`, `#161B22`, `#0D1117`) and glowing electric/blue active handle high-contrast layouts.
-- **Responsive Mode & Support**: Seamless fallback color scaling accommodates system light themes (`body.theme-light` & `(prefers-color-scheme: light)`) as well as tailored printing layouts (`@media print`) that strip interactive elements to optimize physical print outputs. Also features comprehensive bright / dark color-scheme layouts.
-- **Accessibility (RGAA)**: Labels are strictly associated with inputs to support screen readers, high-contrast outlines are present on active elements, and focus states have standard visible outline offsets.
+- **Zero Dependencies**: Built exclusively with pure vanilla TypeScript and SCSS styles, completely avoiding CSS
+  resets and external JS/CSS frameworks to ensure a lightweight footprint and zero side-effects.
+- **Stable Input Focus**: Designed so that typing values directly in sidebar inputs edits the shape dynamically,
+  while pointer dragging on the interactive canvas updates values in input fields without stealing keyboard focus.
+- **Expanded Variable Naming**: Complete rejection of abbreviations in the codebase to improve readability and
+  long-term maintainability (e.g., using `xCoordinate` instead of `x`, `syntaxModifier` instead of `subType`,
+  `firstControlCircle` instead of `ctrlRef`).
+- **OKLCH Color Space**: Styled using native CSS `oklch(L C H)` color functions for modern dark and light palettes,
+  featuring dark panel layers (`#0F1115`, `#161B22`, `#0D1117`) and high-contrast active handle layouts.
+- **Responsive Mode & Support**: Automatic fallback layout accommodating light themes (`body.theme-light` &
+  `(prefers-color-scheme: light)`) and tailored print layouts (`@media print`) that strip interactive controls to
+  optimize physical print outputs.
+- **Accessibility (RGAA/WCAG)**: Form labels are strictly linked with inputs, high-contrast outlines are present on
+  active elements, and focus states have standard visible outline offsets.
 
 ## Features Implemented
-1. **Interactive SVG Painting Canvas**: A highly responsive 400x400 grid overlaid with active anchors. Highlights active selection steps and supports direct mouse or touch pointer drag operations. Includes cursor coordinates readout.
-2. **Double-Click Node Insertion (Context-Aware Placement)**: Users can double-click anywhere inside the grid to dynamically place a new `line to` anchor. If an anchor is currently selected, the new point is inserted immediately *after* the selected command in the path instead of at the end. This allows intuitive point insertion or path splicing anywhere in the shape sequence.
-3. **Bespoke Preset Library**: Significantly enriched with a comprehensive selection of 36 high-fidelity, premium geometric shape presets (including speech bubble, sacred heart, 5-point star, national shield, wave banner, octagonal badge, teardrop, crescent moon, infinity, classic hourglass, solar eclipse arc, triangle, trapezoid, parallelogram, rhombus, pentagon, hexagon, heptagon, octagon, nonagon, decagon, bevel, rabbet, left arrow, right arrow, left point, right point, left chevron, right chevron, cross, message, close, frame, inset, circle, and ellipse). Each preset is dynamically rendered as a gorgeous visual micro-icon inside its grid card using real-time inline CSS `shape()` masks and high-contrast gradients, eliminating the need to read complex textual descriptions to find shapes. This covers all classic polygon standards, UI indicators, and curve examples, creating an incredibly rich library matching professional designer toolkits.
-4. **Transition Animation Player (Keyframe Workbench)**: Lets developers save a "State A" shape configuration, modify the path on screen, save it to "State B", and play a genuine CSS transition loop on a preview element with customized durations using a range slider.
-5. **Universal Unit Converter Suite with REM Support**: Allows changing all coordinates across the entire shape between pixels (`px`), percentages (`%`), and root elements (`rem`) in a single click, instantly transforming calculations based on physical grid projection.
-6. **Live parent font-size baseline**: A toolbar-mounted direct input field allowing real-time adjustment of the baseline parent font-size (in pixels), immediately re-scaling all active relative `rem` unit math and drawing states.
-7. **Code Terminal block**: Provides real-time formatted CSS output with a single-click "Copy Code" action offering high-contrast styled copy success banners.
-8. **Internationalization & Language Switcher**: Configured with a default English-first localization system that supports a full translation matrix for both English and French. The segmented controller in the header dynamically translates static content, SVG pointer descriptions, real-time cursor coordinates, transition players, and the dynamic preset cards.
-9. **Interactive Light/Dark Theme Switcher**: Added a matching toggle toolbar switch allowing real-time transition between deep cosmic dark canvas aesthetics and crisp paper light themes with automatic system default sniffing and local state persistence.
-10. **Site Footer & Project Promotion**: Added a minimalist footer providing direct, subtle links to the user's secondary technology projects (OTRA, EcoComposer, technical blog) and professional LinkedIn profile to foster community connections.
+1. **Interactive SVG Painting Canvas**: Overlaid on a responsive 400x400 vector coordinate grid. Highlights active
+   selection steps, supports mouse/touch pointer drag operations, and displays cursor coordinates in real time.
+2. **Context-Aware Point Insertion**: Canvas double-clicks place a new `line to` anchor. If an anchor is currently
+   selected, the new point is inserted immediately *after* the selected command instead of at the end of the array.
+3. **Preset Library**: Contains 36 shape presets (including speech bubble, sacred heart, 5-point star, national
+   shield, wave banner, octagonal badge, teardrop, crescent moon, infinity, classic hourglass, solar eclipse arc,
+   polygons from triangle to decagon, bevel, rabbet, left/right arrows, left/right points, left/right chevrons,
+   cross, message, close, frame, inset, circle, and ellipse). Each preset renders dynamically as a visual micro-icon
+   using inline CSS `shape()` masks and gradients.
+4. **Transition Animation Player (Keyframe Workbench)**: Lets developers save a "State A" shape configuration,
+   modify the path on screen, save it to "State B", and play a genuine CSS transition loop on a preview element
+   with customized durations using a range slider.
+5. **Universal Unit Converter Suite**: Allows changing all coordinates across the entire shape between pixels
+   (`px`), percentages (`%`), and root elements (`rem`) in a single click, instantly transforming calculations based
+   on physical grid projection.
+6. **Live Parent Font-Size Baseline**: Integrates a toolbar-mounted input field allowing real-time adjustment of the
+   baseline parent font-size (in pixels), immediately re-scaling active relative `rem` unit math and drawing states.
+7. **Code Terminal Block**: Provides real-time formatted CSS output with a single-click copy action and visual success
+   toast indicators.
+8. **Internationalization & Language Switcher**: Configured with a default English-first system supporting complete
+   English and French translations for static content, SVG pointer descriptions, coordinates, transition players,
+   and dynamic presets.
+9. **Interactive Theme Switcher**: Added a toolbar toggle allowing real-time transition between deep cosmic dark
+   canvas aesthetics and crisp paper light themes, with system default preference sniffing and localStorage state
+   persistence.
+10. **Site Footer & Project Promotion**: Minimalist footer providing direct links to secondary technical projects
+    (OTRA, EcoComposer, technical blog) and professional LinkedIn profile to foster community connections.
 
-## Current Project State
-The application is 100% complete and fully verified. It remains framework-free (utilizing pure vanilla TypeScript and SCSS styles). TypeScript typing has been fully resolved and both compilation and lint checks are passing successfully. Layout and display issues, such as the bottom-right toast banner peeking out while inactive, have been completely resolved using elegant opacity transitions and hidden visibility overrides. Touch and pointer interaction mechanics have been thoroughly optimized by binding pointer movements to global `window` events and applying `touch-action: none` rules. Additionally, coordinate projection alignment offsets between the browser's absolute `clip-path` calculations and the SVG drag handles grid have been completely solved: the `#clippedElement` is fixed to 400x400px bounds and dynamically scaled using CSS `transform: scale(factor)` upon updates and window resize events, guaranteeing flawless precision at any physical viewport or viewport-relative dimensions. To top it off, UX ergonomics have been brought to production standards: double-clicking the canvas or manually adding segment commands now dynamically inserts the new point immediately *after the selected anchor* in the path instead of at the end, enabling intuitive shape splicing and mid-path additions. Full WCAG/RGAA AAA color contrast compliance has been successfully achieved with ratios exceeding 7:1 for all captions, labels, help text guidelines, and corner overlays (e.g. `0, 0` and `100%, 0`) in both light and dark themes, ensuring perfect legibility and pristine accessibility. All non-dynamic architectural variables (including fonts, grid border-radii, and styling parameters) have been fully refactored into compile-time SCSS variables, completely stripping them from browser custom property lookup scopes, resulting in a significantly lighter and cleaner compiled CSS asset with optimal rendering performance. Finally, full keyboard navigation and motor-accessibility standards (RGAA/WCAG) have been fully realized: users can focus individual SVG anchor or curve control points via the keyboard, select them by hitting Enter or Space, move them in increments/decrements of 1px using Arrow keys (or 10px holding Shift), and enjoy fully preserved focus across real-time DOM redraw events, delivering an elite, fully inclusive experience. This includes an integrated screen reader live announcement system using `aria-live="polite"` which verbally announces action events—such as loading presets, creating, reordering, deleting commands, or translating active nodes via key controls—ensuring non-visual users are immediately updated on state changes. Additionally, the project files and package manifests (`package.json`, `tsconfig.json`) have been fully stripped of all unused framework-specific dependencies (such as React, Tailwind, and Lucide), verifying that the build config aligns with our strict zero-dependency vanilla principles. Hover state animations for the interactive SVG canvas handles have been fully resolved with 100% rendering compatibility across all browser engines (such as Firefox, Safari, and Chrome) by replacing inconsistent CSS `transform: scale()` scale transformations on absolute SVG coordinate positions with modern, native CSS transitions on the SVG `r` (radius) property, completely preventing layout offset and centering jitter bugs during hover or active drag sequences. Furthermore, disruptive browser-default rectangular focus outline boxes have been excluded from active SVG handle structures on click and active drag sequences using robust fallback `outline: none` rules, preserving perfect, unhindered color contrast and custom visual indicators. A conflict with CSS custom property lookup on browsers with system light-theme preferences (`prefers-color-scheme: light`) was resolved by declaring explicit variable states under `body.theme-dark` in the stylesheet, guaranteeing that theme selection behaves seamlessly regardless of browser defaults. Finally, the shape() Animation Module is fully corrected and interactive: by defining the animated preview element's physical dimensions to be exactly 400x400px and scaling it down via CSS `transform: scale(0.25)`, its coordinate grid aligns 1-to-1 with the generator's grid, allowing absolute and relative pixels to clip the object with flawless accuracy instead of being clipped out of bounds. The module now features immediate high-fidelity visual feedback when saving active states (A and B) and initiates a smooth, automatic, frames-aligned CSS clip-path transition sequence from State A to State B with custom durations. To complement this, an elite tab-switching system has been integrated into the code output card, letting developers toggle between the static `clip-path` code and real-time generated CSS animation and transition blocks (featuring keyframes and hover configurations with custom speed constants). It also features smart auto-selection triggers that instantly transition to the animation code view whenever a state is saved or tested, maximizing ergonomics and minimizing clicks. Lastly, the entire collapsible card accordion layout system (Workspace Canvas, Shape Animation Module, Shape Presets, Command Structure, and Code Output) has been refactored to use native, semantic HTML5 `<details>` and `<summary>` components. This structural upgrade optimizes space utilization with native accessibility (RGAA/WCAG) and zero custom button wrappers: it implements browser-native keyboard focus and disclosure actions, animates/rotates custom high-contrast CSS chevrons seamlessly using the `:not([open])` visual states, and persists active card preferences inside localStorage using native `toggle` event listeners. It also preserves smart, programmatically triggered expansions (e.g. automatically revealing cards upon double-clicking the canvas, toolbar additions, preset loads, or animation play actions) with minimal, ultra-performant DOM footprints suited for maximum device performance. Finally, the entire application has been fully optimized for search engines (SEO) and crawlers at any host: it features a highly precise, 55-character visual title tag (*CSS shape() Visual Editor & Generator - Clip Path Maker*) and a 152-character description tag without the deprecated meta keywords elements, meeting standard SEO width constraints perfectly. The setup features a native canonical URL pointing to the production domain (`https://shape.lionel-peramo.com/`), an integrated JSON-LD web application schema metadata block for rich index structures, a structured crawl guidelines `/public/robots.txt` file, and an automatically served XML sitemap (`/public/sitemap.xml`) targeting the live custom site. In addition, the shapes library has been significantly enriched with 25 new premium, high-fidelity presets, bringing the total library to 36 ready-to-use shape configurations (including speech bubble, sacred heart, 5-point star, national shield, wave banner, octagonal badge, teardrop, crescent moon, infinity, classic hourglass, solar eclipse arc, triangle, trapezoid, parallelogram, rhombus, pentagon, hexagon, heptagon, octagon, nonagon, decagon, bevel, rabbet, left/right arrow, left/right point, left/right chevron, cross, message, close, frame, inset, circle, and ellipse). These beautiful designs are rendered dynamically as high-contrast micro-icons in a responsive dense grid layout, fully showcasing advanced capabilities of the CSS Level 2 `shape()` standard including complex Bézier curves, straight `hline` bounds, and elliptical arc (`arc`) projection rules, offering a powerful, instantaneous visual playground for developers.
+## Current Project State & Technical Implementation
+- **Code Quality**: Completely framework-free. TypeScript typing is fully resolved, and both compilation and lint
+  checks pass successfully.
+- **Layout & Toast Notification**: Solved overlap issues with the bottom-right toast banner when inactive by
+  implementing explicit CSS opacity transitions and hidden visibility overrides.
+- **Touch and Pointer Interactions**: Drag movements are bound to global `window` events and paired with
+  `touch-action: none` rules to ensure continuous, reliable drag sequences.
+- **Coordinate Projection Alignment**: Mismatches between absolute clip-path coordinates and SVG handles were
+  resolved by wrapping the `#clippedElement` in a fixed 400x400px box, scaled dynamically using CSS
+  `transform: scale(factor)` upon updates and window resize events.
+- **WCAG/RGAA Contrast compliance**: Achieved high color contrast ratios exceeding 7:1 for all captions, labels,
+  guidelines, and corner overlays (e.g., `0,0` and `100%,0`) in both light and dark modes.
+- **Asset Performance**: All non-dynamic variables (fonts, border-radii, grid styling parameters) are refactored
+  into compile-time SASS variables, stripping them from browser custom property lookup scopes.
+- **Keyboard Navigation Controls**: Fully supports keyboard interactions on both anchors and curve controls. Users
+  can focus SVG points via keyboard, select with Enter or Space, translate them in 1px steps using Arrow keys (or
+  10px holding Shift), and retain keyboard focus during DOM redraw events.
+- **Screen Reader Announcements**: Integrates a polite ARIA live announcer (`aria-live="polite"`) that verbally
+  announces actions (such as loading presets, creating, reordering, or deleting commands) for non-visual users.
+- **Dependency Cleanup**: Fully stripped unused framework-specific dependencies (such as React, Tailwind, and Lucide)
+  from the project files and package manifests.
+- **SVG Handle Cross-Browser Rendering**: Prevented layout jitter and centering issues on Firefox, Safari, and
+  Chrome by replacing inconsistent CSS `transform: scale()` on absolute SVG coordinate positions with modern native
+  CSS transitions on the SVG `r` (radius) property during hover/drag interactions.
+- **Focus Outline Overrides**: Excluded browser-default rectangular focus outlines from active SVG handle structures
+  on click and active drag sequences using fallback `outline: none` rules, preserving custom circular focus states.
+- **System Preference Fallbacks**: Resolved SASS custom property lookup bugs on browsers with default system light
+  themes by declaring explicit variable states under `body.theme-dark` in the stylesheet.
+- **Animation Module Synchronization**: The animated preview is defined to be exactly 400x400px and scaled down via
+  CSS `transform: scale(0.25)`. This aligns its coordinate grid 1-to-1 with the editor, guaranteeing absolute and
+  relative units clip the preview element with accuracy. It features immediate visual feedback when saving states (A and
+  B) and initiates a smooth CSS clip-path transition loop.
+- **Integrated Code Tabs**: Toggles between static `clip-path` output and real-time transition blocks (including SASS
+  transitions and keyframe loops), auto-focusing the animation block when states are saved or tested.
+- **Details-Based Collapsible Layout**: All collapsible blocks are refactored into native, semantic `<details>` and
+  `<summary>` components. Focus and disclosure are browser-native, chevron indicators animate cleanly via `:not([open])`
+  visual states, card states persist in `localStorage` via native toggle event listeners, and programmatic expansions
+  trigger automatically when action elements are clicked.
+- **SEO Parameters**: Configured title tags (55 characters: *CSS shape() Visual Editor & Generator - Clip Path Maker*),
+  description (152 characters), canonical URL (`https://shape.lionel-peramo.com/`), structured JSON-LD WebApplication
+  schema, automated sitemaps, and strict crawl instructions in robots.txt.

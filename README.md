@@ -50,6 +50,11 @@ python3 -m http.server 3000
 
 Once started, open your browser and navigate to `http://localhost:3000`.
 
+## Specifications & Architecture
+To learn more about the design decisions, accessibility constraints (RGAA/WCAG),
+the presets catalog, or specific display bug-fixes, please refer to the
+[PROJECT_SUMMARY.md](./PROJECT_SUMMARY.md) document.
+
 ## Author
 
 Created and maintained by Lionel Péramo.
