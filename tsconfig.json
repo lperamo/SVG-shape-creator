@@ -3,6 +3,7 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "rootDir": "./src/ts",
     "outDir": "./src/js",
     "strict": true,
     "skipLibCheck": true
