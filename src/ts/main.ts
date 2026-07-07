@@ -36,9 +36,6 @@ import {
   translatePageHTML
 } from './localization.js';
 
-// Importing the SCSS style to let Vite understand it natively
-import '../scss/pages/editor/editor.scss';
-
 // Custom presets loaded into application memory
 export const shapePresets: ShapePreset[] = [
   {
