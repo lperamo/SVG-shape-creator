@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Coordinate, Unit } from './types.ts';
-import { state } from './state';
+import { Coordinate, Unit } from './types.js';
+import { state } from './state.js';
 
 /**
  * Translates physical client pointer coordinates to logical paintboard space (0-400px).

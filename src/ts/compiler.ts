@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ShapeCommand } from './types.ts';
-import { state } from './state';
+import { ShapeCommand } from './types.js';
+import { state } from './state.js';
 
 /**
  * Builds the pure CSS shape() string from the local command structures.

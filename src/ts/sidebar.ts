@@ -13,10 +13,10 @@ import {
   VerticalLineCommand,
   CurveCommand,
   ArcCommand
-} from './types.ts';
-import { state } from './state';
-import { updateVisualClippedLayoutAndCanvas } from './canvas';
-import { announceToScreenReader } from './main';
+} from './types.js';
+import { state } from './state.js';
+import { updateVisualClippedLayoutAndCanvas } from './canvas.js';
+import { announceToScreenReader } from './main.js';
 
 type AllowedNumericKeys<T> = {
   [K in keyof T]: T[K] extends number ? K : never;

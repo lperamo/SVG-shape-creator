@@ -1,4 +1,4 @@
-import { ShapeCommand } from './types.ts';
+import { ShapeCommand } from './types.js';
 
 export const state = {
   commandsStack: [] as ShapeCommand[],

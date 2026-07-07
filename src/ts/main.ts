@@ -10,31 +10,31 @@ import {
   ShapeCommand,
   FromCommand,
   ShapePreset
-} from './types';
-import { state } from './state';
+} from './types.js';
+import { state } from './state.js';
 import {
   adjustClippedElementScale,
   computeWholeCoordinatesMatrix,
   handleCanvasDoubleClick,
   updateVisualClippedLayoutAndCanvas
-} from './canvas';
+} from './canvas.js';
 import {
   setFocusedActiveCommand,
   stableRebuildCommandsSidebarDOM
-} from './sidebar';
+} from './sidebar.js';
 import {
   computeLogicalCoordinates,
   convertPixelsToUnit,
   convertUnitToPixels
-} from './conversions';
+} from './conversions.js';
 import {
   compileCSSAnimationCodeString,
   compileShapeCodeString
-} from './compiler';
+} from './compiler.js';
 import {
   presetLocalizations,
   translatePageHTML
-} from './localization';
+} from './localization.js';
 
 // Importing the SCSS style to let Vite understand it natively
 import '../scss/pages/editor/editor.scss';

@@ -3,23 +3,23 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Coordinate, CurveCommand, ShapeCommand, Unit } from './types.ts';
-import { state } from './state';
+import { Coordinate, CurveCommand, ShapeCommand, Unit } from './types.js';
+import { state } from './state.js';
 import {
   computeLogicalCoordinates,
   convertPixelsToUnit,
   convertUnitToPixels
-} from './conversions';
+} from './conversions.js';
 import {
   compileCSSAnimationCodeString,
   compileShapeCodeString
-} from './compiler';
+} from './compiler.js';
 import {
   stablePushCoordinateValueToSidebarInputs,
   stableRebuildCommandsSidebarDOM,
   setFocusedActiveCommand
-} from './sidebar';
-import { announceToScreenReader, toggleCollapsibleSection } from './main';
+} from './sidebar.js';
+import { announceToScreenReader, toggleCollapsibleSection } from './main.js';
 
 export interface ComputedCoordinates
 {
@@ -607,9 +607,14 @@ export function rebuildCanvasSvgInteractionHandles(coordinatesMatrix: ComputedCo
           event.preventDefault();
           setFocusedActiveCommand(command.identifier);
 
+          const controlOne = absoluteRecord.absoluteControlOne;
+
+          if (!controlOne)
+            return;
+
           const
-            currentX = absoluteRecord.absoluteControlOne.xCoordinate,
-            currentY = absoluteRecord.absoluteControlOne.yCoordinate,
+            currentX = controlOne.xCoordinate,
+            currentY = controlOne.yCoordinate,
             step = event.shiftKey ? 10 : 1;
 
           let
@@ -707,9 +712,14 @@ export function rebuildCanvasSvgInteractionHandles(coordinatesMatrix: ComputedCo
             event.preventDefault();
             setFocusedActiveCommand(command.identifier);
 
+            const controlTwo = absoluteRecord.absoluteControlTwo;
+
+            if (!controlTwo)
+              return;
+
             const
-              currentX = absoluteRecord.absoluteControlTwo.xCoordinate,
-              currentY = absoluteRecord.absoluteControlTwo.yCoordinate,
+              currentX = controlTwo.xCoordinate,
+              currentY = controlTwo.yCoordinate,
               step = event.shiftKey ? 10 : 1;
 
             let
