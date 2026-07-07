@@ -1,17 +1,8 @@
-import {defineConfig} from 'vite';
-import path from 'path';
+import { defineConfig } from 'vite';
 
-export default defineConfig(() => {
-  return {
-    resolve: {
-      alias: {
-        '@': path.resolve(__dirname, '.'),
-      },
-    },
-    server: {
-      // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
-      hmr: process.env.DISABLE_HMR !== 'true',
-      watch: process.env.DISABLE_HMR === 'true' ? null : {},
-    },
-  };
+export default defineConfig({
+  server: {
+    host : '0.0.0.0',
+    port : 3000
+  }
 });

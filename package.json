@@ -12,7 +12,6 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/node": "^22.14.0",
     "sass": "^1.100.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.3"

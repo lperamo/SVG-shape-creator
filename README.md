@@ -1,20 +1,20 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# SVG shape creator tool
 
-# Run and deploy your AI Studio app
+A simple tool for creating SVG shapes.
 
-This contains everything you need to run your app locally.
+## Installation
 
-View your app in AI Studio: https://ai.studio/apps/e01182fa-690e-4e2f-8050-e335e4b31b40
+```bash
+npm install
+npm run dev
+```
 
-## Run Locally
+## Author
 
-**Prerequisites:**  Node.js
+Created and maintained by Lionel Péramo.
 
+I'm a French full-stack developer focused on performance, web standards and sustainable web development.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+- Website: https://lionel-peramo.com
+- LinkedIn: https://www.linkedin.com/in/lionel-p%C3%A9ramo-web-development/
+- Bluesky: https://bsky.app/profile/lionelperamo.bsky.social 
