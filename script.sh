@@ -1,10 +1,20 @@
 #!/bin/sh
 
 # Ensure build target directories exist inside dist and src/js
-mkdir -p dist/css dist/js src/js
+mkdir -p dist/css dist/js dist/images src/js
 
 # Clean up any leftover stale files in dist/js to keep it pristine
 rm -f dist/js/*.js
+
+# Copy static production assets to dist immediately on startup
+echo 'Copying static files to dist/...'
+cp index.html dist/index.html
+cp public/robots.txt dist/robots.txt
+cp public/sitemap.xml dist/sitemap.xml
+
+if [ -d 'public/images' ]; then
+  cp -r public/images dist/
+fi
 
 # Gracefully terminate all background processes without signal recursion loops
 trap 'trap - INT TERM EXIT; kill 0' INT TERM EXIT
