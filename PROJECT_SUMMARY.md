@@ -6,8 +6,14 @@ declarations. It replaces manual coordinate calculations and constant browser re
 draw, edit, and animate complex silhouettes in real time.
 
 ## Specifications and Constraints
-- **Zero Dependencies**: Built exclusively with pure vanilla TypeScript and SCSS styles, completely avoiding CSS
-  resets and external JS/CSS frameworks to ensure a lightweight footprint and zero side-effects.
+- **Zero Dependencies & Clean Workspace**: Built exclusively with pure vanilla TypeScript and SCSS styles. All generated
+  assets (compiled CSS and transpiled JS) are strictly routed into the `src/css/` and `src/js/` subdirectories to keep
+  the root directory uncluttered and isolated.
+- **Module Resolution**: Configured with extensionless relative path imports in TypeScript source files, complying with
+  the `"moduleResolution": "bundler"` specification.
+- **Advanced Asset Optimization**: Supports optional compilation and minification using Google Closure Compiler via a
+  local `.env` configuration (`CLOSURE_COMPILER_PATH`) targeting ECMASCRIPT_2022 standards for optimal runtime
+  performance.
 - **Stable Input Focus**: Designed so that typing values directly in sidebar inputs edits the shape dynamically,
   while pointer dragging on the interactive canvas updates values in input fields without stealing keyboard focus.
 - **Expanded Variable Naming**: Complete rejection of abbreviations in the codebase to improve readability and

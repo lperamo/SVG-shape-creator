@@ -2,14 +2,12 @@ node_modules/
 build/
 dist/
 coverage/
-src/css/
 src/js/
 .idea/
 .DS_Store
 *.log
 .env*
 !.env.example
-projet.zip
 
 # Administrative & Server Setup Files
 nginx.conf

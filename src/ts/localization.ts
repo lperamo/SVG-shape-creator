@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { state } from './state';
+import { state } from './state.js';
 
 export interface LanguageDictionary
 {

@@ -13,30 +13,31 @@ Ensure you have the SASS and TypeScript compilers installed globally on your sys
 npm install -g sass typescript
 ```
 
-## Compilation
+## Environment Configuration
 
-Before running the application, you need to compile the stylesheet and TypeScript files.
+The build system supports optional optimization using Google Closure Compiler. To enable JavaScript minification, create a `.env` file in the project root:
 
-### One-time Build
-
-```bash
-# Compile the Sass stylesheet
-sass src/scss/pages/editor/editor.scss src/css/editor.css
-
-# Compile the TypeScript files
-tsc
+```env
+# Path to your local Google Closure Compiler jar file
+CLOSURE_COMPILER_PATH="/var/www/html/lib/compiler.jar"
 ```
 
-### Live Development Watchers
+If this variable is defined and points to a valid `.jar` file, the compilation script will automatically optimize the output JavaScript.
 
-To automatically compile your files as you edit them, run these commands in your terminal:
+## Compilation & Asset Generation
+
+An automated compilation script is provided to compile both stylesheets and TypeScript files.
+
+### Using the Build Script
+
+Run the POSIX-compliant script from your terminal to compile all assets:
 
 ```bash
-# Watch Sass files
-sass --watch src/scss/pages/editor/editor.scss:src/css/editor.css
+# Make the script executable
+chmod +x script.sh
 
-# Watch TypeScript files
-tsc -w
+# Run the compilation
+./script.sh
 ```
 
 ## Local Development Server
