@@ -1,4 +1,4 @@
-#!/sh
+#!/bin/sh
 
 # Ensure build target directories exist inside dist and src/js
 mkdir -p dist/css dist/js src/js

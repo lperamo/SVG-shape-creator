@@ -827,6 +827,11 @@ export function applyDragShiftToAnchor(
   logicalCoordinateY: number
 ): void
 {
+  if (state.activePresetIndex !== null)
+  {
+    state.activePresetIndex = null;
+    document.querySelector('.preset-item-card.active-setting')?.classList.remove('active-setting');
+  }
   const
     hasToModifier = 'syntaxModifier' in command && command.syntaxModifier === 'to',
     horizontalOffsetReference = (command.type === 'from' || hasToModifier)
@@ -866,6 +871,12 @@ export function applyDragShiftToControlPoint(
   logicalCoordinateY: number
 ): void
 {
+  if (state.activePresetIndex !== null)
+  {
+    state.activePresetIndex = null;
+    document.querySelector('.preset-item-card.active-setting')?.classList.remove('active-setting');
+  }
+
   const
     relativeOffsetReferenceX = command.syntaxModifier === 'to'
       ? 0
@@ -905,7 +916,13 @@ export function handleCanvasDoubleClick(logicalCoordinateX: number, logicalCoord
     roundedCoordinateX = Math.round(logicalCoordinateX),
     roundedCoordinateY = Math.round(logicalCoordinateY);
 
-  toggleCollapsibleSection('commandsCard', 'expand');
+  if (state.activePresetIndex !== null)
+  {
+    state.activePresetIndex = null;
+    document.querySelector('.preset-item-card.active-setting')?.classList.remove('active-setting');
+  }
+
+  toggleCollapsibleSection('commandsCard', 'expand')
 
   const command: ShapeCommand = {
     identifier: newIdentifier,

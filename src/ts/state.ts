@@ -8,5 +8,6 @@ export const state = {
   currentSelectedCodeTab: 'static' as 'static' | 'animation',
   parentFontSize: 16,
   isCurrentlyDragging: false,
-  currentLanguage: 'en' as 'en' | 'fr'
+  currentLanguage: 'en' as 'en' | 'fr',
+  activePresetIndex: null as number | null
 };

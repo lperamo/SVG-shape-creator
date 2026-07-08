@@ -527,6 +527,33 @@ export const shapePresets: ShapePreset[] = [
   }
 ];
 
+/**
+ * Updates the highlight class on preset cards directly in the DOM without rebuilding nodes.
+ */
+export function updateActivePresetHighlightInDOM(activePresetIndex: number | null): void
+{
+  const container = document.getElementById('presetsGridContainer');
+
+  if (!container)
+    return;
+
+  const cards = container.querySelectorAll('.preset-item-card');
+
+  for (let index = 0; index < cards.length; index = index + 1)
+  {
+    const card = cards[index];
+
+    if (index === activePresetIndex)
+    {
+      card.classList.add('active-setting');
+    }
+    else
+    {
+      card.classList.remove('active-setting');
+    }
+  }
+}
+
 export function deepDuplicateStack(commands: ShapeCommand[]): ShapeCommand[]
 {
   return JSON.parse(JSON.stringify(commands));
@@ -534,18 +561,19 @@ export function deepDuplicateStack(commands: ShapeCommand[]): ShapeCommand[]
 
 export function loadSelectedPresetTemplate(preset: ShapePreset): void
 {
+  const presetIndex = shapePresets.indexOf(preset);
   state.commandsStack = deepDuplicateStack(preset.commands);
   state.selectedCommandIdentifier = state.commandsStack[0].identifier;
-
+  state.activePresetIndex = presetIndex;
+  updateActivePresetHighlightInDOM(presetIndex);
   state.initialStateCommands = null;
   state.finalStateCommands = null;
   refreshAnimationIndicatorsUI();
 
   stableRebuildCommandsSidebarDOM();
   updateVisualClippedLayoutAndCanvas();
-  renderPresetButtonCardsList();
 
-  const presetName = presetLocalizations[state.currentLanguage][shapePresets.indexOf(preset)]?.name || preset.name;
+  const presetName = presetLocalizations[state.currentLanguage][presetIndex]?.name || preset.name;
 
   announceToScreenReader(state.currentLanguage === 'en'
     ? `Preset loaded: ${presetName}`
@@ -559,6 +587,12 @@ export function createAndAppendCommandBlock(type: CommandType): void
 {
   const newIdentifier = `cmd-user-${Date.now()}`;
   let newCommand: ShapeCommand;
+
+  if (state.activePresetIndex !== null)
+  {
+    state.activePresetIndex = null;
+    updateActivePresetHighlightInDOM(null);
+  }
 
   toggleCollapsibleSection('commandsCard', 'expand');
 
@@ -1018,7 +1052,8 @@ export function performAnimationTransitionTest(): void
     const cssA = compileShapeCodeString(state.initialStateCommands);
     animationElement.style.clipPath = `shape(${cssA.replace('clip-path: shape(', '').slice(0, -2)})`;
 
-    void animationElement.offsetWidth;
+    // forces the reflow.
+    const _triggerReflow = animationElement.offsetWidth;
 
     requestAnimationFrame(() =>
     {
@@ -1045,13 +1080,13 @@ export function renderPresetButtonCardsList(): void
   {
     const
       presetObject = shapePresets[index],
-      isCurrentActive = state.commandsStack.length === presetObject.commands.length &&
-        (state.commandsStack[0] as FromCommand).xCoordinate === (presetObject.commands[0] as FromCommand).xCoordinate,
+      isCurrentActive = state.activePresetIndex === index,
       presetName = presetLocalizations[state.currentLanguage][index]?.name || presetObject.name,
       presetDesc = presetLocalizations[state.currentLanguage][index]?.description || presetObject.description,
       buttonCard = document.createElement('button');
 
     buttonCard.setAttribute('type', 'button');
+    buttonCard.setAttribute('data-index', String(index));
     buttonCard.setAttribute(
       'class',
       `preset-item-card${isCurrentActive ? ' active-setting' : ''}`
@@ -1304,6 +1339,12 @@ export function initializeUIEventHandlers(): void
   {
     clearButton.addEventListener('click', () =>
     {
+      if (state.activePresetIndex !== null)
+      {
+        state.activePresetIndex = null;
+        updateActivePresetHighlightInDOM(null);
+      }
+
       state.commandsStack = [
         {
           identifier: 'cmd-clear-1',
@@ -1491,12 +1532,10 @@ window.addEventListener('DOMContentLoaded', () =>
 /**
  * Sends a verbal notification to screen readers via an aria-live div.
  */
-export function announceToScreenReader(message: string): void
-{
+export function announceToScreenReader(message: string): void {
   const announcer = document.getElementById('srLiveAnnouncer');
 
-  if (announcer)
-  {
+  if (announcer) {
     announcer.textContent = '';
     setTimeout(() => {
       announcer.textContent = message;

@@ -585,6 +585,12 @@ export function removeCommandFromStack(commandIdentifier: string): void
   const deletedType = state.commandsStack[index].type;
   state.commandsStack.splice(index, 1);
 
+  if (state.activePresetIndex !== null)
+  {
+    state.activePresetIndex = null;
+    document.querySelector('.preset-item-card.active-setting')?.classList.remove('active-setting');
+  }
+
   if (state.selectedCommandIdentifier === commandIdentifier)
   {
     state.selectedCommandIdentifier = state.commandsStack.length > 0
@@ -608,6 +614,12 @@ export function swapCommandsInStack(indexOne: number, indexTwo: number): void
   if (state.commandsStack[indexOne].type === 'close'
     || state.commandsStack[indexTwo].type === 'close')
     return;
+
+  if (state.activePresetIndex !== null)
+  {
+    state.activePresetIndex = null;
+    document.querySelector('.preset-item-card.active-setting')?.classList.remove('active-setting');
+  }
 
   const temporaryPlaceholder = state.commandsStack[indexOne];
   state.commandsStack[indexOne] = state.commandsStack[indexTwo];
